@@ -6,6 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Misskey from 'cherrypick-js';
 import { DI } from '@/di-symbols.js';
+import type { Config } from '@/config.js';
 import type { SigninsRepository, UserProfilesRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiLocalUser } from '@/models/User.js';
@@ -19,6 +20,9 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 @Injectable()
 export class SigninService {
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.signinsRepository)
 		private signinsRepository: SigninsRepository,
 
@@ -50,11 +54,37 @@ export class SigninService {
 
 			this.globalEventService.publishMainStream(user.id, 'signin', await this.signinEntityService.pack(record));
 
+			const host = this.config.url.replace("https://","");
 			const profile = await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
 			if (profile.email && profile.emailVerified) {
-				this.emailService.sendEmail(profile.email, 'New login / ログインがありました / 로그인 알림',
-					'There is a new login. If you do not recognize this login, update the security status of your account, including changing your password. / 新しいログインがありました。このログインに心当たりがない場合は、パスワードを変更するなど、アカウントのセキュリティ状態を更新してください。/ 새 기기에서 로그인을 시도했어요. 이 로그인이 신뢰할 수 있는 기기에서 한 것이 아니라면, 즉시 비밀번호를 변경하는 등의 조치를 통해 계정의 보안 상태를 업데이트해야 해요.',
-					'There is a new login. If you do not recognize this login, update the security status of your account, including changing your password. / 新しいログインがありました。このログインに心当たりがない場合は、パスワードを変更するなど、アカウントのセキュリティ状態を更新してください。/ 새 기기에서 로그인을 시도했어요. 이 로그인이 신뢰할 수 있는 기기에서 한 것이 아니라면, 즉시 비밀번호를 변경하는 등의 조치를 통해 계정의 보안 상태를 업데이트해야 해요.');
+				this.emailService.sendEmail(profile.email, `【${host}】新規ログインのお知らせ`,
+					`${user.name??`@${user.username}`} 様<br><br>`+
+					`いつも${host}をご利用いただきありがとうございます。<br><br>`+
+					`お使いのアカウント(@${user.username})に対する新しいログインがありましたのでお知らせいたします。<br><br>`+
+					`ログイン時刻 : ${new Date().toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo',})}<br>`+
+					`IPアドレス : ${request.ip}<br><br>`+
+					`<strong>●ユーザー自身がログインした場合</strong><br>`+
+					`このメールは無視して構いません。<br>`+
+					`引き続き${host}をお楽しみください<br><br>`+
+					`<strong>●このログインに心当たりがない場合</strong><br>`+
+					`すぐにパスワードの変更とログイントークンを再生成し、アカウントを保護してください。<br><br>`+
+					`また、パスワード変更やログイン履歴等の各種情報は以下のURLから確認できます。<br>`+
+					`<a href="${this.config.url}/settings/security">${this.config.url}/settings/security</a><br><br>`+
+					`※本メールは送信専用になります。`
+					,
+					`${user.name??`@${user.username}`} 様\n\n`+
+					`いつも${host}をご利用いただきありがとうございます。\n\n`+
+					`お使いのアカウント(@${user.username})に対する新しいログインがありましたのでお知らせいたします。\n\n`+
+					`ログイン時刻 : ${new Date().toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo',})}\n`+
+					`IPアドレス : ${request.ip}\n\n`+
+					`●ユーザー自身がログインした場合\n`+
+					`このメールは無視して構いません。\n`+
+					`引き続き$${host}をお楽しみください\n\n`+
+					`●このログインに心当たりがない場合\n`+
+					`すぐにパスワードの変更とログイントークンを再生成し、アカウントを保護してください。\n\n`+
+					`また、パスワード変更やログイン履歴等の各種情報は以下のURLから確認できます。\n`+
+					`${this.config.url}/settings/security \n\n`+
+					`※本メールは送信専用になります。`);
 			}
 		});
 
