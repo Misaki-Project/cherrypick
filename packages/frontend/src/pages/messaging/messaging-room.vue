@@ -366,11 +366,11 @@ definePageMetadata(computed(() => !fetching.value ? user.value ? {
   padding: 20px;
 }
 
-.footer {
+footer {
 	width: 100%;
 	position: sticky;
+  bottom: 0;
 	z-index: 2;
-	padding-top: 8px;
 }
 
 .newMessage {
@@ -427,6 +427,7 @@ definePageMetadata(computed(() => !fetching.value ? user.value ? {
 	.footer {
     &.friendly {
       margin-bottom: calc(50px + env(safe-area-inset-bottom));
+			padding-bottom: 8px;
     }
 	}
 
