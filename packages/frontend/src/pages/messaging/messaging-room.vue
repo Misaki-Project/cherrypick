@@ -30,7 +30,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkPagination>
 			</div>
 		</MkSpacer>
-		<footer>
+		<footer :class="$style.footer">
 			<div :class="$style.footerSpacer">
 				<div :class="[$style.footer, { [$style.friendly]: isFriendly }]">
 					<div v-if="typers.length > 0" :class="$style.typers">
@@ -366,10 +366,11 @@ definePageMetadata(computed(() => !fetching.value ? user.value ? {
   padding: 20px;
 }
 
-footer {
+.footer {
 	width: 100%;
 	position: sticky;
-  bottom: 0;
+  bottom: var(--MI-stickyBottom);
+	padding-top: 8px;
 	z-index: 2;
 }
 
@@ -427,7 +428,6 @@ footer {
 	.footer {
     &.friendly {
       margin-bottom: calc(50px + env(safe-area-inset-bottom));
-			padding-bottom: 8px;
     }
 	}
 
