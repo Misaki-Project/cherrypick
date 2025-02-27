@@ -176,6 +176,47 @@ export type RoleCondFormulaValue = { id: string } & (
 	CondFormulaValueNotesMoreThanOrEq
 );
 
+// 固定値モデル 必要値 : base
+type ExperienceLevelPolicyValueConst = {
+	type: 'const';
+	base: any;
+}
+
+// 線形モデル 必要値 : base + additional * level
+type ExperienceLevelPolicyValueLinear = {
+	type: 'linear';
+	base: number;
+	additional: number;
+};
+
+// 指数モデル 必要値 : base * (additional ^ level)
+type ExperienceLevelPolicyValueExponential = {
+	type: 'exponential';
+	base: number;
+	exponential: number;
+};
+
+export type RoleExperienceLevelPolicyValue = { id: number} & (
+	ExperienceLevelPolicyValueConst |
+	ExperienceLevelPolicyValueLinear |
+	ExperienceLevelPolicyValueExponential
+);
+
+type ExperiencePolicyCulcValueConst = {
+	type: 'const';
+	base: number;
+};
+type ExperiencePolicyCulcValueMultiplier = {
+	type: 'multiplier';
+	base: number;
+	multiplier: number;
+}
+
+export type RoleExperiencePolicyCulcValue = { id: number} & (
+	ExperiencePolicyCulcValueConst |
+	ExperiencePolicyCulcValueMultiplier
+);
+
 @Entity('role')
 export class MiRole {
 	@PrimaryColumn(id())
@@ -253,6 +294,16 @@ export class MiRole {
 	})
 	public canEditMembersByModerator: boolean;
 
+	// レベル情報
+	@Column('jsonb', {
+		default: { },
+	})
+	public levelPolicies: {
+		minLevel: number;
+		maxLevel: number;
+		experiencePolicies: RoleExperienceLevelPolicyValue;
+	};
+
 	// UIに表示する際の並び順用(大きいほど先頭)
 	@Column('integer', {
 		default: 0,
@@ -266,5 +317,6 @@ export class MiRole {
 		useDefault: boolean;
 		priority: number;
 		value: any;
+		poricyAsLevel : RoleExperiencePolicyCulcValue | null;
 	}>;
 }

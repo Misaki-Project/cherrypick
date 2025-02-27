@@ -45,4 +45,11 @@ export class MiRoleAssignment {
 		nullable: true,
 	})
 	public expiresAt: Date | null;
+
+	//ユーザー毎にロールのレベル情報を持たせる
+	@Index()
+	@Column('integer', {
+		comment: 'Experience for the role',
+	})
+	public experience: number | null;
 }
