@@ -196,11 +196,11 @@ type ExperienceLevelPolicyValueExponential = {
 	exponential: number;
 };
 
-export type RoleExperienceLevelPolicyValue = { id: number} & (
+export type RoleExperienceLevelPolicyValue = Record<number, (
 	ExperienceLevelPolicyValueConst |
 	ExperienceLevelPolicyValueLinear |
 	ExperienceLevelPolicyValueExponential
-);
+)>;
 
 type ExperiencePolicyCulcValueConst = {
 	type: 'const';
@@ -212,10 +212,10 @@ type ExperiencePolicyCulcValueMultiplier = {
 	multiplier: number;
 }
 
-export type RoleExperiencePolicyCulcValue = { id: number} & (
+export type RoleExperiencePolicyCulcValue = Record<number, (
 	ExperiencePolicyCulcValueConst |
 	ExperiencePolicyCulcValueMultiplier
-);
+)>;
 
 @Entity('role')
 export class MiRole {
@@ -253,10 +253,10 @@ export class MiRole {
 	public iconUrl: string | null;
 
 	@Column('enum', {
-		enum: ['manual', 'conditional'],
+		enum: ['manual', 'conditional', 'manualLevel'],
 		default: 'manual',
 	})
-	public target: 'manual' | 'conditional';
+	public target: 'manual' | 'conditional' | 'manualLevel';
 
 	@Column('jsonb', {
 		default: { },
@@ -302,7 +302,7 @@ export class MiRole {
 		minLevel: number;
 		maxLevel: number;
 		experiencePolicies: RoleExperienceLevelPolicyValue;
-	};
+	} | null;
 
 	// UIに表示する際の並び順用(大きいほど先頭)
 	@Column('integer', {

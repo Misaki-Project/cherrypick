@@ -3,10 +3,13 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { start } from 'repl';
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { In } from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
+import { range } from '@tensorflow/tfjs-core';
+import { min } from 'date-fns';
 import type {
 	MiMeta,
 	MiRole,
@@ -20,7 +23,7 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { CacheService } from '@/core/CacheService.js';
-import type { RoleCondFormulaValue } from '@/models/Role.js';
+import type { RoleCondFormulaValue, RoleExperienceLevelPolicyValue, RoleExperiencePolicyCulcValue } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -312,6 +315,89 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		} catch (err) {
 			// TODO: log error
 			return false;
+		}
+	}
+
+	@bindThis
+	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole):
+	{
+		level: number;
+		currentLevelExp: number;
+		nextLevelExp: number;
+	} | null {
+		if (role.target !== 'manualLevel' || !role.levelPolicies) return null;
+
+		const exp = Math.max(assign.experience ?? 0, 0);
+		const policies = Object.entries(role.levelPolicies.experiencePolicies);
+		if (!policies.find(([level]) => Number.parseInt(level) === role.levelPolicies?.minLevel)) return null;
+
+		let level = role.levelPolicies.minLevel;
+		let currentExp = 0;
+		let currentLevelExp = 0;
+		let nextLevelExp = 0;
+
+		for (let i = 0; i < policies.length; i++) {
+			const [startLevelStr, levelPolicy] = policies[i];
+			const startLevel = Number.parseInt(startLevelStr);
+			const nextLevel = policies[i + 1] ? Number.parseInt(policies[i + 1][0]) : role.levelPolicies.maxLevel;
+			const diffLevel = nextLevel - startLevel;
+			let nextToExp = 0;
+
+			switch (levelPolicy.type) {
+				case 'const':
+					nextToExp = levelPolicy.base * diffLevel;
+					break;
+				case 'linear':
+					nextToExp = (levelPolicy.base * diffLevel) + (levelPolicy.additional * (diffLevel * (diffLevel - 1)) / 2);
+					break;
+				case 'exponential':
+					nextToExp = levelPolicy.base * ((levelPolicy.exponential ** diffLevel) - 1) / (levelPolicy.exponential - 1);
+					break;
+				default:
+					// TODO: log error
+					return null;
+			}
+
+			if (currentExp + nextToExp > exp) {
+				let rangeLevel = 0;
+				switch (levelPolicy.type) {
+					case 'const':
+						rangeLevel = startLevel + Math.floor((exp - currentExp) / levelPolicy.base);
+						currentLevelExp = currentExp + levelPolicy.base * (rangeLevel - startLevel);
+						nextLevelExp = currentExp + levelPolicy.base * (rangeLevel + 1 - startLevel);
+						break;
+					case 'linear':
+						rangeLevel = startLevel + Math.floor((-1 + Math.sqrt(1 + 8 * ((exp - currentExp) / levelPolicy.additional))) / 2);
+						currentLevelExp = currentExp + levelPolicy.base * (rangeLevel - startLevel) + levelPolicy.additional * (rangeLevel * (rangeLevel - 1)) / 2;
+						nextLevelExp = currentExp + levelPolicy.base * (rangeLevel + 1 - startLevel) + levelPolicy.additional * (rangeLevel + 1) * rangeLevel / 2;
+						break;
+					case 'exponential':
+						rangeLevel = startLevel + Math.floor(Math.log((exp - currentExp) * (levelPolicy.exponential - 1) / levelPolicy.base + 1) / Math.log(levelPolicy.exponential));
+						currentLevelExp = currentExp + levelPolicy.base * (Math.pow(levelPolicy.exponential, rangeLevel) - 1) / (levelPolicy.exponential - 1);
+						nextLevelExp = currentExp + levelPolicy.base * (Math.pow(levelPolicy.exponential, rangeLevel + 1) - 1) / (levelPolicy.exponential - 1);
+						break;
+					default:
+						// TODO: log error
+						return null;
+				}
+				level = role.levelPolicies.minLevel + rangeLevel;
+				break;
+			}
+			currentExp += nextToExp;
+		}
+
+		if (currentExp <= exp) {
+			return {
+				level: role.levelPolicies.maxLevel,
+				currentLevelExp: exp - currentExp,
+				nextLevelExp: Number.NaN,
+			};
+		} else {
+			return {
+				level: level,
+				currentLevelExp: exp - currentLevelExp,
+				nextLevelExp: nextLevelExp - currentLevelExp,
+			};
 		}
 	}
 
