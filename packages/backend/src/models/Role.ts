@@ -208,6 +208,7 @@ type ExperiencePolicyCulcValueConst = {
 };
 type ExperiencePolicyCulcValueMultiplier = {
 	type: 'multiplier';
+	offset: number;
 	base: number;
 	multiplier: number;
 }

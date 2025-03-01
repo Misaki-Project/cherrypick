@@ -118,8 +118,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
 	private notificationService: NotificationService;
 
-	public static AlreadyAssignedError = class extends Error {};
-	public static NotAssignedError = class extends Error {};
+	public static AlreadyAssignedError = class extends Error { };
+	public static NotAssignedError = class extends Error { };
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -316,8 +316,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole):
-	{
+	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole): {
 		level: number;
 		currentLevelExp: number;
 		nextLevelExp: number;
@@ -326,6 +325,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 		const exp = Math.max(assign.experience ?? 0, 0);
 		const policies = Object.entries(role.levelPolicies.experiencePolicies);
+		if (policies.length === 0) return null;
 		if (!policies.find(([level]) => Number.parseInt(level) === role.levelPolicies?.minLevel)) return null;
 
 		let level = role.levelPolicies.minLevel;
@@ -399,6 +399,37 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
+	private async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & {
+		experience?: {
+			level: number;
+			currentExp: number;
+			nextLevelExp: number;
+			totalExp: number;
+		};
+	})[]> {
+		return roles.map(role => {
+			if (role.target === 'manualLevel') {
+				const assign = assigns.find(a => a.roleId === role.id);
+				if (assign) {
+					const levelInfo = this.evalRoleLevel(assign, role);
+					if (levelInfo) {
+						return {
+							...role,
+							experience: {
+								level: levelInfo.level,
+								currentExp: levelInfo.currentLevelExp,
+								nextLevelExp: levelInfo.nextLevelExp,
+								totalExp: assign.experience ?? 0,
+							},
+						};
+					}
+				}
+			}
+			return role;
+		});
+	}
+
+	@bindThis
 	public async getRoles() {
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
 		return roles;
@@ -417,9 +448,12 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	public async getUserRoles(userId: MiUser['id']) {
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
 		const assigns = await this.getUserAssigns(userId);
-		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
+		const assignedRoles = await this.attachRoleLevels(
+			roles.filter(r => assigns.map(x => x.roleId).includes(r.id)),
+			assigns,
+		);
 		const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-		const matchedCondRoles = roles.filter(r => r.target === 'conditional' && this.evalCond(user!, assignedRoles, r.condFormula));
+		const matchedCondRoles = roles.filter(r => r.target === 'conditional' && user && this.evalCond(user, assignedRoles, r.condFormula));
 		return [...assignedRoles, ...matchedCondRoles];
 	}
 
@@ -433,12 +467,16 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		// 期限切れのロールを除外
 		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
-		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
+		const assignedRoles = await this.attachRoleLevels(
+			roles.filter(r => assigns.map(x => x.roleId).includes(r.id)),
+			assigns,
+		);
 		const assignedBadgeRoles = assignedRoles.filter(r => r.asBadge);
 		const badgeCondRoles = roles.filter(r => r.asBadge && (r.target === 'conditional'));
+
 		if (badgeCondRoles.length > 0) {
 			const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-			const matchedBadgeCondRoles = badgeCondRoles.filter(r => this.evalCond(user!, assignedRoles, r.condFormula));
+			const matchedBadgeCondRoles = user ? badgeCondRoles.filter(r => this.evalCond(user, assignedRoles, r.condFormula)) : [];
 			return [...assignedBadgeRoles, ...matchedBadgeCondRoles];
 		} else {
 			return assignedBadgeRoles;
@@ -452,11 +490,48 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		if (userId == null) return basePolicies;
 
 		const roles = await this.getUserRoles(userId);
+		const assigns = await this.getUserAssigns(userId);
 
-		function calc<T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) {
+		const calc = <T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) => {
 			if (roles.length === 0) return basePolicies[name];
 
-			const policies = roles.map(role => role.policies[name] ?? { priority: 0, useDefault: true });
+			const policies = roles.map(role => {
+				const policy = role.policies[name] ?? { priority: 0, useDefault: true };
+
+				// manualLevelロールの場合、レベルに基づいて制御
+				if (role.target === 'manualLevel' && role.levelPolicies) {
+					const assign = assigns.find(a => a.roleId === role.id);
+					if (assign) {
+						const levelInfo = this.evalRoleLevel(assign, role);
+						if (levelInfo) {
+							// レベルに応じたポリシー値を設定
+							const levelPolicy = role.policies[name].poricyAsLevel;
+							if (levelPolicy) {
+								for (let i = 0; i < Object.entries(levelPolicy).length; i++) {
+									const [levelStr, policyValue] = Object.entries(levelPolicy)[i];
+									const level = Number.parseInt(levelStr);
+									const nextLevel = Object.entries(levelPolicy)[i + 1] ? Number.parseInt(Object.entries(levelPolicy)[i + 1][0]) : role.levelPolicies.maxLevel;
+
+									if (levelInfo.level >= level && levelInfo.level < nextLevel) {
+										switch (policyValue.type) {
+											case 'const':
+												policy.value = policyValue.base;
+												break;
+											case 'multiplier':
+												policy.value = policyValue.offset + policyValue.base * (levelInfo.level - level);
+												break;
+										}
+										policy.useDefault = false;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+
+				return policy;
+			});
 
 			const p2 = policies.filter(policy => policy.priority === 2);
 			if (p2.length > 0) return aggregate(p2.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
@@ -465,7 +540,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			if (p1.length > 0) return aggregate(p1.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
 
 			return aggregate(policies.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
-		}
+		};
 
 		return {
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
