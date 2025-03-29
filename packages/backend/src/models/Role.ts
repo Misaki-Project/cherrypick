@@ -213,6 +213,14 @@ type ExperiencePolicyCulcValueMultiplier = {
 	multiplier: number;
 }
 
+export const RoleExperienceSetMode = {
+	Add: 'add',
+	Multipiler: 'multipiler',
+	Set: 'set',
+} as const;
+
+export type RoleExperienceSetMode = typeof RoleExperienceSetMode[keyof typeof RoleExperienceSetMode];
+
 export type RoleExperiencePolicyCulcValue = Record<number, (
 	ExperiencePolicyCulcValueConst |
 	ExperiencePolicyCulcValueMultiplier

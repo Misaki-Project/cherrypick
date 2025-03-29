@@ -20,7 +20,7 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { CacheService } from '@/core/CacheService.js';
-import type { RoleCondFormulaValue, RoleExperienceLevelPolicyValue, RoleExperiencePolicyCulcValue } from '@/models/Role.js';
+import type { RoleCondFormulaValue, RoleExperienceLevelPolicyValue, RoleExperiencePolicyCulcValue, RoleExperienceSetMode } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -198,6 +198,19 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					const cached = this.rolesCache.get();
 					if (cached) {
 						this.rolesCache.set(cached.filter(x => x.id !== body.id));
+					}
+					break;
+				}
+				case 'userRoleExperienceUpdated': {
+					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
+					if (cached) {
+						const index = cached.findIndex(x => x.id === body.id);
+						if (index > -1) {
+							cached[index] = {
+								...cached[index],
+								experience: body.experience,
+							};
+						}
 					}
 					break;
 				}
@@ -688,6 +701,59 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			id: In(ids),
 		}) : [];
 		return users;
+	}
+
+	@bindThis
+	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser): Promise<void> {
+		const now = Date.now();
+		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
+		let assign = await this.roleAssignmentsRepository.findOneBy({ userId, roleId });
+		if (!assign) {
+			//新規でアサインする
+			assign = await this.roleAssignmentsRepository.insertOne({
+				id: this.idService.gen(now),
+				roleId: roleId,
+				userId: userId,
+				//ToDo:ここにassignの経験値の処理を追加
+			});
+
+			this.rolesRepository.update(roleId, {
+				lastUsedAt: new Date(),
+			});
+		} else {
+	  	//ToDo:ここにassignの経験値の処理を追加
+			assign.experience = (assign.experience ?? 0) + experience;
+			await this.roleAssignmentsRepository.update(assign.id, { experience: assign.experience });
+		}
+
+		this.rolesRepository.update(roleId, {
+			lastUsedAt: new Date(),
+		});
+		const user = await this.usersRepository.findOneByOrFail({ id: userId });
+
+		// ToDo : ここに経験値の通知を追加する
+		/*
+		if (role.isPublic && user.host === null) {
+			this.notificationService.createNotification(userId, 'roleAssigned', {
+				roleId: roleId,
+			});
+		}
+		*/
+
+		if (moderator) {
+			this.moderationLogService.log(moderator, 'changeExperienceRole', {
+				roleId: roleId,
+				roleName: role.name,
+				userId: userId,
+				userUsername: user.username,
+				userHost: user.host,
+				actionType: setMode,
+				actionValue: experience,
+				beforeValue: assign ? assign.experience : null,
+				afterValue: assign.experience ? assign.experience : 0,
+			});
+		}
+		this.globalEventService.publishInternalEvent('userRoleExperienceUpdated', assign);
 	}
 
 	@bindThis

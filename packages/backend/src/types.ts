@@ -84,6 +84,7 @@ export const moderationLogTypes = [
 	'updateCustomEmoji',
 	'deleteCustomEmoji',
 	'assignRole',
+	'changeExperienceRole',
 	'unassignRole',
 	'createRole',
 	'updateRole',
@@ -171,6 +172,17 @@ export type ModerationLogPayloads = {
 		roleName: string;
 		expiresAt: string | null;
 	};
+	changeExperienceRole: {
+		userId: string;
+		userUsername: string;
+		userHost: string | null;
+		roleId: string;
+		roleName: string;
+		actionType: string;
+		actionValue: number;
+		beforeValue: number | null;
+		afterValue: number;
+	}
 	unassignRole: {
 		userId: string;
 		userUsername: string;
