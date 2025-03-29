@@ -17,7 +17,6 @@ export const meta = {
 
 	requireCredential: true,
 	requireModerator: true,
-	requireAdmin: true,
 	kind: 'write:admin:reset-password',
 
 	res: {
@@ -59,10 +58,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (user == null) {
 				throw new Error('user not found');
 			}
-			/*
+
 			if (user.isRoot) {
 				throw new Error('cannot reset password of root');
-			}*/
+			}
 
 			const passwd = secureRndstr(8);
 
