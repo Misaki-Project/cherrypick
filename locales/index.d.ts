@@ -8023,6 +8023,10 @@ export interface Locale extends ILocale {
              */
             "canEditNote": string;
             /**
+             * 完全なアカウントの削除
+             */
+            "canPurgeAccount": string;
+            /**
              * 予約投稿の最大数
              */
             "scheduleNoteMax": string;
