@@ -15,9 +15,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span class="name"><MkUserName class="name" :user="user"/></span>
 						<span class="sub"><span class="acct _monospace">@{{ acct(user) }}</span></span>
 						<span class="state">
-							<span v-if="suspended" class="suspended">Suspended</span>
-							<span v-if="silenced" class="silenced">Silenced</span>
+							<span v-if="admin" class="admin">Admin</span>
 							<span v-if="moderator" class="moderator">Moderator</span>
+							<span v-if="silenced" class="silenced">Silenced</span>
+							<span v-if="limited" class="limited">Limited</span>
+							<span v-if="suspended" class="suspended">Suspended</span>
+							<span v-if="deleted" class="deleted">Deleted</span>
 						</span>
 					</div>
 				</div>
@@ -251,6 +254,9 @@ const ap = ref<any>(null);
 const moderator = ref(false);
 const silenced = ref(false);
 const suspended = ref(false);
+const admin = ref(false);
+const limited = ref(false);
+const deleted = ref(false);
 const moderationNote = ref('');
 const filesPagination = {
 	endpoint: 'admin/drive/files' as const,
@@ -283,14 +289,18 @@ function createFetcher() {
 		user.value = _user;
 		info.value = _info;
 		ips.value = _ips;
+		admin.value = info.value.isAdmin;
+		deleted.value = info.value.isDeleted;
+		limited.value = info.value.isLimited;
 		moderator.value = info.value.isModerator;
 		silenced.value = info.value.isSilenced;
 		suspended.value = info.value.isSuspended;
 		moderationNote.value = info.value.moderationNote;
 
 		watch(moderationNote, async () => {
-			await misskeyApi('admin/update-user-note', { userId: user.value.id, text: moderationNote.value });
-			await refreshUser();
+			await misskeyApi('admin/update-user-note', {
+				userId: user.value.id, text: moderationNote.value,
+			}).then(refreshUser);
 		});
 	});
 }
@@ -300,8 +310,9 @@ function refreshUser() {
 }
 
 async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
-	refreshUser();
+	await os.apiWithDialog('federation/update-remote-user', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function resetPassword() {
@@ -330,8 +341,9 @@ async function toggleSuspend(v) {
 	if (confirm.canceled) {
 		suspended.value = !v;
 	} else {
-		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value.id });
-		await refreshUser();
+		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', {
+			userId: user.value.id,
+		}).then(refreshUser);
 	}
 }
 
@@ -341,17 +353,10 @@ async function unsetUserAvatar() {
 		text: i18n.ts.unsetUserAvatarConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/unset-user-avatar', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
-		os.alert({
-			type: 'error',
-			text: err.toString(),
-		});
-	});
-	refreshUser();
+
+	await os.apiWithDialog('admin/unset-user-avatar', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function unsetUserBanner() {
@@ -360,17 +365,10 @@ async function unsetUserBanner() {
 		text: i18n.ts.unsetUserBannerConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/unset-user-banner', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
-		os.alert({
-			type: 'error',
-			text: err.toString(),
-		});
-	});
-	refreshUser();
+
+	await os.apiWithDialog('admin/unset-user-banner', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function deleteAllFiles() {
@@ -379,16 +377,21 @@ async function deleteAllFiles() {
 		text: i18n.ts.deleteAllFilesConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
+	const typed = await os.inputText({
+		text: i18n.tsx.typeToConfirm({ x: user.value?.username }),
+	});
+	if (typed.canceled) return;
+
+	if (typed.result === user.value?.username) {
+		await os.apiWithDialog('admin/drive/delete-all-files-of-a-user', {
+			userId: user.value.id,
+		}).then(refreshUser);
+	} else {
 		os.alert({
 			type: 'error',
-			text: err.toString(),
+			text: 'input not match',
 		});
-	});
+	}
 	await refreshUser();
 }
 
@@ -405,9 +408,9 @@ async function deleteAccount() {
 	if (typed.canceled) return;
 
 	if (typed.result === user.value?.username) {
-		await os.apiWithDialog('admin/delete-account', {
+		await os.apiWithDialog('admin/accounts/delete', {
 			userId: user.value.id,
-		});
+		}).then(refreshUser);
 	} else {
 		os.alert({
 			type: 'error',
@@ -449,8 +452,9 @@ async function assignRole() {
 		: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
 		: null;
 
-	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value.id, expiresAt });
-	refreshUser();
+	await os.apiWithDialog('admin/roles/assign', {
+		roleId, userId: user.value.id, expiresAt,
+	}).then(refreshUser);
 }
 
 async function unassignRole(role, ev) {
@@ -459,8 +463,9 @@ async function unassignRole(role, ev) {
 		icon: 'ti ti-x',
 		danger: true,
 		action: async () => {
-			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value.id });
-			refreshUser();
+			await os.apiWithDialog('admin/roles/unassign', {
+				roleId: role.id, userId: user.value.id,
+			}).then(refreshUser);
 		},
 	}], ev.currentTarget ?? ev.target);
 }
@@ -582,12 +587,22 @@ definePageMetadata(() => ({
 				display: none;
 			}
 
-			> .suspended, > .silenced, > .moderator {
+			> .admin,
+			> .moderator,
+			> .silenced,
+			> .limited,
+			> .suspended,
+			> .deleted {
 				display: inline-block;
 				border: solid 1px;
 				border-radius: 6px;
 				padding: 2px 6px;
 				font-size: 85%;
+			}
+
+			> .admin {
+				color: var(--success);
+				border-color: var(--success);
 			}
 
 			> .suspended {
@@ -604,6 +619,15 @@ definePageMetadata(() => ({
 				color: var(--MI_THEME-success);
 				border-color: var(--MI_THEME-success);
 			}
+
+			> .limited {
+				color: var(--error);
+				border-color: var(--error);
+			}
+
+			> .deleted {
+				color: var(--error);
+				border-color: var(--error);
 		}
 	}
 }
