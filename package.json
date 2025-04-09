@@ -1,6 +1,7 @@
 {
 	"name": "cherrypick",
-	"version": "4.15.1-misaki.6",
+
+	"version": "4.15.1-misaki.0",
 	"basedMisskeyVersion": "2025.2.1",
 	"codename": "nasubi",
 	"repository": {
@@ -56,26 +57,24 @@
 		"lodash": "4.17.21"
 	},
 	"dependencies": {
-		"cssnano": "6.1.2",
-		"esbuild": "0.24.0",
+		"cssnano": "7.0.6",
 		"execa": "8.0.1",
-		"fast-glob": "3.3.2",
-		"glob": "11.0.0",
+		"fast-glob": "3.3.3",
 		"ignore-walk": "6.0.5",
 		"js-yaml": "4.1.0",
 		"postcss": "8.5.2",
 		"tar": "6.2.1",
-		"terser": "5.36.0",
-		"typescript": "5.6.3"
+		"terser": "5.39.0",
+		"typescript": "5.7.3",
+		"esbuild": "0.25.0",
+		"glob": "11.0.1"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.3",
-		"@misskey-dev/eslint-plugin": "2.0.3",
-		"@types/matter-js": "0.19.7",
-		"@types/node": "22.9.0",
-		"@types/seedrandom": "3.0.8",
-		"@typescript-eslint/eslint-plugin": "7.17.0",
-		"@typescript-eslint/parser": "7.17.0",
+		"@biomejs/biome": "1.9.4",
+		"@misskey-dev/eslint-plugin": "2.1.0",
+		"@types/node": "22.13.4",
+		"@typescript-eslint/eslint-plugin": "8.24.0",
+		"@typescript-eslint/parser": "8.24.0",
 		"cross-env": "7.0.3",
 		"cypress": "14.0.3",
 		"eslint": "9.20.1",
