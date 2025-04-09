@@ -311,14 +311,18 @@ async function onSubmit(): Promise<void> {
 				await login(resJson.token);
 			}
 		}
-	} else {
+	} else if (res) {
+		await res.json()
+			.then((json: { message?: string }) => onSignupApiError(json.message))
+			.catch(() => onSignupApiError());
+	}else {
 		onSignupApiError();
 	}
 
 	submitting.value = false;
 }
 
-function onSignupApiError() {
+function onSignupApiError(reason?: string): void {
 	submitting.value = false;
 	hcaptcha.value?.reset?.();
 	mcaptcha.value?.reset?.();
@@ -328,7 +332,8 @@ function onSignupApiError() {
 
 	os.alert({
 		type: 'error',
-		text: i18n.ts.somethingHappened,
+		title: i18n.ts.somethingHappened,
+		text: reason
 	});
 }
 </script>

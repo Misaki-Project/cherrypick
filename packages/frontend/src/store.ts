@@ -125,7 +125,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	imageCompressionMode: {
 		where: 'account',
-		default: 'resizeCompressLossy' as 'resizeCompress' | 'noResizeCompress' | 'resizeCompressLossy' | 'noResizeCompressLossy' | null,
+		default: 'noResizeCompress' as 'resizeCompress' | 'noResizeCompress' | 'resizeCompressLossy' | 'noResizeCompressLossy' | null,
 	},
 	memo: {
 		where: 'account',
@@ -641,7 +641,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	showTranslateButtonInNote: {
 		where: 'device',
-		default: true,
+		default: false,
 	},
 	enableAbsoluteTime: {
 		where: 'device',

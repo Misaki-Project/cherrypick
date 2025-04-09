@@ -255,6 +255,8 @@ export function userDetailed(id = 'someuserid', username = 'cherrypikist', host:
 		isModerator: false,
 		isMuted: false,
 		isSilenced: false,
+		isLimited: false,
+		isDeleted: false,
 		isSuspended: false,
 		lang: 'en',
 		location: 'Fediverse',

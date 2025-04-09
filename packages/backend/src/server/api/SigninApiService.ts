@@ -25,6 +25,7 @@ import { WebAuthnService } from '@/core/WebAuthnService.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
 import { CaptchaService } from '@/core/CaptchaService.js';
 import { FastifyReplyError } from '@/misc/fastify-reply-error.js';
+import { LoggerService } from '@/core/LoggerService.js';
 import { RateLimiterService } from './RateLimiterService.js';
 import { SigninService } from './SigninService.js';
 import type { AuthenticationResponseJSON } from '@simplewebauthn/types';
@@ -56,6 +57,7 @@ export class SigninApiService {
 		private signinService: SigninService,
 		private userAuthService: UserAuthService,
 		private webAuthnService: WebAuthnService,
+		private loggerService: LoggerService,
 		private captchaService: CaptchaService,
 	) {
 	}
@@ -77,6 +79,7 @@ export class SigninApiService {
 		}>,
 		reply: FastifyReply,
 	) {
+		const logger = this.loggerService.getLogger('api:signin');
 		reply.header('Access-Control-Allow-Origin', this.config.url);
 		reply.header('Access-Control-Allow-Credentials', 'true');
 
@@ -121,6 +124,13 @@ export class SigninApiService {
 		}) as MiLocalUser;
 
 		if (user == null) {
+			return error(404, {
+				id: '6cc579cc-885d-43d8-95c2-b8c7fc963280',
+			});
+		}
+
+		if (user.isDeleted && user.isSuspended) {
+			logger.error('No such user. (logical deletion)');
 			return error(404, {
 				id: '6cc579cc-885d-43d8-95c2-b8c7fc963280',
 			});

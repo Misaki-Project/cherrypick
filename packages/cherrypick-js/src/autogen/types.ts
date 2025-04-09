@@ -5448,6 +5448,7 @@ export type components = {
       gtlAvailable: boolean;
       ltlAvailable: boolean;
       canPublicNote: boolean;
+			canPurgeAccount: boolean;
       mentionLimit: number;
       canInvite: boolean;
       inviteLimit: number;
