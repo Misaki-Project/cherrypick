@@ -9,6 +9,7 @@ import type Logger from '@/logger.js';
 import { RoleService } from '@/core/RoleService.js';
 import type { FollowingsRepository, MiUser, UsersRepository } from '@/models/_.js';
 import { QueueService } from '@/core/QueueService.js';
+import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';

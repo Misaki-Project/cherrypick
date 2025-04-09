@@ -628,6 +628,7 @@ definePageMetadata(() => ({
 			> .deleted {
 				color: var(--error);
 				border-color: var(--error);
+			}
 		}
 	}
 }

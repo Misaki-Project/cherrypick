@@ -261,7 +261,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				notificationRecieveConfig: profile.notificationRecieveConfig,
 				isModerator: isModerator,
 				isSilenced: isSilenced,
-				//isLimited: user.isLimited,
+				isLimited: false, //user.isLimited,
 				isDeleted: user.isDeleted,
 				isSuspended: user.isSuspended,
 				isHibernated: user.isHibernated,
