@@ -42,8 +42,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div :class="$style.submitInner">
 						<template v-if="posted"></template>
 						<template v-else-if="posting"><MkEllipsis/></template>
-						<template v-else>{{ submitText }}</template>
-						<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : saveAsDraft ? 'ti ti-pencil-minus' : replyTargetNote ? 'ti ti-arrow-back-up' : renoteTargetNote ? 'ti ti-quote' : updateMode ? 'ti ti-pencil' : defaultStore.state.renameTheButtonInPostFormToNya ? 'ti ti-paw-filled' : 'ti ti-send'"></i>
+						<template v-else></template>
+						<i :class="posted ? 'ti ti-check' : saveAsDraft ? 'ti ti-pencil-minus' : replyTargetNote ? 'ti ti-arrow-back-up' : renoteTargetNote ? 'ti ti-quote' : updateMode ? 'ti ti-pencil' : defaultStore.state.renameTheButtonInPostFormToNya ? 'ti ti-paw-filled' : 'ti ti-send'"></i>
 					</div>
 				</button>
 				<button v-click-anime class="_button" style="margin-left: 2px;" :class="$style.submitButton" @click="showPostMenu">
@@ -1613,7 +1613,7 @@ defineExpose({
 	line-height: 34px;
 	font-weight: bold;
 	border-radius: 6px 0 0 6px;
-	min-width: 90px;
+	min-width: 34px;
 	box-sizing: border-box;
 	color: var(--MI_THEME-fgOnAccent);
 	// background: linear-gradient(90deg, var(--MI_THEME-buttonGradateA), var(--MI_THEME-buttonGradateB));
