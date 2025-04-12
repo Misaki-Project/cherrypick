@@ -1342,6 +1342,15 @@ export interface Locale extends ILocale {
      */
     "followConfirm": ParameterizedString<"name">;
     /**
+     * {name}のフォローリクエストを連合せずに拒否しますか？
+     */
+    "followRequestRejectWithNoActivityConfirm": ParameterizedString<"name">;
+    /**
+     * 連合せずに拒否をすると、直ちにフォローリクエストから削除されますが、相手から見るフォローリクエストは半永久的に承認待ちの状態になります。
+     * この操作を続行しますか？
+     */
+    "followRequestRejectWithNoActivityConfirmDescription": string;
+    /**
      * プロキシアカウント
      */
     "proxyAccount": string;
@@ -12992,6 +13001,10 @@ export interface Locale extends ILocale {
          */
         "precipitation": string;
     };
+    /**
+     * アクティビティを送信しない
+     */
+    "noSendActivity": string;
 }
 declare const locales: {
     [lang: string]: Locale;

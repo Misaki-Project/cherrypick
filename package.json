@@ -1,7 +1,6 @@
 {
 	"name": "cherrypick",
-
-	"version": "4.15.1-misaki.1",
+	"version": "4.15.1-misaki.2",
 	"basedMisskeyVersion": "2025.2.1",
 	"codename": "nasubi",
 	"repository": {

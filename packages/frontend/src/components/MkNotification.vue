@@ -140,6 +140,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-if="full && !followRequestDone" :class="$style.followRequestCommands">
 					<MkButton :class="$style.followRequestCommandButton" rounded primary @click="acceptFollowRequest()"><i class="ti ti-check"/> {{ i18n.ts.accept }}</MkButton>
 					<MkButton :class="$style.followRequestCommandButton" rounded danger @click="rejectFollowRequest()"><i class="ti ti-x"/> {{ i18n.ts.reject }}</MkButton>
+					<MkButton v-if="notification.user.host" :class="$style.followRequestCommandButton" rounded danger @click="noSendActivity_reject()"><i class="ti ti-x"/>{{ i18n.ts.reject }}({{ i18n.ts.noSendActivity }})</MkButton>
 				</div>
 			</template>
 			<template v-else-if="notification.type === 'groupInvited'">
@@ -186,6 +187,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { ref } from 'vue';
 import * as Misskey from 'cherrypick-js';
+import * as os from '@/os.js';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -252,6 +254,22 @@ const rejectGroupInvitation = () => {
 	groupInviteDone.value = true;
 	misskeyApi('users/groups/invitations/reject', { invitationId: props.notification.invitation.id });
 };
+
+const noSendActivity_reject = async () => {
+	if (!('user' in props.notification)) return;
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		title: i18n.tsx.followRequestRejectWithNoActivityConfirm({ name: props.notification.user.name || props.notification.user.username }),
+		text: i18n.ts.followRequestRejectWithNoActivityConfirmDescription,
+	});
+
+	if (canceled) {
+		return;
+	}
+	followRequestDone.value = true;
+	misskeyApi('following/requests/reject', { userId: props.notification.user.id, noSendActivity: true });
+};
+
 </script>
 
 <style lang="scss" module>
@@ -478,12 +496,13 @@ const rejectGroupInvitation = () => {
 
 .followRequestCommands {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 8px;
 	max-width: 300px;
 	margin-top: 8px;
 }
 .followRequestCommandButton {
-	flex: 1;
+	flex: 1 1 auto;
 }
 
 .reactionsItem {
