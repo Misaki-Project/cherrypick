@@ -485,16 +485,15 @@ export class UserEntityService implements OnModuleInit {
 		}
 
 		let pins: MiUserNotePining[] = [];
-		if (isDetailed) {
-			if (opts.pinNotes) {
-				pins = opts.pinNotes.get(user.id) ?? [];
-			} else {
-				pins = await this.userNotePiningsRepository.createQueryBuilder('pin')
-					.where('pin.userId = :userId', { userId: user.id })
-					.innerJoinAndSelect('pin.note', 'note')
-					.orderBy('pin.id', 'DESC')
-					.getMany();
-			}
+		//if (isDetailed)
+		if (opts.pinNotes) {
+			pins = opts.pinNotes.get(user.id) ?? [];
+		} else {
+			pins = await this.userNotePiningsRepository.createQueryBuilder('pin')
+				.where('pin.userId = :userId', { userId: user.id })
+				.innerJoinAndSelect('pin.note', 'note')
+				.orderBy('pin.id', 'DESC')
+				.getMany();
 		}
 
 		const followingCount = profile == null ? null :
@@ -563,6 +562,7 @@ export class UserEntityService implements OnModuleInit {
 			) : undefined,
 			setFederationAvatarShape: user.setFederationAvatarShape ?? undefined,
 			isSquareAvatars: user.isSquareAvatars ?? undefined,
+			pinnedNoteIds: pins.map(pin => pin.noteId),
 
 			...(isDetailed ? {
 				url: profile!.url,
@@ -588,7 +588,6 @@ export class UserEntityService implements OnModuleInit {
 				followersCount: followersCount ?? 0,
 				followingCount: followingCount ?? 0,
 				notesCount: user.notesCount,
-				pinnedNoteIds: pins.map(pin => pin.noteId),
 				pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, {
 					detail: true,
 				}),

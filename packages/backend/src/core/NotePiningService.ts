@@ -70,6 +70,11 @@ export class NotePiningService {
 			throw new IdentifiableError('23f0cf4e-59a3-4276-a91d-61a5891c1514', 'That note has already been pinned.');
 		}
 
+		//単なるリノートをピン止めできないように
+		if (!note.text && note.renoteId) {
+			throw new IdentifiableError('d3b4a8f7-9f5c-4a1e-8f2c-0d6e3c7c0a68', 'You can not pin any renote.');
+		}
+
 		await this.userNotePiningsRepository.insert({
 			id: this.idService.gen(),
 			userId: user.id,
