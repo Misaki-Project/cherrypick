@@ -139,7 +139,12 @@ export class NoteEntityService implements OnModuleInit {
 					|| (hiddenBefore > 0 && (new Date(packedNote.createdAt).getTime() < hiddenBefore * 1000))
 				)
 			) {
-				hide = true;
+				// ピン止めされているノートは非表示にしない
+				if (packedNote.user.pinnedNoteIds.includes(packedNote.id)) {
+					hide = false;
+				} else {
+					hide = true;
+				}
 			}
 		}
 
@@ -193,6 +198,15 @@ export class NoteEntityService implements OnModuleInit {
 			packedNote.poll = undefined;
 			packedNote.cw = null;
 			packedNote.isHidden = true;
+			// リノートの中身を隠す
+			packedNote.renote = null;
+			packedNote.renoteId = null;
+			// リアクション等のユーザー情報を隠す
+			packedNote.reactions = {};
+			packedNote.reactionCount = 0;
+			packedNote.reactionEmojis = [];
+			packedNote.reactionAndUserPairCache = [];
+			packedNote.renoteCount = 0;
 			// TODO: hiddenReason みたいなのを提供しても良さそう
 		}
 	}

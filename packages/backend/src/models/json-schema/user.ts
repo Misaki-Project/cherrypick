@@ -215,6 +215,15 @@ export const packedUserLiteSchema = {
 			type: 'boolean',
 			nullable: true, optional: true,
 		},
+		pinnedNoteIds: {
+			type: 'array',
+			nullable: false, optional: false,
+			items: {
+				type: 'string',
+				nullable: false, optional: false,
+				format: 'id',
+			},
+		},
 	},
 } as const;
 
@@ -336,15 +345,6 @@ export const packedUserDetailedNotMeOnlySchema = {
 		notesCount: {
 			type: 'number',
 			nullable: false, optional: false,
-		},
-		pinnedNoteIds: {
-			type: 'array',
-			nullable: false, optional: false,
-			items: {
-				type: 'string',
-				nullable: false, optional: false,
-				format: 'id',
-			},
 		},
 		pinnedNotes: {
 			type: 'array',

@@ -4172,6 +4172,7 @@ export type components = {
       requireSigninToViewContents?: boolean;
       makeNotesFollowersOnlyBefore?: number | null;
       makeNotesHiddenBefore?: number | null;
+			pinnedNoteIds: string[];
       instance?: {
         name: string | null;
         softwareName: string | null;
@@ -4228,7 +4229,6 @@ export type components = {
       followersCount: number;
       followingCount: number;
       notesCount: number;
-      pinnedNoteIds: string[];
       pinnedNotes: components['schemas']['Note'][];
       pinnedPageId: string | null;
       pinnedPage: components['schemas']['Page'] | null;
