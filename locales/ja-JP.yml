@@ -1519,7 +1519,7 @@ _accountSettings:
   makeNotesFollowersOnlyBefore: "過去のノートをフォロワーのみ表示可能にする"
   makeNotesFollowersOnlyBeforeDescription: "この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートがフォロワーのみ表示可能になります。無効に戻すと、ノートの公開状態も元に戻ります。"
   makeNotesHiddenBefore: "過去のノートを非公開化する"
-  makeNotesHiddenBeforeDescription: "この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。"
+  makeNotesHiddenBeforeDescription: "この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。\nピン止めされたノートには影響を受けません。"
   mayNotEffectForFederatedNotes: "リモートサーバーに連合されたノートには効果が及ばない場合があります。"
   notesHavePassedSpecifiedPeriod: "指定した時間を経過しているノート"
   notesOlderThanSpecifiedDateAndTime: "指定した日時より前のノート"

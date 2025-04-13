@@ -6078,6 +6078,7 @@ export interface Locale extends ILocale {
         "makeNotesHiddenBefore": string;
         /**
          * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。
+         * ピン止めされたノートには影響を受けません。
          */
         "makeNotesHiddenBeforeDescription": string;
         /**
