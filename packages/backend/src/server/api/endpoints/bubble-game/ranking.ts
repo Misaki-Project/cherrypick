@@ -5,17 +5,14 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
-import { min } from 'date-fns';
-import { $7 } from 're2';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { BubbleGameRecordsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { maximum } from '@/misc/prelude/array.js';
 
 export const meta = {
 	allowGet: true,
-	cacheSec: 15,
+	cacheSec: 60,
 
 	errors: {
 	},
