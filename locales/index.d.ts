@@ -82,7 +82,7 @@ export interface Locale extends ILocale {
      */
     "youBlocked": string;
     /**
-     * {user}さんのフォローやポストの表示はできません。
+     * {user}さんのフォローやノートの表示はできません。
      */
     "youBlockedDescription": ParameterizedString<"user">;
     /**
@@ -562,7 +562,7 @@ export interface Locale extends ILocale {
      */
     "initialPasswordForSetupDescription": string;
     /**
-     * パスワードを忘れた
+     * パスワードを忘れましたか？
      */
     "forgotPassword": string;
     /**
@@ -598,7 +598,7 @@ export interface Locale extends ILocale {
      */
     "noNotes": string;
     /**
-     * 通知はありません
+     * 通知はありません…寂しいですね。
      */
     "noNotifications": string;
     /**
@@ -1011,6 +1011,7 @@ export interface Locale extends ILocale {
     "cantRenote": string;
     /**
      * リノートをリノートすることはできません。
+     * <small>まるでマトリョーシカですね…</small>
      */
     "cantReRenote": string;
     /**
@@ -1671,7 +1672,7 @@ export interface Locale extends ILocale {
      */
     "usernameOrUserId": string;
     /**
-     * ユーザーが見つかりません
+     * ユーザーが見つからないようです…
      */
     "noSuchUser": string;
     /**
@@ -2447,7 +2448,7 @@ export interface Locale extends ILocale {
      */
     "notFound": string;
     /**
-     * 指定されたURLに該当するページはありませんでした。
+     * ここには何もないようです…
      */
     "notFoundDescription": string;
     /**
@@ -2559,7 +2560,7 @@ export interface Locale extends ILocale {
      */
     "quoteQuestion": string;
     /**
-     * クリップボードのテキストが長いです。テキストファイルとして添付しますか？
+     * クリップボードのテキストが長過ぎて貼り付けられないようです。ここはテキストファイルとして添付するのはどうでしょう？
      */
     "attachAsFileQuestion": string;
     /**
@@ -2567,7 +2568,7 @@ export interface Locale extends ILocale {
      */
     "noMessagesYet": string;
     /**
-     * 新しいメッセージがあります
+     * 新着メッセージがあります
      */
     "newMessageExists": string;
     /**
@@ -2575,7 +2576,7 @@ export interface Locale extends ILocale {
      */
     "onlyOneFileCanBeAttached": string;
     /**
-     * 続行する前に、登録またはログインが必要です
+     * この操作を実行するには、登録またはログインが必要です。
      */
     "signinRequired": string;
     /**
@@ -5732,9 +5733,21 @@ export interface Locale extends ILocale {
      */
     "ranking": string;
     /**
+     * 直近{n}時間
+     */
+    "lastNHours": ParameterizedString<"n">;
+    /**
      * 直近{n}日
      */
     "lastNDays": ParameterizedString<"n">;
+    /**
+     * 直近{n}週間
+     */
+    "lastNWeeks": ParameterizedString<"n">;
+    /**
+     * 直近{n}年
+     */
+    "lastNYears": ParameterizedString<"n">;
     /**
      * タイトルへ
      */
@@ -6077,8 +6090,7 @@ export interface Locale extends ILocale {
          */
         "makeNotesHiddenBefore": string;
         /**
-         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。
-         * ピン止めされたノートには影響を受けません。
+         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。ピン止めされたノートには影響を受けません。
          */
         "makeNotesHiddenBeforeDescription": string;
         /**
@@ -8330,15 +8342,15 @@ export interface Locale extends ILocale {
     };
     "_emailUnavailable": {
         /**
-         * 既に使用されています
+         * 既に使用されているようです
          */
         "used": string;
         /**
-         * 形式が正しくありません
+         * メールアドレスとして形式が正しくありません
          */
         "format": string;
         /**
-         * 恒久的に使用可能なアドレスではありません
+         * 恒久的に使用可能なアドレスではありません。捨てメアドではありませんか？
          */
         "disposable": string;
         /**
@@ -8350,7 +8362,7 @@ export interface Locale extends ILocale {
          */
         "smtp": string;
         /**
-         * このメールアドレスでは登録できません
+         * このメールアドレスでの登録は禁止されています
          */
         "banned": string;
     };
@@ -8370,7 +8382,7 @@ export interface Locale extends ILocale {
     };
     "_signup": {
         /**
-         * ほとんど完了です
+         * 登録完了まであと少しです！
          */
         "almostThere": string;
         /**
@@ -8402,7 +8414,7 @@ export interface Locale extends ILocale {
          */
         "requestAccountDelete": string;
         /**
-         * 削除処理が開始されました。
+         * 削除処理が開始されました。  #Goodbye
          */
         "started": string;
         /**
@@ -12089,7 +12101,7 @@ export interface Locale extends ILocale {
          */
         "title": string;
         /**
-         * サーバーに接続できません
+         * サーバーに接続できないようです…
          */
         "header": string;
     };
