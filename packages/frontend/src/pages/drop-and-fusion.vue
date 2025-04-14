@@ -54,7 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 										<option value="1h">{{ getHourLocalize("1h") }}</option>
 										<option value="6h">{{ getHourLocalize("6h") }}</option>
 										<option value="24h">{{ getHourLocalize("24h") }}</option>
-										<option value="1w">{{ getHourLocalize("1w") }}</option>
+										<option value="7d">{{ getHourLocalize("7d") }}</option>
 										<option value="30d">{{ getHourLocalize("30d") }}</option>
 										<option value="1y">{{ getHourLocalize("1y") }}</option>
 										<!--<option value="all">{{ getHourLocalize("all") }}</option>-->
@@ -115,7 +115,7 @@ import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/scripts/misskey-api.js';
 
 const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
-const rankingSince = ref<'1h' | '6h' | '24h' | '1w' | '30d' | '1y' | 'all'>('1w');
+const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
 const gameStarted = ref(false);
 const mute = ref(false);
 const ranking = ref(null);
