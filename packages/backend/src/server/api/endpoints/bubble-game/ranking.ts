@@ -5,14 +5,17 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { MoreThan } from 'typeorm';
+import { min } from 'date-fns';
+import { $7 } from 're2';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { BubbleGameRecordsRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { maximum } from '@/misc/prelude/array.js';
 
 export const meta = {
 	allowGet: true,
-	cacheSec: 60,
+	cacheSec: 15,
 
 	errors: {
 	},
@@ -46,6 +49,7 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		gameMode: { type: 'string' },
+		sinceHour: { type: 'integer', nullable: true, minimum: 0, maximum: 24 * 365 * 3 },
 	},
 	required: ['gameMode'],
 } as const;
@@ -59,15 +63,19 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private userEntityService: UserEntityService,
 	) {
 		super(meta, paramDef, async (ps) => {
+			let sinceHour = 24 * 7;
+			if (ps.sinceHour) sinceHour = ps.sinceHour;
 			const records = await this.bubbleGameRecordsRepository.find({
 				where: {
 					gameMode: ps.gameMode,
-					seededAt: MoreThan(new Date(Date.now() - 1000 * 60 * 60 * 24 * 7)),
+					... (sinceHour > 0 ? {
+						seededAt: MoreThan(new Date(Date.now() - 1000 * 60 * 60 * sinceHour)),
+					} : {}),
 				},
 				order: {
 					score: 'DESC',
 				},
-				take: 10,
+				take: 20,
 				relations: ['user'],
 			});
 
@@ -76,6 +84,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			return records.map(r => ({
 				id: r.id,
 				score: r.score,
+				registeredAt: r.seededAt,
 				user: users.find(u => u.id === r.user!.id),
 			}));
 		});
