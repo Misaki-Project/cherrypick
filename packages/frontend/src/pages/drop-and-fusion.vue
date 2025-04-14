@@ -115,7 +115,7 @@ import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/scripts/misskey-api.js';
 
 const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
-const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
+const rankingSince = ref<'1h' | '6h' | '24h' | '1w' | '30d' | '1y' | 'all'>('1w');
 const gameStarted = ref(false);
 const mute = ref(false);
 const ranking = ref(null);
