@@ -46,7 +46,7 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		gameMode: { type: 'string' },
-		sinceHour: { type: 'integer', nullable: true, minimum: 0, maximum: 24 * 365 * 3 },
+		sinceHour: { type: 'integer', nullable: true, minimum: 1, maximum: 24 * 365 },
 	},
 	required: ['gameMode'],
 } as const;
@@ -67,7 +67,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					gameMode: ps.gameMode,
 					... (sinceHour > 0 ? {
 						seededAt: MoreThan(new Date(Date.now() - 1000 * 60 * 60 * sinceHour)),
-					} : {}),
+					} : {
+						seededAt: MoreThan(new Date(0)),
+					}),
 				},
 				order: {
 					score: 'DESC',
