@@ -8216,6 +8216,14 @@ export interface Locale extends ILocale {
              * アイコンの形設定の連合を許可
              */
             "canSetFederationAvatarShape": string;
+            /**
+             * アカウントの削除の許可
+             */
+            "canDeleteAccount": string;
+            /**
+             * アカウントの整理の許可
+             */
+            "canTruncateAccount": string;
         };
         "_condition": {
             /**

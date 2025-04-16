@@ -11,6 +11,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DeleteAccountService } from '@/core/DeleteAccountService.js';
 import { DI } from '@/di-symbols.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { RoleService } from '@/core/RoleService.js';
 
 export const meta = {
 	requireCredential: true,
@@ -38,6 +39,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		private userAuthService: UserAuthService,
 		private deleteAccountService: DeleteAccountService,
+		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const token = ps.token;
@@ -55,6 +57,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				}
 			}
 
+			const policies = await this.roleService.getUserPolicies(me.id);
+			if (!policies.canDeleteAccount) {
+				throw new Error('permission denied');
+			}
+
 			const userDetailed = await this.usersRepository.findOneByOrFail({ id: me.id });
 			if (userDetailed.isDeleted) {
 				return;
@@ -65,7 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new Error('incorrect password');
 			}
 
-			await this.deleteAccountService.deleteAccount(me);
+			await this.deleteAccountService.deleteAccount(me, false, me);
 		});
 	}
 }
