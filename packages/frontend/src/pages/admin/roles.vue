@@ -314,6 +314,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<template #label>{{ i18n.ts.enable }}</template>
 							</MkSwitch>
 						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canDeleteAccount, 'canDeleteAccount'])">
+							<template #label>{{ i18n.ts._role._options.canDeleteAccount }}</template>
+							<template #suffix>{{ policies.canDeleteAccount ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canDeleteAccount">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canTruncateAccount, 'canTruncateAccount'])">
+							<template #label>{{ i18n.ts._role._options.canTruncateAccount }}</template>
+							<template #suffix>{{ policies.canTruncateAccount ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canTruncateAccount">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
 					</div>
 				</MkFolder>
 				<div class="_gaps_s">
