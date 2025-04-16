@@ -2123,6 +2123,8 @@ _role:
     canImportUserLists: "リストのインポートを許可"
     noteDraftLimit: "サーバーサイドのノートの下書きの作成可能数"
     canSetFederationAvatarShape: "アイコンの形設定の連合を許可"
+    canDeleteAccount: "アカウントの削除の許可"
+    canTruncateAccount: "アカウントの整理の許可"
   _condition:
     roleAssignedTo: "マニュアルロールにアサイン済み"
     isLocal: "ローカルユーザー"

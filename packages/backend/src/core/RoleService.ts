@@ -70,6 +70,8 @@ export type RolePolicies = {
 	canImportUserLists: boolean;
 	noteDraftLimit: number;
 	canSetFederationAvatarShape: boolean;
+	canDeleteAccount: boolean;
+	canTruncateAccount: boolean;
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -111,6 +113,8 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canImportUserLists: true,
 	noteDraftLimit: 10,
 	canSetFederationAvatarShape: true,
+	canDeleteAccount: true,
+	canTruncateAccount: true,
 };
 
 @Injectable()
@@ -425,6 +429,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canImportUserLists: calc('canImportUserLists', vs => vs.some(v => v === true)),
 			noteDraftLimit: calc('noteDraftLimit', vs => Math.max(...vs)),
 			canSetFederationAvatarShape: calc('canSetFederationAvatarShape', vs => vs.some(v => v === true)),
+			canDeleteAccount: calc('canDeleteAccount', vs => vs.some(v => v === true)),
+			canTruncateAccount: calc('canTruncateAccount', vs => vs.some(v => v === true)),
 		};
 	}
 

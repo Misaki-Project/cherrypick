@@ -36,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
-			<MkFolder>
+			<MkFolder v-if="$i.policies.canDeleteAccount">
 				<template #icon><i class="ti ti-alert-triangle"></i></template>
 				<template #label>{{ i18n.ts.closeAccount }}</template>
 
@@ -48,7 +48,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
-			<MkFolder>
+			<MkFolder v-if="$i.policies.canTruncateAccount">
 				<template #icon><i class="ti ti-recycle"></i></template>
 				<template #label>{{ i18n.ts.truncateAccount }}</template>
 

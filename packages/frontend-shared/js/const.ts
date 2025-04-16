@@ -116,6 +116,8 @@ export const ROLE_POLICIES = [
 	'canImportUserLists',
 	'noteDraftLimit',
 	'canSetFederationAvatarShape',
+	'canDeleteAccount',
+	'canTruncateAccount',
 ] as const;
 
 // なんか動かない

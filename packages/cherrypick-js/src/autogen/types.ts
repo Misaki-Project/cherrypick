@@ -5482,6 +5482,8 @@ export type components = {
       canEditNote: boolean;
       scheduleNoteMax: number;
       canSetFederationAvatarShape: boolean;
+			canDeleteAccount: boolean,
+			canTruncateAccount: boolean,
     };
     ReversiGameLite: {
       /** Format: id */
