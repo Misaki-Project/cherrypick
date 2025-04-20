@@ -10537,6 +10537,28 @@ export interface Locale extends ILocale {
          * フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。
          */
         "followedMessageDescriptionForLockedAccount": string;
+        "_friendsFollows": {
+            /**
+             * フォローしている人にフォロワーはいません
+             */
+            "noFollows": string;
+            /**
+             * {user}さんにフォローされています
+             */
+            "oneFollow": ParameterizedString<"user">;
+            /**
+             * {user1}さんと{user2}さんにフォローされています
+             */
+            "twoFollows": ParameterizedString<"user1" | "user2">;
+            /**
+             * {user1}さん、{user2}さん、{user3}さんにフォローされています
+             */
+            "threeFollows": ParameterizedString<"user1" | "user2" | "user3">;
+            /**
+             * {user1}さん、{user2}さん、他{count}人にフォローされています
+             */
+            "manyFollows": ParameterizedString<"user1" | "user2" | "count">;
+        };
     };
     "_exportOrImport": {
         /**

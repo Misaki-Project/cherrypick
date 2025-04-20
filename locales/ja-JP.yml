@@ -2766,6 +2766,12 @@ _profile:
   followedMessage: "フォローされた時のメッセージ"
   followedMessageDescription: "フォローされた時に相手に表示する短いメッセージを設定できます。"
   followedMessageDescriptionForLockedAccount: "フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。"
+  _friendsFollows:
+    noFollows: "フォローしている人にフォロワーはいません"
+    oneFollow: "{user}さんにフォローされています"
+    twoFollows: "{user1}さんと{user2}さんにフォローされています"
+    threeFollows: "{user1}さん、{user2}さん、{user3}さんにフォローされています"
+    manyFollows: "{user1}さん、{user2}さん、他{count}人にフォローされています"
 
 _exportOrImport:
   allNotes: "全てのノート"

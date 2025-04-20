@@ -133,6 +133,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dd>
 						</dl>
 					</div>
+					<div v-if="$i && $i.id != user.id && friendsFollow && friendsFollow.userCount" class="friends">
+						<div class="friends-field">
+							<div v-for="(r, index) in friendsFollow.users" :key="r.id" class="icons">
+								<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
+							</div>
+							<div class="text">
+								<span>{{ getFriendsFollowText(friendsFollow.users, friendsFollow.userCount) }}</span>
+							</div>
+						</div>
+					</div>
 					<div class="status">
 						<MkA :to="userPage(user)">
 							<b>{{ number(user.notesCount) }}</b>
@@ -261,6 +271,8 @@ const memoDraft = ref(props.user.memo);
 const isEditingMemo = ref(false);
 const moderationNote = ref(props.user.moderationNote);
 const editModerationNote = ref(false);
+const friendsFollow = ref(null);
+const friendsFollowText = ref<null | string>(null);
 
 const translation = ref<Misskey.entities.UsersTranslateResponse | null>(null);
 const translating = ref(false);
@@ -285,6 +297,26 @@ const style = computed(() => {
 		};
 	}
 });
+
+onMounted(async () => {
+	friendsFollow.value = await misskeyApi('users/friends-following', { userId: props.user.id, limit: 5 });
+});
+
+function getFriendsFollowText(users: Array<any> | null, count: number): string {
+	try {
+		if (users == null) return '';
+		if (users.length === 0) return i18n.ts._profile._friendsFollows.noFollows;
+		const user1 = users[0].follower.name ?? users[0].follower.username;
+		if (users.length === 1) return i18n.tsx._profile._friendsFollows.oneFollow({ user: user1 });
+		const user2 = users[1].follower.name ?? users[1].follower.username;
+		if (users.length === 2) return i18n.tsx._profile._friendsFollows.twoFollows({ user1: user1, user2: user2 });
+		const user3 = users[2].follower.name ?? users[2].follower.username;
+		if (users.length === 3) return i18n.tsx._profile._friendsFollows.threeFollows({ user1: user1, user2: user2, user3: user3 });
+		return i18n.tsx._profile._friendsFollows.manyFollows({ user1: user1, user2: user2, count: count - 2 });
+	} catch {
+		return '';
+	}
+}
 
 const age = computed(() => {
 	return calcAge(props.user.birthday);
@@ -729,6 +761,30 @@ onUnmounted(() => {
 						> span {
 							font-size: 70%;
 						}
+					}
+				}
+
+				> .friends {
+					padding: 16px 8px 16px 8px;
+
+					> .friends-field {
+						display: flex;
+						flex-wrap: nowrap;
+						overflow-x: auto;
+						padding-left: 12px;
+
+						> .icons {
+							align-content: center;
+							display: inline-block;
+							margin-left: -12px;
+						}
+
+						> .text {
+							align-content: center;
+							word-wrap: break-word;
+							white-space: normal;
+							margin-left: 4px;}
+							font-size: 90%;
 					}
 				}
 			}
