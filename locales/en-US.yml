@@ -218,6 +218,7 @@ note: "Note"
 notes: "Notes"
 following: "Following"
 followers: "Followers"
+followersYouFollow: "Followers you know"
 followsYou: "Follows you"
 createList: "Create list"
 manageLists: "Manage lists"
@@ -2701,6 +2702,13 @@ _profile:
   followedMessage: "Message when you are followed"
   followedMessageDescription: "You can set a short message to be displayed to the recipient when they follow you."
   followedMessageDescriptionForLockedAccount: "If you have set up that follow requests require approval, this will be displayed when you grant a follow request."
+  _friendsFollows:
+    noFollows: "Not followed by anyone you’re following"
+    oneFollow: "Followed by {user}"
+    twoFollows: "Followed by {user1} and {user2}"
+    threeFollows: "Followed by {user1}, {user2}, and {user3}"
+    manyFollows: "Followed by {user1}, {user2}, and {count} others you follow"
+
 _exportOrImport:
   allNotes: "All notes"
   favoritedNotes: "Favorite notes"

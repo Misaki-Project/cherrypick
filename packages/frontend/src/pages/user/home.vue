@@ -133,13 +133,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dd>
 						</dl>
 					</div>
-					<div v-if="$i && $i.id != user.id && friendsFollow && friendsFollow.userCount" class="friends">
-						<div class="friends-field">
-							<div v-for="(r, index) in friendsFollow.users" :key="r.id" class="icons">
-								<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
+					<div v-if="$i && $i.id != user.id && friendsFollow && friendsFollow.users" class="friends">
+						<MkA v-if="friendsFollow.userCount > 0" :to="userPage(user, 'followers-you-follow')" class="link">
+							<div class="friends-field">
+								<div v-for="(r, index) in friendsFollow.users" :key="r.id" class="icons">
+									<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
+								</div>
+								<div class="text">
+									<span>{{ getFriendsFollowText(friendsFollow.users, friendsFollow.userCount) }}</span>
+								</div>
 							</div>
-							<div class="text">
-								<span>{{ getFriendsFollowText(friendsFollow.users, friendsFollow.userCount) }}</span>
+						</MkA>
+						<div v-if="friendsFollow.userCount === 0" class="link">
+							<div class="friends-field">
+								<div class="text">
+									<span>{{ i18n.ts._profile._friendsFollows.noFollows }}</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -227,6 +236,7 @@ import detectLanguage from '@/scripts/detect-language.js';
 import { globalEvents } from '@/events.js';
 import { notesSearchAvailable, canSearchNonLocalNotes } from '@/scripts/check-permissions.js';
 import { youBlockedImageUrl } from '@/instance.js';
+import MkA from '@/components/global/MkA.vue';
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);
@@ -765,26 +775,28 @@ onUnmounted(() => {
 				}
 
 				> .friends {
-					padding: 16px 8px 16px 8px;
+					padding: 8px 16px 8px 16px;
+					> .link {
+						> .friends-field {
+							display: flex;
+							flex-wrap: nowrap;
+							overflow-x: auto;
+							padding-left: 24px;
 
-					> .friends-field {
-						display: flex;
-						flex-wrap: nowrap;
-						overflow-x: auto;
-						padding-left: 12px;
+							> .icons {
+								align-content: center;
+								display: inline-block;
+								margin-left: -12px;
+							}
 
-						> .icons {
-							align-content: center;
-							display: inline-block;
-							margin-left: -12px;
+							> .text {
+								align-content: center;
+								word-wrap: break-word;
+								white-space: normal;
+								margin-left: 8px;
+								font-size: 90%;
+							}
 						}
-
-						> .text {
-							align-content: center;
-							word-wrap: break-word;
-							white-space: normal;
-							margin-left: 4px;}
-							font-size: 90%;
 					}
 				}
 			}
