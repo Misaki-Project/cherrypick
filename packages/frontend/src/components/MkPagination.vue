@@ -83,8 +83,12 @@ export type Paging<E extends keyof Misskey.Endpoints = keyof Misskey.Endpoints> 
 
 type MisskeyEntityMap = Map<string, MisskeyEntity>;
 
-function arrayToEntries(entities: MisskeyEntity[]): [string, MisskeyEntity][] {
-	return entities.map(en => [en.id, en]);
+function arrayToEntries(entities: MisskeyEntity | any): [string, MisskeyEntity][] {
+	if (entities.users) {
+		return entities.users.map(en => [en.id, en]);
+	} else {
+		return entities.map(en => [en.id, en]);
+	}
 }
 
 function concatMapWithArray(map: MisskeyEntityMap, entities: MisskeyEntity[]): MisskeyEntityMap {

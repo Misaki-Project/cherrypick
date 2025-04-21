@@ -27,6 +27,9 @@ const routes: RouteDef[] = [{
 	path: '/@:acct/followers',
 	component: page(() => import('@/pages/user/followers.vue')),
 }, {
+	path: '/@:acct/followers-you-follow',
+	component: page(() => import('@/pages/user/followers-you-follow.vue')),
+}, {
 	name: 'user',
 	path: '/@:acct/:page?',
 	component: page(() => import('@/pages/user/index.vue')),
