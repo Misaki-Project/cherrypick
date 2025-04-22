@@ -3373,3 +3373,5 @@ _weather:
   precipitation: "Precipitation"
 
 noSendActivity: "Don't send activity"
+
+ipAddress: "IP Address"
