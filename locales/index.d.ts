@@ -13052,6 +13052,10 @@ export interface Locale extends ILocale {
      * アクティビティを送信しない
      */
     "noSendActivity": string;
+    /**
+     * IPアドレス
+     */
+    "ipAddress": string;
 }
 declare const locales: {
     [lang: string]: Locale;

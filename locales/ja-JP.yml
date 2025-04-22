@@ -3492,3 +3492,5 @@ _weather:
   pressure: "気圧"
   precipitation: "降水量"
 noSendActivity: "アクティビティを送信しない"
+
+ipAddress: "IPアドレス"

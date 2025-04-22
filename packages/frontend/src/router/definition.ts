@@ -513,6 +513,10 @@ const routes: RouteDef[] = [{
 		name: 'update',
 		component: page(() => import('@/pages/admin/update.vue')),
 	}, {
+		path: '/users-from-ip',
+		name: 'users-from-ip',
+		component: page(() => import('@/pages/admin/users-from-ip.vue')),
+	}, {
 		path: '/',
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
