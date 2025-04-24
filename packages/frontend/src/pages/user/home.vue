@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div class="profile _gaps">
 				<MkAccountMoved v-if="user.movedTo" :movedTo="user.movedTo"/>
 				<MkRemoteCaution v-if="user.host != null" :href="user.url ?? user.uri!" class="warn"/>
-
+				<MkSuspendedCaution v-if="user.isSuspended" class="warn"/>
 				<div :key="user.id" class="main _panel">
 					<div class="banner-container" :style="style">
 						<div ref="bannerEl" class="banner" :style="style"></div>
@@ -136,7 +136,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div v-if="$i && $i.id != user.id && friendsFollow && friendsFollow.users" class="friends">
 						<MkA v-if="friendsFollow.userCount > 0" :to="userPage(user, 'followers-you-follow')" class="link">
 							<div class="friends-field">
-								<div v-for="(r, index) in friendsFollow.users" :key="r.id" class="icons">
+								<div v-for="(r, index) in friendsFollow.users.slice(0, 3)" :key="r.id" class="icons">
 									<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
 								</div>
 								<div class="text">
@@ -145,10 +145,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</div>
 						</MkA>
 						<div v-if="friendsFollow.userCount === 0" class="link">
-							<div class="friends-field">
-								<div class="text">
-									<span>{{ i18n.ts._profile._friendsFollows.noFollows }}</span>
-								</div>
+							<div class="friends-field-noUser">
+								<span>{{ i18n.ts._profile._friendsFollows.noFollows }}</span>
 							</div>
 						</div>
 					</div>
@@ -211,6 +209,7 @@ import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkAccountMoved from '@/components/MkAccountMoved.vue';
 import MkFukidashi from '@/components/MkFukidashi.vue';
 import MkRemoteCaution from '@/components/MkRemoteCaution.vue';
+import MkSuspendedCaution from '@/components/MkSuspendedCaution.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 import MkOmit from '@/components/MkOmit.vue';
 import MkInfo from '@/components/MkInfo.vue';
@@ -780,13 +779,18 @@ onUnmounted(() => {
 						> .friends-field {
 							display: flex;
 							flex-wrap: nowrap;
-							overflow-x: auto;
-							padding-left: 24px;
+							overflow-x: hidden;
+							padding-left: 12px;
+							overflow-y: hidden;
 
 							> .icons {
 								align-content: center;
-								display: inline-block;
 								margin-left: -12px;
+								position: relative;
+
+								&:not(:first-child) {
+									margin-left: -12px;
+								}
 							}
 
 							> .text {
@@ -796,6 +800,14 @@ onUnmounted(() => {
 								margin-left: 8px;
 								font-size: 90%;
 							}
+						}
+						> .friends-field-noUser {
+							display: flex;
+							flex-wrap: nowrap;
+							align-content: center;
+							word-wrap: break-word;
+							white-space: normal;
+							font-size: 90%;
 						}
 					}
 				}

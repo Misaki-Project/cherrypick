@@ -446,6 +446,7 @@ termsOfService: "利用規約"
 start: "始める"
 home: "ホーム"
 remoteUserCaution: "リモートユーザーのため、情報が不完全です。"
+suspendedUserCaution: "このユーザーは凍結されています。"
 activity: "アクティビティ"
 images: "画像"
 image: "画像"
@@ -3494,3 +3495,12 @@ _weather:
 noSendActivity: "アクティビティを送信しない"
 
 ipAddress: "IPアドレス"
+
+_chat:
+  dateSinceRegistedBy: "{year}年{month}月から利用しています"
+  dateSinceRemoteRegistedBy: "{year}年{month}月から観測しています"
+  countOfFollowers: "{value} 人のフォロワー"
+  noticeRemoteMessage: "リモートのソフトウェアが対応していない場合、正常に通信ができない場合があります。"
+  cannotSendMessagesToUsersAnymore: "今後、このユーザーにチャットを送信することはできません。"
+  cannotSendMessagesBecauseYouBlocking: "このユーザーをブロックしています。"
+  cannotSendMessagesBecauseToYourself: "自分自身にメッセージを送信することはできません。"

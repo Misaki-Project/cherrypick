@@ -74,6 +74,12 @@ export const meta = {
 			code: 'YOU_HAVE_BEEN_BLOCKED',
 			id: 'c15a5199-7422-4968-941a-2a462c478f7d',
 		},
+
+		youHaveBlocking: {
+			message: 'You cannot send a message because you have blocked this user.',
+			code: 'YOU_HAVE_BLOCKING',
+			id: 'a0f1b8c2-4d3e-4f5b-9a6c-7d0e1f2b3c5d',
+		},
 	},
 } as const;
 
@@ -131,6 +137,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					blockeeId: me.id,
 				});
 				if (block) {
+					throw new ApiError(meta.errors.youHaveBeenBlocked);
+				}
+
+				const blocking = await this.blockingsRepository.findOneBy({
+					blockerId: me.id,
+					blockeeId: recipientUser.id,
+				});
+				if (blocking) {
 					throw new ApiError(meta.errors.youHaveBeenBlocked);
 				}
 			} else if (ps.groupId != null) {
