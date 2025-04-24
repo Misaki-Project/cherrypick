@@ -1816,6 +1816,10 @@ export interface Locale extends ILocale {
      */
     "remoteUserCaution": string;
     /**
+     * このユーザーは凍結されています。
+     */
+    "suspendedUserCaution": string;
+    /**
      * アクティビティ
      */
     "activity": string;
@@ -13056,6 +13060,36 @@ export interface Locale extends ILocale {
      * IPアドレス
      */
     "ipAddress": string;
+    "_chat": {
+        /**
+         * {year}年{month}月から利用しています
+         */
+        "dateSinceRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {year}年{month}月から観測しています
+         */
+        "dateSinceRemoteRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {value} 人のフォロワー
+         */
+        "countOfFollowers": ParameterizedString<"value">;
+        /**
+         * リモートのソフトウェアが対応していない場合、正常に通信ができない場合があります。
+         */
+        "noticeRemoteMessage": string;
+        /**
+         * 今後、このユーザーにチャットを送信することはできません。
+         */
+        "cannotSendMessagesToUsersAnymore": string;
+        /**
+         * このユーザーをブロックしています。
+         */
+        "cannotSendMessagesBecauseYouBlocking": string;
+        /**
+         * 自分自身にメッセージを送信することはできません。
+         */
+        "cannotSendMessagesBecauseToYourself": string;
+    };
 }
 declare const locales: {
     [lang: string]: Locale;
