@@ -145,7 +145,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					blockeeId: recipientUser.id,
 				});
 				if (blocking) {
-					throw new ApiError(meta.errors.youHaveBeenBlocked);
+					throw new ApiError(meta.errors.youHaveBlocking);
 				}
 			} else if (ps.groupId != null) {
 				// Fetch recipient (group)
