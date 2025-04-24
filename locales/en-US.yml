@@ -446,6 +446,7 @@ termsOfService: "Terms of Service"
 start: "Begin"
 home: "Home"
 remoteUserCaution: "As this user is from a remote instance, the shown information may be incomplete."
+suspendedUserCaution: "This user is suspended"
 activity: "Activity"
 images: "Images"
 image: "Image"
@@ -3375,3 +3376,12 @@ _weather:
 noSendActivity: "Don't send activity"
 
 ipAddress: "IP Address"
+
+_chat:
+  dateSinceRegistedBy: "Registered since {month} / {year}"
+  dateSinceRemoteRegistedBy: "Observated since {month} / {year}"
+  countOfFollowers: "{value} followers"
+  noticeRemoteMessage: "If the remote software is not supported, normal communication may not be possible."
+  cannotSendMessagesToUsersAnymore: "You can no longer send Chat to this person."
+  cannotSendMessagesBecauseYouBlocking: "You are blocking this person."
+  cannotSendMessagesBecauseToYourself: "You cannot send messages to yourself."
