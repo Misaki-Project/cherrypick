@@ -269,7 +269,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 				const role = await this.roleService.getUserPolicies(user.id);
 				if (role.canPublicNote === false) {
 					data.visibility = 'home';
-				} else if (data.reply && role.canPublicReplyNote === false) {
+				} else if (data.reply && !role.canPublicReplyNote) {
+					data.visibility = 'home';
+				} else if (data.renote && data.text && !role.canPublicQuoteNote) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && !role.canPublicRenote) {
 					data.visibility = 'home';
 				}
 			}

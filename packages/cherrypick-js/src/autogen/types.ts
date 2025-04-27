@@ -5449,6 +5449,8 @@ export type components = {
       ltlAvailable: boolean;
       canPublicNote: boolean;
 			canPublicReplyNote: boolean;
+			canPublicQuoteNote: boolean;
+			canPublicRenote: boolean;
 			canPurgeAccount: boolean;
       mentionLimit: number;
       canInvite: boolean;
