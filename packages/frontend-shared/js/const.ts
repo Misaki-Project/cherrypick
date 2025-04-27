@@ -82,6 +82,7 @@ export const ROLE_POLICIES = [
 	'ltlAvailable',
 	'btlAvailable',
 	'canPublicNote',
+	'canPublicReplyNote',
 	'canPurgeAccount',
 	'canEditNote',
 	'scheduleNoteMax',

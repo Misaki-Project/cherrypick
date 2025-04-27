@@ -8077,6 +8077,10 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * 公開投稿でのリプライを許可
+             */
+            "canPublicReplyNote": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;

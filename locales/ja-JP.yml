@@ -2089,6 +2089,7 @@ _role:
     ltlAvailable: "ローカルタイムラインの閲覧"
     btlAvailable: "バブルタイムラインの閲覧"
     canPublicNote: "パブリック投稿の許可"
+    canPublicReplyNote: "公開投稿でのリプライを許可"
     canEditNote: "ノートの編集"
     canPurgeAccount: "完全なアカウントの削除"
     scheduleNoteMax: "予約投稿の最大数"
