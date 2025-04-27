@@ -5451,6 +5451,7 @@ export type components = {
 			canPublicReplyNote: boolean;
 			canPublicQuoteNote: boolean;
 			canPublicRenote: boolean;
+			canPublicNoteWithFile: boolean;
 			canPurgeAccount: boolean;
       mentionLimit: number;
       canInvite: boolean;

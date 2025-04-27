@@ -8089,6 +8089,10 @@ export interface Locale extends ILocale {
              */
             "canPublicRenote": string;
             /**
+             * ファイル付きのパブリック投稿を許可
+             */
+            "canPublicNoteWithFile": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
