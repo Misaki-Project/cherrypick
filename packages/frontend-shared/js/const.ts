@@ -85,6 +85,7 @@ export const ROLE_POLICIES = [
 	'canPublicReplyNote',
 	'canPublicQuoteNote',
 	'canPublicRenote',
+	'canPublicNoteWithFile',
 	'canPurgeAccount',
 	'canEditNote',
 	'scheduleNoteMax',
