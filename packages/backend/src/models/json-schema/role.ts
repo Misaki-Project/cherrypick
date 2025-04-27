@@ -184,6 +184,14 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canPublicQuoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
 			type: 'integer',
 			optional: false, nullable: false,
