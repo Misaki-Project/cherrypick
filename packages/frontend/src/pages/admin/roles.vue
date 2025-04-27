@@ -63,6 +63,30 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</MkSwitch>
 						</MkFolder>
 
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicReplyNote, 'canPublicReplyNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicReplyNote }}</template>
+							<template #suffix>{{ policies.canPublicReplyNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicReplyNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicQuoteNote, 'canPublicQuoteNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicQuoteNote }}</template>
+							<template #suffix>{{ policies.canPublicQuoteNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicQuoteNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenote, 'canPublicRenote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenote }}</template>
+							<template #suffix>{{ policies.canPublicRenote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
 						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 							<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
 							<template #suffix>{{ policies.canPurgeAccount ? i18n.ts.yes : i18n.ts.no }}</template>
