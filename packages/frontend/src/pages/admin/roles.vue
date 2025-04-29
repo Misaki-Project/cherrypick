@@ -79,10 +79,24 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</MkSwitch>
 						</MkFolder>
 
-						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenote, 'canPublicRenote'])">
-							<template #label>{{ i18n.ts._role._options.canPublicRenote }}</template>
-							<template #suffix>{{ policies.canPublicRenote ? i18n.ts.yes : i18n.ts.no }}</template>
-							<MkSwitch v-model="policies.canPublicRenote">
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteSelf, 'canPublicRenoteSelf'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteSelf }}</template>
+							<template #suffix>{{ policies.canPublicRenoteSelf ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteSelf">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteLocalNote, 'canPublicRenoteLocalNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteLocalNote }}</template>
+							<template #suffix>{{ policies.canPublicRenoteLocalNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteLocalNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteRemoteNote, 'canPublicRenoteRemoteNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteRemoteNote }}</template>
+							<template #suffix>{{ policies.canPublicRenoteRemoteNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteRemoteNote">
 								<template #label>{{ i18n.ts.enable }}</template>
 							</MkSwitch>
 						</MkFolder>

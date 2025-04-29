@@ -272,7 +272,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 					data.visibility = 'home';
 				} else if (data.renote && data.text && !role.canPublicQuoteNote) {
 					data.visibility = 'home';
-				} else if (data.renote && !data.text && !role.canPublicRenote) {
+				} else if (data.renote && !data.text && data.renote.userId === user.id && !role.canPublicRenoteSelf) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && data.renote.userId !== user.id && !data.renote.userHost && !role.canPublicRenoteLocalNote) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && data.renote.userHost && !role.canPublicRenoteRemoteNote) {
 					data.visibility = 'home';
 				} else if (data.files && data.files.length > 0 && !role.canPublicNoteWithFile) {
 					data.visibility = 'home';
