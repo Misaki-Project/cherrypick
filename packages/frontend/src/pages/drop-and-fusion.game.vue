@@ -32,8 +32,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div :class="$style.header">
 				<div class="_woodenFrame" :class="[$style.headerTitle]">
 					<div class="_woodenFrameInner">
-						<b>{{ i18n.ts.bubbleGame }}</b>
-						<div>- {{ gameMode.toUpperCase() }} -</div>
+						<span><b>{{ i18n.ts.bubbleGame }}</b> - {{ gameMode.toUpperCase() }} -</span>
+						<div> {{ i18n.ts._bubbleGame._score.score }}: <MkNumber :value="score"/>{{ getScoreUnit(gameMode) }} </div>
 					</div>
 				</div>
 				<div class="_woodenFrame _woodenFrameH">

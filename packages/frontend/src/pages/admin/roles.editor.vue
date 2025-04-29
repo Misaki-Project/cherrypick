@@ -221,25 +221,66 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
-			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenote, 'canPublicRenote'])">
-				<template #label>{{ i18n.ts._role._options.canPublicRenote }}</template>
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteSelf, 'canPublicRenoteSelf'])">
+				<template #label>{{ i18n.ts._role._options.canPublicRenoteSelf }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicRenote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicRenote.value ? i18n.ts.yes : i18n.ts.no }}</span>
-					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenote)"></i></span>
+					<span v-if="role.policies.canPublicRenoteSelf.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canPublicRenoteSelf.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteSelf)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicRenote.useDefault" :readonly="readonly">
+					<MkSwitch v-model="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
 						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
 					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicRenote.value" :disabled="role.policies.canPublicRenote.useDefault" :readonly="readonly">
+					<MkSwitch v-model="role.policies.canPublicRenoteSelf.value" :disabled="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
 						<template #label>{{ i18n.ts.enable }}</template>
 					</MkSwitch>
-					<MkRange v-model="role.policies.canPublicRenote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+					<MkRange v-model="role.policies.canPublicRenoteSelf.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
 				</div>
 			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteLocalNote, 'canPublicRenoteLocalNote'])">
+				<template #label>{{ i18n.ts._role._options.canPublicRenoteLocalNote }}</template>
+				<template #suffix>
+					<span v-if="role.policies.canPublicRenoteLocalNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canPublicRenoteLocalNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteLocalNote)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.value" :disabled="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.canPublicRenoteLocalNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteRemoteNote, 'canPublicRenoteRemoteNote'])">
+				<template #label>{{ i18n.ts._role._options.canPublicRenoteRemoteNote }}</template>
+				<template #suffix>
+					<span v-if="role.policies.canPublicRenoteRemoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canPublicRenoteRemoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteRemoteNote)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.value" :disabled="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.canPublicRenoteRemoteNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicNoteWithFile, 'canPublicNoteWithFile'])">
 				<template #label>{{ i18n.ts._role._options.canPublicNoteWithFile }}</template>
 				<template #suffix>
@@ -259,6 +300,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkRange>
 				</div>
 			</MkFolder>
+
 
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 				<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>

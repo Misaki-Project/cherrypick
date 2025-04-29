@@ -38,8 +38,10 @@ export type RolePolicies = {
 	canPublicNote: boolean;
 	canPublicReplyNote: boolean;
 	canPublicQuoteNote: boolean;
+	canPublicRenoteSelf: boolean;
+	canPublicRenoteLocalNote: boolean;
+	canPublicRenoteRemoteNote: boolean;
 	canPublicNoteWithFile: boolean;
-	canPublicRenote: boolean;
 	canEditNote: boolean;
 	canPurgeAccount: boolean;
 	scheduleNoteMax: number;
@@ -85,7 +87,9 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canPublicNote: true,
 	canPublicReplyNote: true,
 	canPublicQuoteNote: true,
-	canPublicRenote: true,
+	canPublicRenoteSelf: true,
+	canPublicRenoteLocalNote: true,
+	canPublicRenoteRemoteNote: true,
 	canPublicNoteWithFile: true,
 	canEditNote: true,
 	canPurgeAccount: true,
@@ -405,7 +409,9 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
 			canPublicReplyNote: calc('canPublicReplyNote', vs => vs.some(v => v === true)),
 			canPublicQuoteNote: calc('canPublicQuoteNote', vs => vs.some(v => v === true)),
-			canPublicRenote: calc('canPublicRenote', vs => vs.some(v => v === true)),
+			canPublicRenoteSelf: calc('canPublicRenoteSelf', vs => vs.some(v => v === true)),
+			canPublicRenoteLocalNote: calc('canPublicRenoteLocalNote', vs => vs.some(v => v === true)),
+			canPublicRenoteRemoteNote: calc('canPublicRenoteRemoteNote', vs => vs.some(v => v === true)),
 			canPublicNoteWithFile: calc('canPublicNoteWithFile', vs => vs.some(v => v === true)),
 			canEditNote: calc('canEditNote', vs => vs.some(v => v === true)),
 			canPurgeAccount: calc('canPurgeAccount', vs => vs.some(v => v === true)),
