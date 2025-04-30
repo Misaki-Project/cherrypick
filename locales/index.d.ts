@@ -902,6 +902,10 @@ export interface Locale extends ILocale {
      */
     "followers": string;
     /**
+     * 知り合いのフォロワー
+     */
+    "followersYouFollow": string;
+    /**
      * フォローされています
      */
     "followsYou": string;
@@ -1811,6 +1815,10 @@ export interface Locale extends ILocale {
      * リモートユーザーのため、情報が不完全です。
      */
     "remoteUserCaution": string;
+    /**
+     * このユーザーは凍結されています。
+     */
+    "suspendedUserCaution": string;
     /**
      * アクティビティ
      */
@@ -8069,6 +8077,30 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * 公開投稿のリプライにパブリック投稿を許可
+             */
+            "canPublicReplyNote": string;
+            /**
+             * 公開投稿の引用にパブリック投稿を許可
+             */
+            "canPublicQuoteNote": string;
+            /**
+             * 自分の投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteSelf": string;
+            /**
+             * ローカル投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteLocalNote": string;
+            /**
+             * リモート投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteRemoteNote": string;
+            /**
+             * ファイル付きのパブリック投稿を許可
+             */
+            "canPublicNoteWithFile": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
@@ -10537,6 +10569,28 @@ export interface Locale extends ILocale {
          * フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。
          */
         "followedMessageDescriptionForLockedAccount": string;
+        "_friendsFollows": {
+            /**
+             * フォローしている人にフォロワーはいません
+             */
+            "noFollows": string;
+            /**
+             * {user}さんにフォローされています
+             */
+            "oneFollow": ParameterizedString<"user">;
+            /**
+             * {user1}さんと{user2}さんにフォローされています
+             */
+            "twoFollows": ParameterizedString<"user1" | "user2">;
+            /**
+             * {user1}さん、{user2}さん、{user3}さんにフォローされています
+             */
+            "threeFollows": ParameterizedString<"user1" | "user2" | "user3">;
+            /**
+             * {user1}さん、{user2}さん、他{count}人にフォローされています
+             */
+            "manyFollows": ParameterizedString<"user1" | "user2" | "count">;
+        };
     };
     "_exportOrImport": {
         /**
@@ -13026,6 +13080,40 @@ export interface Locale extends ILocale {
      * アクティビティを送信しない
      */
     "noSendActivity": string;
+    /**
+     * IPアドレス
+     */
+    "ipAddress": string;
+    "_chat": {
+        /**
+         * {year}年{month}月から利用しています
+         */
+        "dateSinceRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {year}年{month}月から観測しています
+         */
+        "dateSinceRemoteRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {value} 人のフォロワー
+         */
+        "countOfFollowers": ParameterizedString<"value">;
+        /**
+         * リモートのソフトウェアが対応していない場合、正常に通信ができない場合があります。
+         */
+        "noticeRemoteMessage": string;
+        /**
+         * 今後、このユーザーにチャットを送信することはできません。
+         */
+        "cannotSendMessagesToUsersAnymore": string;
+        /**
+         * このユーザーをブロックしています。
+         */
+        "cannotSendMessagesBecauseYouBlocking": string;
+        /**
+         * 自分自身にメッセージを送信することはできません。
+         */
+        "cannotSendMessagesBecauseToYourself": string;
+    };
 }
 declare const locales: {
     [lang: string]: Locale;

@@ -14,7 +14,34 @@ SPDX-License-Identifier: AGPL-3.0-only
 	>
 		<MkSpacer :contentMax="800">
 			<div :class="$style.body">
-				<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
+				<div v-if="user && user.id!=$i.id && !pagingComponent?.more" :class="$style.chatInfo">
+					<div>
+						<MkAvatar :user="user" style="width: 64px; height: 64px" indicator link/>
+					</div>
+					<div>
+						<b><Mfm :plain="true" :text="user.name?user.name:('@'+user.username + (user.host?(`@${user.host}`):``))" :author="user" :enableEmojiMenu="!!$i"/></b>
+					</div>
+					<div v-if="user.name!=null" style="font-size: 0.9em; color: var(--MI_THEME-fgTransparentWeak);">
+						<span :class="$style.username">@{{ user.username + (user.host?(`@${user.host}`):"") }}</span>
+					</div>
+					<div>
+						<span>{{ getSinceRegistedBy(user) }}</span>
+						<span style="margin-left: 4px; margin-right: 4px;">・</span>
+						<span v-if="isFollowersVisibleForMe(user)">
+							{{ i18n.tsx._chat.countOfFollowers({value: user.followersCount }) }}
+						</span>
+					</div>
+					<hr style="margin: 16px 0; border: none; border-top: 1px solid var(--MI_THEME-divider);">
+				</div>
+				<div v-if="(user && user.id == $i.id)" key="_empty_" class="empty">
+					<slot name="empty">
+						<div class="_fullinfo">
+							<img :src="serverErrorImageUrl" class="_ghost"/>
+							<div>{{ i18n.ts._chat.cannotSendMessagesBecauseToYourself }}</div>
+						</div>
+					</slot>
+				</div>
+				<MkPagination v-if="pagination && ((user && user.id != $i.id) || group)" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
 					<template #default="{ items: messages, fetching: pFetching }">
 						<MkDateSeparatedList
 							v-if="messages.length > 0"
@@ -28,6 +55,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</MkDateSeparatedList>
 					</template>
 				</MkPagination>
+				<div v-if="(user && (user.isBlocked || user.isBlocking))" style="text-align: center; margin-top: 16px">
+					<hr style="margin: 16px 0; border: none; border-top: 1px solid var(--MI_THEME-divider);">
+					<span v-if="user.isBlocked">{{ i18n.ts._chat.cannotSendMessagesToUsersAnymore }}</span>
+					<span v-if="user.isBlocking">{{ i18n.ts._chat.cannotSendMessagesBecauseYouBlocking }}</span>
+				</div>
 			</div>
 		</MkSpacer>
 		<footer :class="$style.footer">
@@ -48,7 +80,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</button>
 						</div>
 					</Transition>
-					<XForm v-if="!fetching" ref="formEl" :user="user" :group="group" :class="$style.form"/>
+					<XForm v-if="!fetching && ((user && !user.isBlocked && !user.isBlocking && user.id != $i.id) || group) " ref="formEl" :user="user" :group="group" :class="$style.form"/>
 				</div>
 			</div>
 		</footer>
@@ -75,6 +107,9 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { vibrate } from '@/scripts/vibrate.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
+import { isFollowersVisibleForMe } from '@/scripts/isFfVisibleForMe.js';
+import MkAvatar from '@/components/global/MkAvatar.vue';
+import { serverErrorImageUrl } from '@/instance.js';
 
 const isFriendly = ref(miLocalStorage.getItem('ui') === 'friendly');
 
@@ -109,7 +144,7 @@ async function fetch() {
 		const acct = Misskey.acct.parse(props.userAcct);
 		user.value = await misskeyApi('users/show', { username: acct.username, host: acct.host || undefined });
 		group.value = null;
-
+		if (!user.value) return; //ToDo
 		pagination.value = {
 			endpoint: 'messaging/messages' as const,
 			limit: 20,
@@ -126,7 +161,7 @@ async function fetch() {
 	} else {
 		user.value = null;
 		group.value = await misskeyApi('users/groups/show', { groupId: props.groupId });
-
+		if (!group.value) return; //ToDo
 		pagination.value = {
 			endpoint: 'messaging/messages' as const,
 			limit: 20,
@@ -157,6 +192,14 @@ async function fetch() {
 			fetching.value = false;
 		}, 300);
 	});
+}
+
+function getSinceRegistedBy(user) {
+	if (user.host) {
+		return i18n.tsx._chat.dateSinceRemoteRegistedBy({ year: new Date(user.createdAt).getFullYear(), month: new Date(user.createdAt).getMonth() });
+	} else {
+		return i18n.tsx._chat.dateSinceRegistedBy({ year: new Date(user.createdAt).getFullYear(), month: new Date(user.createdAt).getMonth() });
+	}
 }
 
 function onDragover(ev: DragEvent) {
@@ -317,125 +360,133 @@ definePageMetadata(computed(() => !fetching.value ? user.value ? {
 } : null));
 </script>
 
-<style lang="scss" module>
-.fade-enter-active, .fade-leave-active {
-	transition: opacity 0.1s;
-}
-
-.fade-enter-from, .fade-leave-to {
-	transition: opacity 0.5s;
-	opacity: 0;
-}
-
-.body {
-	min-height: 80dvh;
-}
-
-.more {
-	display: block;
-	margin: 16px auto;
-	padding: 0 12px;
-	line-height: 24px;
-	color: #fff;
-	background: rgba(#000, 0.3);
-	border-radius: 12px;
-
-	&:hover {
-		background: rgba(#000, 0.4);
+	<style lang="scss" module>
+	.fade-enter-active, .fade-leave-active {
+		transition: opacity 0.1s;
 	}
 
-	&:active {
-		background: rgba(#000, 0.5);
+	.fade-enter-from, .fade-leave-to {
+		transition: opacity 0.5s;
+		opacity: 0;
 	}
 
-	> i {
-		margin-right: 4px;
-	}
-}
-
-.fetching {
-	cursor: wait;
-}
-
-.messages {
-	padding: 16px 0 0;
-
-	> * {
-		margin-bottom: 16px;
-	}
-}
-
-.footerSpacer {
-	padding: 20px;
-}
-
-.footer {
-	width: 100%;
-	position: sticky;
-  bottom: var(--MI-stickyBottom);
-	padding-top: 8px;
-	z-index: 2;
-}
-
-.newMessage {
-	width: 100%;
-	padding-bottom: 8px;
-	text-align: center;
-}
-
-.newMessageButton {
-	display: inline-block;
-	margin: 0;
-	padding: 0 12px;
-	line-height: 32px;
-	font-size: 12px;
-	border-radius: 16px;
-}
-
-.newMessageIcon {
-	display: inline-block;
-	margin-right: 8px;
-}
-
-.typers {
-	position: absolute;
-	bottom: 100%;
-	padding: 0 8px 0 8px;
-	font-size: 0.9em;
-	color: var(--MI_THEME-fgTransparentWeak);
-}
-
-.user + .user:before {
-	content: ", ";
-	font-weight: normal;
-}
-
-.user:last-of-type:after {
-	content: " ";
-}
-
-.form {
-	max-height: 12em;
-	overflow-y: scroll;
-	// border-top: solid 0.5px var(--MI_THEME-divider);
-	// border-bottom-left-radius: 0;
-	// border-bottom-right-radius: 0;
-	border-radius: 15px;
-}
-
-@container (max-width: 500px) {
-	.footerSpacer {
-		padding: initial;
+	.body {
+		min-height: 80dvh;
 	}
 
-	.footer {
-		&.friendly {
-			margin-bottom: calc(50px + env(safe-area-inset-bottom));
+	.more {
+		display: block;
+		margin: 16px auto;
+		padding: 0 12px;
+		line-height: 24px;
+		color: #fff;
+		background: rgba(#000, 0.3);
+		border-radius: 12px;
+
+		&:hover {
+			background: rgba(#000, 0.4);
+		}
+
+		&:active {
+			background: rgba(#000, 0.5);
+		}
+
+		> i {
+			margin-right: 4px;
 		}
 	}
 
-	.form {
-		border-radius: 0;
+	.fetching {
+		cursor: wait;
 	}
-}
-</style>
+
+	.messages {
+		padding: 16px 0 0;
+
+		> * {
+			margin-bottom: 16px;
+		}
+	}
+
+	.footerSpacer {
+		padding: 20px;
+	}
+
+	.footer {
+		width: 100%;
+		position: sticky;
+		bottom: var(--MI-stickyBottom);
+		padding-top: 8px;
+		z-index: 2;
+	}
+
+	.newMessage {
+		width: 100%;
+		padding-bottom: 8px;
+		text-align: center;
+	}
+
+	.newMessageButton {
+		display: inline-block;
+		margin: 0;
+		padding: 0 12px;
+		line-height: 32px;
+		font-size: 12px;
+		border-radius: 16px;
+	}
+
+	.newMessageIcon {
+		display: inline-block;
+		margin-right: 8px;
+	}
+
+	.typers {
+		position: absolute;
+		bottom: 100%;
+		padding: 0 8px 0 8px;
+		font-size: 0.9em;
+		color: var(--MI_THEME-fgTransparentWeak);
+	}
+
+	.user + .user:before {
+		content: ", ";
+		font-weight: normal;
+	}
+
+	.user:last-of-type:after {
+		content: " ";
+	}
+
+	.form {
+		max-height: 12em;
+		overflow-y: scroll;
+		// border-top: solid 0.5px var(--MI_THEME-divider);
+		// border-bottom-left-radius: 0;
+		// border-bottom-right-radius: 0;
+		border-radius: 15px;
+	}
+
+	.chatInfo {
+		text-align: center;
+		> div {
+			margin: 5px auto;
+		}
+	}
+
+	@container (max-width: 500px) {
+		.footerSpacer {
+			padding: initial;
+		}
+
+		.footer {
+			&.friendly {
+				margin-bottom: calc(50px + env(safe-area-inset-bottom));
+			}
+		}
+
+		.form {
+			border-radius: 0;
+		}
+	}
+	</style>
+

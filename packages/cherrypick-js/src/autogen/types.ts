@@ -5448,6 +5448,12 @@ export type components = {
       gtlAvailable: boolean;
       ltlAvailable: boolean;
       canPublicNote: boolean;
+			canPublicReplyNote: boolean;
+			canPublicQuoteNote: boolean;
+			canPublicRenoteSelf: boolean;
+			canPublicRenoteLocalNote: boolean;
+			canPublicRenoteRemoteNote: boolean;
+			canPublicNoteWithFile: boolean;
 			canPurgeAccount: boolean;
       mentionLimit: number;
       canInvite: boolean;

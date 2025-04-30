@@ -180,6 +180,30 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canPublicReplyNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicQuoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteSelf: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteLocalNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteRemoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicNoteWithFile: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
 			type: 'integer',
 			optional: false, nullable: false,

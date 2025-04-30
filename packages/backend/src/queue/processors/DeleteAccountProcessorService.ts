@@ -3,15 +3,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { Not, IsNull, MoreThan } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
-import { MoreThan } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { DriveFilesRepository, NotesRepository, FollowRequestsRepository, UserProfilesRepository, UsersRepository, FollowingsRepository, UserListMembershipsRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
+import { RelationshipJobData } from '@/queue/types.js';
+import { QueueService } from '@/core/QueueService.js';
 import { EmailService } from '@/core/EmailService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { bindThis } from '@/decorators.js';
@@ -38,12 +40,22 @@ export class DeleteAccountProcessorService {
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
+		@Inject(DI.followingsRepository)
+		private followingsRepository: FollowingsRepository,
+
+		@Inject(DI.followRequestsRepository)
+		private followRequestsRepository: FollowRequestsRepository,
+
+		@Inject(DI.userListMembershipsRepository)
+		private userListMembershipsRepository: UserListMembershipsRepository,
+
 		private userEntityService: UserEntityService,
 		private driveService: DriveService,
 		private emailService: EmailService,
 		private roleService: RoleService,
 		private queueLoggerService: QueueLoggerService,
 		private searchService: SearchService,
+		private queueService: QueueService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
 	}
@@ -127,10 +139,73 @@ export class DeleteAccountProcessorService {
 				isSuspended: true,
 				isDeleted: true,
 			});
+			//削除しない代わりにユーザーの痕跡をすべて解除する
+			(async () => {
+				//await this.unsubscribeList(user).catch(e => {});
+				await this.unFollowAll(user).catch(e => {});
+			})();
 		} else {
 			await this.usersRepository.delete(job.data.user.id);
 		}
 
 		return `[${job.data.user.id}] Account deleted`;
+	}
+
+	@bindThis
+	private async unsubscribeList(user: MiUser): Promise<void> {
+		//ToDo
+		/*const listed = await this.userListMembershipsRepository.find({
+			where: {
+				userId: user.id,
+				userListId: Not(IsNull()),
+			},
+		});
+		for (const membership of listed) {
+			await this.userListMembershipsRepository.delete(membership.id);
+		}*/
+	}
+	@bindThis
+
+	private async unFollowAll(user: MiUser): Promise<void> {
+		//その人に対しての全てのフォローリクエストを解除
+		this.followRequestsRepository.delete({
+			followeeId: user.id,
+		});
+		this.followRequestsRepository.delete({
+			followerId: user.id,
+		});
+		//フォローとフォロワーを全て削除
+		const followings = await this.followingsRepository.find({
+			where: {
+				followerId: user.id,
+				followeeId: Not(IsNull()),
+			},
+		});
+		const followers = await this.followingsRepository.find({
+			where: {
+				followerId: Not(IsNull()),
+				followeeId: user.id,
+			},
+		});
+		const jobs: RelationshipJobData[] = [];
+		for (const following of followings) {
+			if (following.followeeId && following.followerId) {
+				jobs.push({
+					from: { id: following.followerId },
+					to: { id: following.followeeId },
+					silent: true,
+				});
+			}
+		}
+		for (const follower of followers) {
+			if (follower.followeeId && follower.followerId) {
+				jobs.push({
+					from: { id: follower.followerId },
+					to: { id: follower.followeeId },
+					silent: true,
+				});
+			}
+		}
+		this.queueService.createUnfollowJob(jobs);
 	}
 }

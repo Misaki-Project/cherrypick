@@ -5,9 +5,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div>
-	<MkPagination v-slot="{items}" ref="list" :pagination="type === 'following' ? followingPagination : followersPagination">
+	<MkPagination v-slot="{items}" ref="list" :pagination="type === 'following' ? followingPagination : (type === 'followers' ?followersPagination : friendsFollowingPagination)">
 		<div :class="$style.users">
-			<MkUserInfo v-for="user in items.map(x => type === 'following' ? x.followee : x.follower)" :key="user.id" :user="user"/>
+			<MkUserInfo v-for="user in type === 'friends'? items.map(x=> x.follower) : items.map(x => type === 'following' ? x.followee : x.follower)" :key="user.id" :user="user"/>
 		</div>
 	</MkPagination>
 </div>
@@ -21,7 +21,7 @@ import MkPagination from '@/components/MkPagination.vue';
 
 const props = defineProps<{
 	user: Misskey.entities.User;
-	type: 'following' | 'followers';
+	type: 'following' | 'followers' | 'friends';
 }>();
 
 const followingPagination = {
@@ -34,6 +34,14 @@ const followingPagination = {
 
 const followersPagination = {
 	endpoint: 'users/followers' as const,
+	limit: 20,
+	params: computed(() => ({
+		userId: props.user.id,
+	})),
+};
+
+const friendsFollowingPagination = {
+	endpoint: 'users/friends-following' as const,
 	limit: 20,
 	params: computed(() => ({
 		userId: props.user.id,
