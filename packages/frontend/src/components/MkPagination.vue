@@ -43,14 +43,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, isRef, nextTick, onActivated, onBeforeMount, onBeforeUnmount, onDeactivated, ref, shallowRef, watch } from 'vue';
+import { computed, isRef, nextTick, onActivated, onBeforeMount, onBeforeUnmount, onDeactivated, ref, shallowRef, watch } from 'vue';
 import * as Misskey from 'cherrypick-js';
 import { useDocumentVisibility } from '@@/js/use-document-visibility.js';
 import { onScrollTop, isTopVisible, getBodyScrollHeight, getScrollContainer, onScrollBottom, scrollToBottom, scroll, isBottomVisible } from '@@/js/scroll.js';
+import type { ComputedRef } from 'vue';
+import type { MisskeyEntity } from '@/types/date-separated-list.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore } from '@/store.js';
-import { MisskeyEntity } from '@/types/date-separated-list.js';
 import { i18n } from '@/i18n.js';
 
 const SECOND_FETCH_LIMIT = 30;
@@ -75,13 +76,19 @@ export type Paging<E extends keyof Misskey.Endpoints = keyof Misskey.Endpoints> 
 
 	offsetMode?: boolean;
 
+	isMessaging?: boolean;
+
 	pageEl?: HTMLElement;
 };
 
 type MisskeyEntityMap = Map<string, MisskeyEntity>;
 
-function arrayToEntries(entities: MisskeyEntity[]): [string, MisskeyEntity][] {
-	return entities.map(en => [en.id, en]);
+function arrayToEntries(entities: MisskeyEntity | any): [string, MisskeyEntity][] {
+	if (entities.users) {
+		return entities.users.map(en => [en.id, en]);
+	} else {
+		return entities.map(en => [en.id, en]);
+	}
 }
 
 function concatMapWithArray(map: MisskeyEntityMap, entities: MisskeyEntity[]): MisskeyEntityMap {
@@ -307,6 +314,8 @@ const fetchMoreAhead = async (): Promise<void> => {
 		limit: SECOND_FETCH_LIMIT,
 		...(props.pagination.offsetMode ? {
 			offset: items.value.size,
+		} : props.pagination.isMessaging ? {
+			untilId: Array.from(items.value.keys()).at(-1),
 		} : {
 			sinceId: Array.from(items.value.keys()).at(-1),
 		}),

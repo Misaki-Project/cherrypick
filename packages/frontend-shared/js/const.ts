@@ -70,6 +70,7 @@ export const notificationTypes = [
 	'achievementEarned',
 	'exportCompleted',
 	'login',
+	'createToken',
 	'scheduleNote',
 	'test',
 	'app',
@@ -81,6 +82,13 @@ export const ROLE_POLICIES = [
 	'ltlAvailable',
 	'btlAvailable',
 	'canPublicNote',
+	'canPublicReplyNote',
+	'canPublicQuoteNote',
+	'canPublicRenoteSelf',
+	'canPublicRenoteLocalNote',
+	'canPublicRenoteRemoteNote',
+	'canPublicNoteWithFile',
+	'canPurgeAccount',
 	'canEditNote',
 	'scheduleNoteMax',
 	'mentionLimit',
@@ -114,6 +122,8 @@ export const ROLE_POLICIES = [
 	'canImportUserLists',
 	'noteDraftLimit',
 	'canSetFederationAvatarShape',
+	'canDeleteAccount',
+	'canTruncateAccount',
 ] as const;
 
 // なんか動かない

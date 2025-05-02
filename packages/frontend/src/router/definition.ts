@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { AsyncComponentLoader, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from 'vue';
+import type { AsyncComponentLoader } from 'vue';
 import type { IRouter, RouteDef } from '@/nirax.js';
 import { Router } from '@/nirax.js';
 import { $i, iAmModerator } from '@/account.js';
@@ -25,6 +26,9 @@ const routes: RouteDef[] = [{
 }, {
 	path: '/@:acct/followers',
 	component: page(() => import('@/pages/user/followers.vue')),
+}, {
+	path: '/@:acct/followers-you-follow',
+	component: page(() => import('@/pages/user/followers-you-follow.vue')),
 }, {
 	name: 'user',
 	path: '/@:acct/:page?',
@@ -508,6 +512,10 @@ const routes: RouteDef[] = [{
 		path: '/update',
 		name: 'update',
 		component: page(() => import('@/pages/admin/update.vue')),
+	}, {
+		path: '/users-from-ip',
+		name: 'users-from-ip',
+		component: page(() => import('@/pages/admin/users-from-ip.vue')),
 	}, {
 		path: '/',
 		component: page(() => import('@/pages/_empty_.vue')),

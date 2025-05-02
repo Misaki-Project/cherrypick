@@ -32,8 +32,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div :class="$style.header">
 				<div class="_woodenFrame" :class="[$style.headerTitle]">
 					<div class="_woodenFrameInner">
-						<b>{{ i18n.ts.bubbleGame }}</b>
-						<div>- {{ gameMode.toUpperCase() }} -</div>
+						<span><b>{{ i18n.ts.bubbleGame }}</b> - {{ gameMode.toUpperCase() }} -</span>
+						<div> {{ i18n.ts._bubbleGame._score.score }}: <MkNumber :value="score"/>{{ getScoreUnit(gameMode) }} </div>
 					</div>
 				</div>
 				<div class="_woodenFrame _woodenFrameH">
@@ -194,9 +194,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, onDeactivated, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
 import * as Matter from 'matter-js';
 import * as Misskey from 'cherrypick-js';
-import { DropAndFusionGame, Mono } from 'misskey-bubble-game';
+import { DropAndFusionGame } from 'misskey-bubble-game';
 import { useInterval } from '@@/js/use-interval.js';
 import { apiUrl } from '@@/js/config.js';
+import type { Mono } from 'misskey-bubble-game';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import * as os from '@/os.js';

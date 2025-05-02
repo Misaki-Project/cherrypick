@@ -10,7 +10,8 @@ import lightTheme from '@@/themes/l-cherrypick.json5';
 import darkTheme from '@@/themes/d-cherrypick.json5';
 import type { SoundType } from '@/scripts/sound.js';
 import type { Ast } from '@syuilo/aiscript';
-import { DEFAULT_DEVICE_KIND, type DeviceKind } from '@/scripts/device-kind.js';
+import type { DeviceKind } from '@/scripts/device-kind.js';
+import { DEFAULT_DEVICE_KIND } from '@/scripts/device-kind.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { Storage } from '@/pizzax.js';
 
@@ -55,7 +56,7 @@ export type SoundStore = {
 	fileUrl: string;
 
 	volume: number;
-}
+};
 
 export const postFormActions: PostFormAction[] = [];
 export const userActions: UserAction[] = [];
@@ -124,7 +125,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	imageCompressionMode: {
 		where: 'account',
-		default: 'resizeCompressLossy' as 'resizeCompress' | 'noResizeCompress' | 'resizeCompressLossy' | 'noResizeCompressLossy' | null,
+		default: 'noResizeCompress' as 'resizeCompress' | 'noResizeCompress' | 'resizeCompressLossy' | 'noResizeCompressLossy' | null,
 	},
 	memo: {
 		where: 'account',
@@ -500,6 +501,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	confirmOnReact: {
+		where: 'device',
+		default: false,
+	},
 	showUnreadNotificationsCount: {
 		where: 'deviceAccount',
 		default: false,
@@ -636,7 +641,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	showTranslateButtonInNote: {
 		where: 'device',
-		default: true,
+		default: false,
 	},
 	enableAbsoluteTime: {
 		where: 'device',
@@ -685,6 +690,10 @@ export const defaultStore = markRaw(new Storage('base', {
 	alwaysShowCw: {
 		where: 'device',
 		default: false,
+	},
+	showReplyTargetNote: {
+		where: 'device',
+		default: true,
 	},
 	showReplyTargetNoteInSemiTransparent: {
 		where: 'device',

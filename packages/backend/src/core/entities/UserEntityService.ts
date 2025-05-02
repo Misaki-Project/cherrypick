@@ -60,12 +60,14 @@ const ajv = new Ajv();
 
 function isLocalUser(user: MiUser): user is MiLocalUser;
 function isLocalUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: null; });
+
 function isLocalUser(user: MiUser | { host: MiUser['host'] }): boolean {
 	return user.host == null;
 }
 
 function isRemoteUser(user: MiUser): user is MiRemoteUser;
 function isRemoteUser<T extends { host: MiUser['host'] }>(user: T): user is (T & { host: string; });
+
 function isRemoteUser(user: MiUser | { host: MiUser['host'] }): boolean {
 	return !isLocalUser(user);
 }
@@ -81,7 +83,7 @@ export type UserRelation = {
 	isBlocked: boolean
 	isMuted: boolean
 	isRenoteMuted: boolean
-}
+};
 
 @Injectable()
 export class UserEntityService implements OnModuleInit {
@@ -483,16 +485,15 @@ export class UserEntityService implements OnModuleInit {
 		}
 
 		let pins: MiUserNotePining[] = [];
-		if (isDetailed) {
-			if (opts.pinNotes) {
-				pins = opts.pinNotes.get(user.id) ?? [];
-			} else {
-				pins = await this.userNotePiningsRepository.createQueryBuilder('pin')
-					.where('pin.userId = :userId', { userId: user.id })
-					.innerJoinAndSelect('pin.note', 'note')
-					.orderBy('pin.id', 'DESC')
-					.getMany();
-			}
+		//if (isDetailed)
+		if (opts.pinNotes) {
+			pins = opts.pinNotes.get(user.id) ?? [];
+		} else {
+			pins = await this.userNotePiningsRepository.createQueryBuilder('pin')
+				.where('pin.userId = :userId', { userId: user.id })
+				.innerJoinAndSelect('pin.note', 'note')
+				.orderBy('pin.id', 'DESC')
+				.getMany();
 		}
 
 		const followingCount = profile == null ? null :
@@ -561,6 +562,7 @@ export class UserEntityService implements OnModuleInit {
 			) : undefined,
 			setFederationAvatarShape: user.setFederationAvatarShape ?? undefined,
 			isSquareAvatars: user.isSquareAvatars ?? undefined,
+			pinnedNoteIds: pins.map(pin => pin.noteId),
 
 			...(isDetailed ? {
 				url: profile!.url,
@@ -575,7 +577,7 @@ export class UserEntityService implements OnModuleInit {
 				lastFetchedAt: user.lastFetchedAt ? user.lastFetchedAt.toISOString() : null,
 				bannerUrl: user.bannerUrl,
 				bannerBlurhash: user.bannerBlurhash,
-				isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+				isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote && !r.canPublicNoteWithFile && !r.canPublicQuoteNote && !r.canPublicRenote && !r.canPublicReplyNote),
 				isSuspended: user.isSuspended,
 				description: profile!.description,
 				location: profile!.location,
@@ -586,7 +588,6 @@ export class UserEntityService implements OnModuleInit {
 				followersCount: followersCount ?? 0,
 				followingCount: followingCount ?? 0,
 				notesCount: user.notesCount,
-				pinnedNoteIds: pins.map(pin => pin.noteId),
 				pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, {
 					detail: true,
 				}),

@@ -36,7 +36,14 @@ export type RolePolicies = {
 	ltlAvailable: boolean;
 	btlAvailable: boolean;
 	canPublicNote: boolean;
+	canPublicReplyNote: boolean;
+	canPublicQuoteNote: boolean;
+	canPublicRenoteSelf: boolean;
+	canPublicRenoteLocalNote: boolean;
+	canPublicRenoteRemoteNote: boolean;
+	canPublicNoteWithFile: boolean;
 	canEditNote: boolean;
+	canPurgeAccount: boolean;
 	scheduleNoteMax: number;
 	mentionLimit: number;
 	canInvite: boolean;
@@ -69,6 +76,8 @@ export type RolePolicies = {
 	canImportUserLists: boolean;
 	noteDraftLimit: number;
 	canSetFederationAvatarShape: boolean;
+	canDeleteAccount: boolean;
+	canTruncateAccount: boolean;
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -76,7 +85,14 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	ltlAvailable: true,
 	btlAvailable: false,
 	canPublicNote: true,
+	canPublicReplyNote: true,
+	canPublicQuoteNote: true,
+	canPublicRenoteSelf: true,
+	canPublicRenoteLocalNote: true,
+	canPublicRenoteRemoteNote: true,
+	canPublicNoteWithFile: true,
 	canEditNote: true,
+	canPurgeAccount: true,
 	scheduleNoteMax: 5,
 	mentionLimit: 20,
 	canInvite: false,
@@ -109,6 +125,8 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canImportUserLists: true,
 	noteDraftLimit: 10,
 	canSetFederationAvatarShape: true,
+	canDeleteAccount: true,
+	canTruncateAccount: true,
 };
 
 @Injectable()
@@ -560,7 +578,14 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
 			btlAvailable: calc('btlAvailable', vs => vs.some(v => v === true)),
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
+			canPublicReplyNote: calc('canPublicReplyNote', vs => vs.some(v => v === true)),
+			canPublicQuoteNote: calc('canPublicQuoteNote', vs => vs.some(v => v === true)),
+			canPublicRenoteSelf: calc('canPublicRenoteSelf', vs => vs.some(v => v === true)),
+			canPublicRenoteLocalNote: calc('canPublicRenoteLocalNote', vs => vs.some(v => v === true)),
+			canPublicRenoteRemoteNote: calc('canPublicRenoteRemoteNote', vs => vs.some(v => v === true)),
+			canPublicNoteWithFile: calc('canPublicNoteWithFile', vs => vs.some(v => v === true)),
 			canEditNote: calc('canEditNote', vs => vs.some(v => v === true)),
+			canPurgeAccount: calc('canPurgeAccount', vs => vs.some(v => v === true)),
 			scheduleNoteMax: calc('scheduleNoteMax', vs => Math.max(...vs)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
@@ -593,6 +618,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canImportUserLists: calc('canImportUserLists', vs => vs.some(v => v === true)),
 			noteDraftLimit: calc('noteDraftLimit', vs => Math.max(...vs)),
 			canSetFederationAvatarShape: calc('canSetFederationAvatarShape', vs => vs.some(v => v === true)),
+			canDeleteAccount: calc('canDeleteAccount', vs => vs.some(v => v === true)),
+			canTruncateAccount: calc('canTruncateAccount', vs => vs.some(v => v === true)),
 		};
 	}
 

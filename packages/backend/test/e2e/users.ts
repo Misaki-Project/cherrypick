@@ -15,7 +15,7 @@ describe('ユーザー', () => {
 	// エンティティとしてのユーザーを主眼においたテストを記述する
 	// (Userを返すエンドポイントとUserエンティティを書き換えるエンドポイントをテストする)
 
-	const stripUndefined = <T extends { [key: string]: any }, >(orig: T): Partial<T> => {
+	const stripUndefined = <T extends { [key: string]: any } >(orig: T): Partial<T> => {
 		return Object.entries({ ...orig })
 			.filter(([, value]) => value !== undefined)
 			.reduce((obj: Partial<T>, [key, value]) => {
@@ -250,7 +250,7 @@ describe('ユーザー', () => {
 		await api('i/delete-account', { password: 'userDeletedBySelf' }, userDeletedBySelf);
 		userDeletedByAdmin = await signup({ username: 'userDeletedByAdmin' });
 		await post(userDeletedByAdmin, { text: 'test' });
-		await api('admin/delete-account', { userId: userDeletedByAdmin.id }, root);
+		await api('admin/accounts/delete', { userId: userDeletedByAdmin.id }, root);
 		userFollowingAlice = await signup({ username: 'userFollowingAlice' });
 		await post(userFollowingAlice, { text: 'test' });
 		await api('following/create', { userId: alice.id }, userFollowingAlice);

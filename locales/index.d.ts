@@ -14,6 +14,10 @@ export interface Locale extends ILocale {
      */
     "_lang_": string;
     /**
+     * {user}さんに返信
+     */
+    "replyTo": ParameterizedString<"user">;
+    /**
      * すべてのリノートの省略
      */
     "forceCollapseAllRenotes": string;
@@ -78,7 +82,7 @@ export interface Locale extends ILocale {
      */
     "youBlocked": string;
     /**
-     * {user}さんのフォローやポストの表示はできません。
+     * {user}さんのフォローやノートの表示はできません。
      */
     "youBlockedDescription": ParameterizedString<"user">;
     /**
@@ -181,6 +185,10 @@ export interface Locale extends ILocale {
      * オフにすると、元のノートのタイムラインに変更されます。
      */
     "filesGridLayoutInUserPageDescription": string;
+    /**
+     * 返信対象ノートを表示
+     */
+    "showReplyTargetNote": string;
     /**
      * 返信対象ノートを半透明に表示
      */
@@ -554,7 +562,7 @@ export interface Locale extends ILocale {
      */
     "initialPasswordForSetupDescription": string;
     /**
-     * パスワードを忘れた
+     * パスワードを忘れましたか？
      */
     "forgotPassword": string;
     /**
@@ -590,7 +598,7 @@ export interface Locale extends ILocale {
      */
     "noNotes": string;
     /**
-     * 通知はありません
+     * 通知はありません…寂しいですね。
      */
     "noNotifications": string;
     /**
@@ -894,6 +902,10 @@ export interface Locale extends ILocale {
      */
     "followers": string;
     /**
+     * 知り合いのフォロワー
+     */
+    "followersYouFollow": string;
+    /**
      * フォローされています
      */
     "followsYou": string;
@@ -1003,6 +1015,7 @@ export interface Locale extends ILocale {
     "cantRenote": string;
     /**
      * リノートをリノートすることはできません。
+     * <small>まるでマトリョーシカですね…</small>
      */
     "cantReRenote": string;
     /**
@@ -1334,6 +1347,15 @@ export interface Locale extends ILocale {
      */
     "followConfirm": ParameterizedString<"name">;
     /**
+     * {name}のフォローリクエストを連合せずに拒否しますか？
+     */
+    "followRequestRejectWithNoActivityConfirm": ParameterizedString<"name">;
+    /**
+     * 連合せずに拒否をすると、直ちにフォローリクエストから削除されますが、相手から見るフォローリクエストは半永久的に承認待ちの状態になります。
+     * この操作を続行しますか？
+     */
+    "followRequestRejectWithNoActivityConfirmDescription": string;
+    /**
      * プロキシアカウント
      */
     "proxyAccount": string;
@@ -1654,7 +1676,7 @@ export interface Locale extends ILocale {
      */
     "usernameOrUserId": string;
     /**
-     * ユーザーが見つかりません
+     * ユーザーが見つからないようです…
      */
     "noSuchUser": string;
     /**
@@ -1793,6 +1815,10 @@ export interface Locale extends ILocale {
      * リモートユーザーのため、情報が不完全です。
      */
     "remoteUserCaution": string;
+    /**
+     * このユーザーは凍結されています。
+     */
+    "suspendedUserCaution": string;
     /**
      * アクティビティ
      */
@@ -2430,7 +2456,7 @@ export interface Locale extends ILocale {
      */
     "notFound": string;
     /**
-     * 指定されたURLに該当するページはありませんでした。
+     * ここには何もないようです…
      */
     "notFoundDescription": string;
     /**
@@ -2542,7 +2568,7 @@ export interface Locale extends ILocale {
      */
     "quoteQuestion": string;
     /**
-     * クリップボードのテキストが長いです。テキストファイルとして添付しますか？
+     * クリップボードのテキストが長過ぎて貼り付けられないようです。ここはテキストファイルとして添付するのはどうでしょう？
      */
     "attachAsFileQuestion": string;
     /**
@@ -2550,7 +2576,7 @@ export interface Locale extends ILocale {
      */
     "noMessagesYet": string;
     /**
-     * 新しいメッセージがあります
+     * 新着メッセージがあります
      */
     "newMessageExists": string;
     /**
@@ -2558,7 +2584,7 @@ export interface Locale extends ILocale {
      */
     "onlyOneFileCanBeAttached": string;
     /**
-     * 続行する前に、登録またはログインが必要です
+     * この操作を実行するには、登録またはログインが必要です。
      */
     "signinRequired": string;
     /**
@@ -5715,9 +5741,21 @@ export interface Locale extends ILocale {
      */
     "ranking": string;
     /**
+     * 直近{n}時間
+     */
+    "lastNHours": ParameterizedString<"n">;
+    /**
      * 直近{n}日
      */
     "lastNDays": ParameterizedString<"n">;
+    /**
+     * 直近{n}週間
+     */
+    "lastNWeeks": ParameterizedString<"n">;
+    /**
+     * 直近{n}年
+     */
+    "lastNYears": ParameterizedString<"n">;
     /**
      * タイトルへ
      */
@@ -5915,9 +5953,29 @@ export interface Locale extends ILocale {
      */
     "federationDisabled": string;
     /**
+     * リアクションする際に確認する
+     */
+    "confirmOnReact": string;
+    /**
+     * " {emoji} " をリアクションしますか？
+     */
+    "reactAreYouSure": ParameterizedString<"emoji">;
+    /**
+     * 文字数
+     */
+    "textCount": string;
+    /**
      * 下書き
      */
     "draft": string;
+    /**
+     * 下書き一覧
+     */
+    "draftNoteList": string;
+    /**
+     * 下書きで保存
+     */
+    "saveAsDraft": string;
     /**
      * 未読の通知の数を表示する
      */
@@ -6040,7 +6098,7 @@ export interface Locale extends ILocale {
          */
         "makeNotesHiddenBefore": string;
         /**
-         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。
+         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。ピン止めされたノートには影響を受けません。
          */
         "makeNotesHiddenBeforeDescription": string;
         /**
@@ -8019,9 +8077,37 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * 公開投稿のリプライにパブリック投稿を許可
+             */
+            "canPublicReplyNote": string;
+            /**
+             * 公開投稿の引用にパブリック投稿を許可
+             */
+            "canPublicQuoteNote": string;
+            /**
+             * 自分の投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteSelf": string;
+            /**
+             * ローカル投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteLocalNote": string;
+            /**
+             * リモート投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteRemoteNote": string;
+            /**
+             * ファイル付きのパブリック投稿を許可
+             */
+            "canPublicNoteWithFile": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
+            /**
+             * 完全なアカウントの削除
+             */
+            "canPurgeAccount": string;
             /**
              * 予約投稿の最大数
              */
@@ -8162,6 +8248,14 @@ export interface Locale extends ILocale {
              * アイコンの形設定の連合を許可
              */
             "canSetFederationAvatarShape": string;
+            /**
+             * アカウントの削除の許可
+             */
+            "canDeleteAccount": string;
+            /**
+             * アカウントの整理の許可
+             */
+            "canTruncateAccount": string;
         };
         "_condition": {
             /**
@@ -8288,15 +8382,15 @@ export interface Locale extends ILocale {
     };
     "_emailUnavailable": {
         /**
-         * 既に使用されています
+         * 既に使用されているようです
          */
         "used": string;
         /**
-         * 形式が正しくありません
+         * メールアドレスとして形式が正しくありません
          */
         "format": string;
         /**
-         * 恒久的に使用可能なアドレスではありません
+         * 恒久的に使用可能なアドレスではありません。捨てメアドではありませんか？
          */
         "disposable": string;
         /**
@@ -8308,7 +8402,7 @@ export interface Locale extends ILocale {
          */
         "smtp": string;
         /**
-         * このメールアドレスでは登録できません
+         * このメールアドレスでの登録は禁止されています
          */
         "banned": string;
     };
@@ -8328,7 +8422,7 @@ export interface Locale extends ILocale {
     };
     "_signup": {
         /**
-         * ほとんど完了です
+         * 登録完了まであと少しです！
          */
         "almostThere": string;
         /**
@@ -8360,7 +8454,7 @@ export interface Locale extends ILocale {
          */
         "requestAccountDelete": string;
         /**
-         * 削除処理が開始されました。
+         * 削除処理が開始されました。  #Goodbye
          */
         "started": string;
         /**
@@ -10215,6 +10309,10 @@ export interface Locale extends ILocale {
          * サイコロ
          */
         "dice": string;
+        /**
+         * 天気
+         */
+        "weather": string;
     };
     "_cw": {
         /**
@@ -10471,6 +10569,28 @@ export interface Locale extends ILocale {
          * フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。
          */
         "followedMessageDescriptionForLockedAccount": string;
+        "_friendsFollows": {
+            /**
+             * フォローしている人にフォロワーはいません
+             */
+            "noFollows": string;
+            /**
+             * {user}さんにフォローされています
+             */
+            "oneFollow": ParameterizedString<"user">;
+            /**
+             * {user1}さんと{user2}さんにフォローされています
+             */
+            "twoFollows": ParameterizedString<"user1" | "user2">;
+            /**
+             * {user1}さん、{user2}さん、{user3}さんにフォローされています
+             */
+            "threeFollows": ParameterizedString<"user1" | "user2" | "user3">;
+            /**
+             * {user1}さん、{user2}さん、他{count}人にフォローされています
+             */
+            "manyFollows": ParameterizedString<"user1" | "user2" | "count">;
+        };
     };
     "_exportOrImport": {
         /**
@@ -11020,6 +11140,14 @@ export interface Locale extends ILocale {
          * 承認されていない機器であれば、セキュリティのために「{text}」を通じてすべての機器でログアウトを行ってください。
          */
         "loginDescription": ParameterizedString<"ip" | "text">;
+        /**
+         * アクセストークンが作成されました
+         */
+        "createToken": string;
+        /**
+         * 心当たりがない場合は「{text}」を通じてアクセストークンを削除してください。
+         */
+        "createTokenDescription": ParameterizedString<"text">;
         "_types": {
             /**
              * すべて
@@ -12035,7 +12163,7 @@ export interface Locale extends ILocale {
          */
         "title": string;
         /**
-         * サーバーに接続できません
+         * サーバーに接続できないようです…
          */
         "header": string;
     };
@@ -12474,13 +12602,7 @@ export interface Locale extends ILocale {
              */
             "title": string;
             /**
-             * このサーバーと通信することはできましたが、得られたデータが不正なものでした。
-             */
-            "description": string;
-        };
-        "_responseInvalidIdHostNotMatch": {
-            /**
-             * 入力されたURIのドメインと最終的に得られたURIのドメインとが異なります。第三者のサーバーを介してリモートのコンテンツを照会している場合は、発信元のサーバーで取得できるURIを使用して照会し直してください。
+             * このサーバーと通信することはできましたが、得られたデータが不正なものでした。第三者のサーバーを介してリモートのコンテンツを照会している場合は、発信元のサーバーで取得できるURIを使用して照会し直してください。
              */
             "description": string;
         };
@@ -12538,19 +12660,87 @@ export interface Locale extends ILocale {
             };
         };
     };
+    "_bootErrors": {
+        /**
+         * 読み込みに失敗しました
+         */
+        "title": string;
+        /**
+         * 少し待ってからリロードしてもまだ問題が解決されない場合、以下のError IDを添えてサーバー管理者に連絡してください。
+         */
+        "serverError": string;
+        /**
+         * 以下を行うと解決する可能性があります。
+         */
+        "solution": string;
+        /**
+         * ブラウザおよびOSを最新バージョンに更新する
+         */
+        "solution1": string;
+        /**
+         * アドブロッカーを無効にする
+         */
+        "solution2": string;
+        /**
+         * ブラウザのキャッシュをクリアする
+         */
+        "solution3": string;
+        /**
+         * (Tor Browser) dom.webaudio.enabledをtrueに設定する
+         */
+        "solution4": string;
+        /**
+         * その他のオプション
+         */
+        "otherOption": string;
+        /**
+         * クライアント設定とキャッシュを削除
+         */
+        "otherOption1": string;
+        /**
+         * 簡易クライアントを起動
+         */
+        "otherOption2": string;
+        /**
+         * 修復ツールを起動
+         */
+        "otherOption3": string;
+    };
+    "_search": {
+        /**
+         * 全て
+         */
+        "searchScopeAll": string;
+        /**
+         * ローカル
+         */
+        "searchScopeLocal": string;
+        /**
+         * サーバー指定
+         */
+        "searchScopeServer": string;
+        /**
+         * ユーザー指定
+         */
+        "searchScopeUser": string;
+        /**
+         * サーバーのホストを入力してください
+         */
+        "pleaseEnterServerHost": string;
+        /**
+         * ユーザーを選択してください
+         */
+        "pleaseSelectUser": string;
+        /**
+         * 例: cherrypick.example.com
+         */
+        "serverHostPlaceholder": string;
+    };
     "_drafts": {
         /**
          * 下書きを選択
          */
         "select": string;
-        /**
-         * サーバーに下書きを保存しますか？
-         */
-        "saveConfirm": string;
-        /**
-         * ここで「保存しない」を選択しても、下書きは端末内に保存されます。
-         */
-        "saveConfirmDescription": string;
         /**
          * 下書きを削除
          */
@@ -12871,6 +13061,58 @@ export interface Locale extends ILocale {
              */
             "sendPost": string;
         };
+    };
+    "_weather": {
+        /**
+         * 湿度
+         */
+        "humidity": string;
+        /**
+         * 気圧
+         */
+        "pressure": string;
+        /**
+         * 降水量
+         */
+        "precipitation": string;
+    };
+    /**
+     * アクティビティを送信しない
+     */
+    "noSendActivity": string;
+    /**
+     * IPアドレス
+     */
+    "ipAddress": string;
+    "_chat": {
+        /**
+         * {year}年{month}月から利用しています
+         */
+        "dateSinceRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {year}年{month}月から観測しています
+         */
+        "dateSinceRemoteRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {value} 人のフォロワー
+         */
+        "countOfFollowers": ParameterizedString<"value">;
+        /**
+         * リモートのソフトウェアが対応していない場合、正常に通信ができない場合があります。
+         */
+        "noticeRemoteMessage": string;
+        /**
+         * 今後、このユーザーにチャットを送信することはできません。
+         */
+        "cannotSendMessagesToUsersAnymore": string;
+        /**
+         * このユーザーをブロックしています。
+         */
+        "cannotSendMessagesBecauseYouBlocking": string;
+        /**
+         * 自分自身にメッセージを送信することはできません。
+         */
+        "cannotSendMessagesBecauseToYourself": string;
     };
 }
 declare const locales: {

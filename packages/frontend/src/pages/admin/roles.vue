@@ -63,6 +63,60 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</MkSwitch>
 						</MkFolder>
 
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicReplyNote, 'canPublicReplyNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicReplyNote }}</template>
+							<template #suffix>{{ policies.canPublicReplyNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicReplyNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicQuoteNote, 'canPublicQuoteNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicQuoteNote }}</template>
+							<template #suffix>{{ policies.canPublicQuoteNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicQuoteNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteSelf, 'canPublicRenoteSelf'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteSelf }}</template>
+							<template #suffix>{{ policies.canPublicRenoteSelf ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteSelf">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteLocalNote, 'canPublicRenoteLocalNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteLocalNote }}</template>
+							<template #suffix>{{ policies.canPublicRenoteLocalNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteLocalNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteRemoteNote, 'canPublicRenoteRemoteNote'])">
+							<template #label>{{ i18n.ts._role._options.canPublicRenoteRemoteNote }}</template>
+							<template #suffix>{{ policies.canPublicRenoteRemoteNote ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicRenoteRemoteNote">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicNoteWithFile, 'canPublicNoteWithFile'])">
+							<template #label>{{ i18n.ts._role._options.canPublicNoteWithFile }}</template>
+							<template #suffix>{{ policies.canPublicNoteWithFile ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPublicNoteWithFile">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
+							<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
+							<template #suffix>{{ policies.canPurgeAccount ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canPurgeAccount">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
 						<MkFolder v-if="matchQuery([i18n.ts._role._options.canEditNote, 'canEditNote'])">
 							<template #label>{{ i18n.ts._role._options.canEditNote }}</template>
 							<template #suffix>{{ policies.canEditNote ? i18n.ts.yes : i18n.ts.no }}</template>
@@ -303,6 +357,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<template #label>{{ i18n.ts._role._options.canSetFederationAvatarShape }}</template>
 							<template #suffix>{{ policies.canSetFederationAvatarShape ? i18n.ts.yes : i18n.ts.no }}</template>
 							<MkSwitch v-model="policies.canSetFederationAvatarShape">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canDeleteAccount, 'canDeleteAccount'])">
+							<template #label>{{ i18n.ts._role._options.canDeleteAccount }}</template>
+							<template #suffix>{{ policies.canDeleteAccount ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canDeleteAccount">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canTruncateAccount, 'canTruncateAccount'])">
+							<template #label>{{ i18n.ts._role._options.canTruncateAccount }}</template>
+							<template #suffix>{{ policies.canTruncateAccount ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canTruncateAccount">
 								<template #label>{{ i18n.ts.enable }}</template>
 							</MkSwitch>
 						</MkFolder>

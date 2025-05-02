@@ -31,9 +31,11 @@ export * as 'admin/announcements/create' from './endpoints/admin/announcements/c
 export * as 'admin/announcements/delete' from './endpoints/admin/announcements/delete.js';
 export * as 'admin/announcements/list' from './endpoints/admin/announcements/list.js';
 export * as 'admin/announcements/update' from './endpoints/admin/announcements/update.js';
+export * as 'admin/avatar-decorations/copy' from './endpoints/admin/avatar-decorations/copy.js';
 export * as 'admin/avatar-decorations/create' from './endpoints/admin/avatar-decorations/create.js';
 export * as 'admin/avatar-decorations/delete' from './endpoints/admin/avatar-decorations/delete.js';
 export * as 'admin/avatar-decorations/list' from './endpoints/admin/avatar-decorations/list.js';
+export * as 'admin/avatar-decorations/list-remote' from './endpoints/admin/avatar-decorations/list-remote.js';
 export * as 'admin/avatar-decorations/update' from './endpoints/admin/avatar-decorations/update.js';
 export * as 'admin/captcha/current' from './endpoints/admin/captcha/current.js';
 export * as 'admin/captcha/save' from './endpoints/admin/captcha/save.js';
@@ -66,6 +68,7 @@ export * as 'admin/forward-abuse-user-report' from './endpoints/admin/forward-ab
 export * as 'admin/get-index-stats' from './endpoints/admin/get-index-stats.js';
 export * as 'admin/get-table-stats' from './endpoints/admin/get-table-stats.js';
 export * as 'admin/get-user-ips' from './endpoints/admin/get-user-ips.js';
+export * as 'admin/get-users-from-ip' from './endpoints/admin/get-users-from-ip.js';
 export * as 'admin/invite/create' from './endpoints/admin/invite/create.js';
 export * as 'admin/invite/list' from './endpoints/admin/invite/list.js';
 export * as 'admin/invite/revoke' from './endpoints/admin/invite/revoke.js';
@@ -399,6 +402,7 @@ export * as 'users/featured-notes' from './endpoints/users/featured-notes.js';
 export * as 'users/flashs' from './endpoints/users/flashs.js';
 export * as 'users/followers' from './endpoints/users/followers.js';
 export * as 'users/following' from './endpoints/users/following.js';
+export * as 'users/friends-following' from './endpoints/users/friends-following.js';
 export * as 'users/gallery/posts' from './endpoints/users/gallery/posts.js';
 export * as 'users/get-frequently-replied-users' from './endpoints/users/get-frequently-replied-users.js';
 export * as 'users/groups/create' from './endpoints/users/groups/create.js';
