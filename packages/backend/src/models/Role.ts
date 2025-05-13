@@ -180,7 +180,7 @@ export type RoleCondFormulaValue = { id: string } & (
 type ExperienceLevelPolicyValueConst = {
 	type: 'const';
 	base: any;
-}
+};
 
 // 線形モデル 必要値 : base + additional * level
 type ExperienceLevelPolicyValueLinear = {
@@ -211,7 +211,7 @@ type ExperiencePolicyCulcValueMultiplier = {
 	offset: number;
 	base: number;
 	multiplier: number;
-}
+};
 
 export const RoleExperienceSetMode = {
 	Add: 'add',
@@ -326,6 +326,6 @@ export class MiRole {
 		useDefault: boolean;
 		priority: number;
 		value: any;
-		poricyAsLevel : RoleExperiencePolicyCulcValue | null;
+		poricyAsLevel: RoleExperiencePolicyCulcValue | null;
 	}>;
 }

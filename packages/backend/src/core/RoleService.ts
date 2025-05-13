@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import exp from 'constants';
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { In } from 'typeorm';
@@ -731,26 +732,49 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser): Promise<void> {
+	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser, assignForce?: boolean): Promise<void> {
 		const now = Date.now();
 		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
 		let assign = await this.roleAssignmentsRepository.findOneBy({ userId, roleId });
+		let setExperience = 0;
 		if (!assign) {
+			if (!assignForce) {
+				throw new RoleService.NotAssignedError();
+			}
 			//新規でアサインする
+			switch (setMode) {
+				case 'set':
+				case 'add':
+					setExperience = experience;
+					break;
+				case 'multipiler':
+					setExperience = 0;
+					break;
+			}
+
 			assign = await this.roleAssignmentsRepository.insertOne({
 				id: this.idService.gen(now),
 				roleId: roleId,
 				userId: userId,
-				//ToDo:ここにassignの経験値の処理を追加
+				experience: Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER),
 			});
 
 			this.rolesRepository.update(roleId, {
 				lastUsedAt: new Date(),
 			});
 		} else {
-	  	//ToDo:ここにassignの経験値の処理を追加
-			assign.experience = (assign.experience ?? 0) + experience;
-			await this.roleAssignmentsRepository.update(assign.id, { experience: assign.experience });
+			switch (setMode) {
+				case 'set':
+					setExperience = experience;
+					break;
+				case 'add':
+					setExperience = (assign.experience ?? 0) + experience;
+					break;
+				case 'multipiler':
+					setExperience = (assign.experience ?? 0) * experience;
+					break;
+			}
+			await this.roleAssignmentsRepository.update(assign.id, { experience: Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER) });
 		}
 
 		this.rolesRepository.update(roleId, {
