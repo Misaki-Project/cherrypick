@@ -251,6 +251,17 @@ export type ModerationLogPayloads = {
 		roleId: string;
 		role: Role;
 	};
+	changeExperienceRole: {
+		userId: string;
+		userUsername: string;
+		userHost: string | null;
+		roleId: string;
+		roleName: string;
+		actionType: string;
+		actionValue: number;
+		beforeValue: number | null;
+		afterValue: number;
+	}
 	clearQueue: Record<string, never>;
 	promoteQueue: Record<string, never>;
 	deleteDriveFile: {
