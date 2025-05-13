@@ -123,7 +123,7 @@ export const moderationLogTypes = [
 	'updateCustomEmoji',
 	'deleteCustomEmoji',
 	'assignRole',
-	'changeExperienceRole'
+	'changeExperienceRole',
 	'unassignRole',
 	'createRole',
 	'updateRole',

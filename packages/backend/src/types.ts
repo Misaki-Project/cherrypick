@@ -185,7 +185,7 @@ export type ModerationLogPayloads = {
 		actionValue: number;
 		beforeValue: number | null;
 		afterValue: number;
-	}
+	};
 	unassignRole: {
 		userId: string;
 		userUsername: string;
