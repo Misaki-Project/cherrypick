@@ -5425,7 +5425,7 @@ export type components = {
       /** Format: date-time */
       updatedAt: string;
       /** @enum {string} */
-      target: 'manual' | 'conditional';
+      target: 'manual' | 'conditional' | 'manualLevel';
       condFormula: components['schemas']['RoleCondFormulaValue'];
       /** @example false */
       isPublic: boolean;
@@ -10166,7 +10166,7 @@ export type operations = {
           color: string | null;
           iconUrl: string | null;
           /** @enum {string} */
-          target: 'manual' | 'conditional';
+          target: 'manual' | 'conditional' | 'manualLevel';
           condFormula: Record<string, never>;
           isPublic: boolean;
           isModerator: boolean;
@@ -10442,7 +10442,7 @@ export type operations = {
           color?: string | null;
           iconUrl?: string | null;
           /** @enum {string} */
-          target?: 'manual' | 'conditional';
+          target?: 'manual' | 'conditional' | 'manualLevel';
           condFormula?: Record<string, never>;
           isPublic?: boolean;
           isModerator?: boolean;

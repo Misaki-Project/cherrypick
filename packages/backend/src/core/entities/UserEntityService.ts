@@ -515,7 +515,6 @@ export class UserEntityService implements OnModuleInit {
 			})) : null;
 
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
-
 		const packed = {
 			id: user.id,
 			name: user.name,
@@ -605,6 +604,14 @@ export class UserEntityService implements OnModuleInit {
 					isModerator: role.isModerator,
 					isAdministrator: role.isAdministrator,
 					displayOrder: role.displayOrder,
+					experience: role.experience ? {
+						currentLevel: role.experience.currentLevel,
+						currentExp: role.experience.currentExp,
+						nextLevelExp: role.experience.nextLevelExp,
+						totalExp: role.experience.totalExp,
+						minLevel: role.experience.minLevel,
+						maxLevel: role.experience.maxLevel,
+					} : undefined,
 				}))),
 				memo: memo,
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,

@@ -34,7 +34,7 @@ export const paramDef = {
 		description: { type: 'string' },
 		color: { type: 'string', nullable: true },
 		iconUrl: { type: 'string', nullable: true },
-		target: { type: 'string', enum: ['manual', 'conditional'] },
+		target: { type: 'string', enum: ['manual', 'conditional', 'manualLevel'] },
 		condFormula: { type: 'object' },
 		isPublic: { type: 'boolean' },
 		isModerator: { type: 'boolean' },
@@ -45,6 +45,15 @@ export const paramDef = {
 		displayOrder: { type: 'number' },
 		policies: {
 			type: 'object',
+		},
+		levelPolicies: {
+			type: 'object',
+			properties: {
+				min: { type: 'number', nullable: false },
+				max: { type: 'number', nullable: false },
+				experiencePolicies: { type: 'array', items: { type: 'object' } },
+			},
+			required: ['min', 'max'],
 		},
 	},
 	required: [

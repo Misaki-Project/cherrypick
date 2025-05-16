@@ -357,7 +357,11 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 		const exp = Math.max(assign.experience ?? 0, 0);
 		const policies = Object.entries(role.levelPolicies.experiencePolicies);
-		if (policies.length === 0) return null;
+		if (policies.length === 0) return {
+			level: role.levelPolicies.minLevel,
+			currentLevelExp: exp,
+			nextLevelExp: Number.NaN,
+		};
 		if (!policies.find(([level]) => Number.parseInt(level) === role.levelPolicies?.minLevel)) return null;
 
 		let level = role.levelPolicies.minLevel;
@@ -431,7 +435,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	private async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & {
+	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & {
 		experience?: {
 			level: number;
 			currentExp: number;
@@ -448,10 +452,12 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 						return {
 							...role,
 							experience: {
-								level: levelInfo.level,
+								currentLevel: levelInfo.level,
 								currentExp: levelInfo.currentLevelExp,
 								nextLevelExp: levelInfo.nextLevelExp,
 								totalExp: assign.experience ?? 0,
+								minLevel: role.levelPolicies?.minLevel ?? 0,
+								maxLevel: role.levelPolicies?.maxLevel ?? number.MAX_SAFE_INTEGER,
 							},
 						};
 					}
@@ -935,6 +941,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canEditMembersByModerator: values.canEditMembersByModerator,
 			displayOrder: values.displayOrder,
 			policies: values.policies,
+			levelPolicies: values.levelPolicies,
 		});
 
 		this.globalEventService.publishInternalEvent('roleCreated', created);
