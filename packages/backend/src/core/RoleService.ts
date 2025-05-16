@@ -356,24 +356,30 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		if (role.target !== 'manualLevel' || !role.levelPolicies) return null;
 
 		const exp = Math.max(assign.experience ?? 0, 0);
-		const policies = Object.entries(role.levelPolicies.experiencePolicies);
-		if (policies.length === 0) return {
+		const policies = Object.entries(role.levelPolicies.experiencePolicies).sort((a, b) => Number.parseInt(a[0]) - Number.parseInt(b[0]));
+		if (policies.length === 0 || !policies.find(a => Number.parseInt(a[0]) === 0)) return {
 			level: role.levelPolicies.minLevel,
 			currentLevelExp: exp,
 			nextLevelExp: Number.NaN,
 		};
 		if (!policies.find(([level]) => Number.parseInt(level) === role.levelPolicies?.minLevel)) return null;
-
-		let level = role.levelPolicies.minLevel;
+		const minLevel = role.levelPolicies.minLevel;
+		let level = minLevel;
 		let currentExp = 0;
 		let currentLevelExp = 0;
 		let nextLevelExp = 0;
 
 		for (let i = 0; i < policies.length; i++) {
 			const [startLevelStr, levelPolicy] = policies[i];
-			const startLevel = Number.parseInt(startLevelStr);
-			const nextLevel = policies[i + 1] ? Number.parseInt(policies[i + 1][0]) : role.levelPolicies.maxLevel;
-			const diffLevel = nextLevel - startLevel;
+			const startLevel = minLevel + Number.parseInt(startLevelStr);
+			const nextLevel = policies[i + 1] ? minLevel + Number.parseInt(policies[i + 1][0]) : role.levelPolicies.maxLevel;
+			const diffLevel = Math.min(role.levelPolicies.maxLevel, nextLevel) - startLevel;
+			if (diffLevel < 0) {
+				break;
+			}
+			if (startLevel < minLevel) {
+				continue;
+			}
 			let nextToExp = 0;
 
 			switch (levelPolicy.type) {
@@ -429,7 +435,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			return {
 				level: level,
 				currentLevelExp: exp - currentLevelExp,
-				nextLevelExp: nextLevelExp - currentLevelExp,
+				nextLevelExp: Math.min(nextLevelExp, Number.MAX_SAFE_INTEGER) - currentLevelExp,
 			};
 		}
 	}

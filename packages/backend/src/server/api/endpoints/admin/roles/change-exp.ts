@@ -4,9 +4,7 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import { value } from 'happy-dom/lib/PropertySymbol.js';
-import { id } from 'date-fns/locale';
-import { assign } from 'nodemailer/lib/shared/index.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { RolesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
@@ -74,6 +72,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.rolesRepository)
 		private rolesRepository: RolesRepository,
 
+		private userEntityService: UserEntityService,
+
 		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
@@ -96,6 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			await this.roleService.assignExperience(user.id, role.id, ps.value, ps.setMode, me, ps.assignForce ?? false);
+			return await this.userEntityService.pack(user.id, me, { schema: 'UserDetailed' });
 		});
 	}
 }
