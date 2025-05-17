@@ -11752,6 +11752,10 @@ export interface Locale extends ILocale {
          * ギャラリーの投稿を削除
          */
         "deleteGalleryPost": string;
+        /**
+         * ロールの経験値を変更
+         */
+        "changeExperienceRole": string;
     };
     "_fileViewer": {
         /**

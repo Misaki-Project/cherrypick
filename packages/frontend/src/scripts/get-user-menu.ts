@@ -487,6 +487,50 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 					}));
 				},
 			});
+
+			menuItems.push({
+				type: 'parent',
+				icon: 'ti ti-badges',
+				text: 'ExperienceRoles', //i18n.ts.roles,
+				children: async () => {
+					const roles = await rolesCache.fetch();
+
+					return roles.filter(r => r.target === 'manualLevel').map(r => ({
+						text: r.name,
+						action: async () => {
+							const { canceled, result: setMode } = await os.select({
+								title: '経験値' + ': ' + r.name,
+								items: [{
+									value: 'add', text: '加算',
+								}, {
+									value: 'multipiler', text: '乗算',
+								}, {
+									value: 'set', text: '固定',
+								}],
+								default: 'indefinitely',
+							});
+							if (canceled) return;
+							const { canceled: canceled2, result: value } = await os.inputNumber({
+								title: '設定する値',
+								default: setMode === 'multipiler' ? 1 : 0,
+								min: setMode === 'add' ? Number.MIN_SAFE_INTEGER : 0,
+								max: setMode === 'multipiler' ? 100 : Number.MAX_SAFE_INTEGER,
+								step: setMode === 'multipiler' ? 0.001 : 1,
+							});
+							if (canceled2) return;
+
+							const { canceled: canceled3, result: note } = await os.inputText({
+								type: 'text',
+								title: i18n.ts.note,
+								default: null,
+								placeholder: i18n.ts.moderationNote,
+							});
+							if (canceled3) return;
+							os.apiWithDialog('admin/roles/change-exp', { roleId: r.id, userId: user.id, setMode: setMode, value: value, assignForce: true, note: note });
+						},
+					}));
+				},
+			});
 		}
 
 		// フォローしたとしても user.isFollowing はリアルタイム更新されないので不便なため

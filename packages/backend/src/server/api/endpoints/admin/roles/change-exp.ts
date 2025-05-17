@@ -52,8 +52,9 @@ export const paramDef = {
 		roleId: { type: 'string', format: 'misskey:id' },
 		userId: { type: 'string', format: 'misskey:id' },
 		setMode: { type: 'string', enum: Object.values(RoleExperienceSetMode) },
-		value: { type: 'integer', nullable: false },
+		value: { type: 'number', nullable: false },
 		assignForce: { type: 'boolean', nullable: true },
+		note: { type: 'string', nullable: true },
 	},
 	required: [
 		'roleId',
@@ -95,7 +96,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.invalidRoleTarget);
 			}
 
-			await this.roleService.assignExperience(user.id, role.id, ps.value, ps.setMode, me, ps.assignForce ?? false);
+			await this.roleService.assignExperience(user.id, role.id, ps.value, ps.setMode, me, ps.assignForce ?? false, ps.note);
 			return await this.userEntityService.pack(user.id, me, { schema: 'UserDetailed' });
 		});
 	}

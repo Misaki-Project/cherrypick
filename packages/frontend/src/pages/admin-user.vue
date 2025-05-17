@@ -420,7 +420,7 @@ async function deleteAccount() {
 }
 
 async function assignRole() {
-	const roles = await misskeyApi('admin/roles/list').then(it => it.filter(r => r.target === 'manual'));
+	const roles = await misskeyApi('admin/roles/list').then(it => it.filter(r => r.target === 'manual' || r.target === 'manualLevel'));
 
 	const { canceled, result: roleId } = await os.select({
 		title: i18n.ts._role.chooseRoleToAssign,

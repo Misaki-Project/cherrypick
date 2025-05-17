@@ -261,6 +261,7 @@ export type ModerationLogPayloads = {
 		actionValue: number;
 		beforeValue: number | null;
 		afterValue: number;
+		note: string | null;
 	}
 	clearQueue: Record<string, never>;
 	promoteQueue: Record<string, never>;

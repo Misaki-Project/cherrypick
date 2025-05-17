@@ -3103,6 +3103,7 @@ _moderationLogTypes:
   deletePage: "ページを削除"
   deleteFlash: "Playを削除"
   deleteGalleryPost: "ギャラリーの投稿を削除"
+  changeExperienceRole: "ロールの経験値を変更"
 
 _fileViewer:
   title: "ファイルの詳細"

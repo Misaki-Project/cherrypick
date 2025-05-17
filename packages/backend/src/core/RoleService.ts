@@ -744,11 +744,12 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser, assignForce?: boolean): Promise<void> {
+	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser, assignForce?: boolean, note?: string): Promise<void> {
 		const now = Date.now();
 		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
 		let assign = await this.roleAssignmentsRepository.findOneBy({ userId, roleId });
 		let setExperience = 0;
+		let beforeValue = 0;
 		if (!assign) {
 			if (!assignForce) {
 				throw new RoleService.NotAssignedError();
@@ -763,18 +764,19 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					setExperience = 0;
 					break;
 			}
-
+			setExperience = Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER);
 			assign = await this.roleAssignmentsRepository.insertOne({
 				id: this.idService.gen(now),
 				roleId: roleId,
 				userId: userId,
-				experience: Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER),
+				experience: setExperience,
 			});
 
 			this.rolesRepository.update(roleId, {
 				lastUsedAt: new Date(),
 			});
 		} else {
+			beforeValue = assign.experience ?? 0;
 			switch (setMode) {
 				case 'set':
 					setExperience = experience;
@@ -786,7 +788,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					setExperience = (assign.experience ?? 0) * experience;
 					break;
 			}
-			await this.roleAssignmentsRepository.update(assign.id, { experience: Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER) });
+			setExperience = Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER);
+			await this.roleAssignmentsRepository.update(assign.id, { experience: setExperience });
 		}
 
 		this.rolesRepository.update(roleId, {
@@ -812,8 +815,9 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				userHost: user.host,
 				actionType: setMode,
 				actionValue: experience,
-				beforeValue: assign ? assign.experience : null,
-				afterValue: assign.experience ? assign.experience : 0,
+				beforeValue: beforeValue,
+				afterValue: setExperience,
+				note: note,
 			});
 		}
 		this.globalEventService.publishInternalEvent('userRoleExperienceUpdated', assign);
