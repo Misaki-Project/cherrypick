@@ -138,9 +138,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<div v-for="role in info.roles" :key="role.id">
 					<div :class="$style.roleItemMain">
-						<MkRolePreview :class="$style.role" :role="role" :forModeration="true"/>
+						<MkRolePreview :class="$style.role" :role="role" :forModeration="true" :detailed="false"/>
 						<button class="_button" @click="toggleRoleItem(role)"><i class="ti ti-chevron-down"></i></button>
 						<button v-if="role.target === 'manual'" class="_button" :class="$style.roleUnassign" @click="unassignRole(role, $event)"><i class="ti ti-x"></i></button>
+						<button v-else-if="role.target === 'manualLevel'" class="_button" :class="$style.roleUnassign" @click="experienceMenu(role, $event)"><i class="ti ti-pencil"></i></button>
 						<button v-else class="_button" :class="$style.roleUnassign" disabled><i class="ti ti-ban"></i></button>
 					</div>
 					<div v-if="expandedRoles.includes(role.id)" :class="$style.roleItemSub">
@@ -459,6 +460,88 @@ async function assignRole() {
 
 async function unassignRole(role, ev) {
 	os.popupMenu([{
+		text: i18n.ts.unassign,
+		icon: 'ti ti-x',
+		danger: true,
+		action: async () => {
+			await os.apiWithDialog('admin/roles/unassign', {
+				roleId: role.id, userId: user.value.id,
+			}).then(refreshUser);
+		},
+	}], ev.currentTarget ?? ev.target);
+}
+
+async function experienceMenu(role, ev) {
+	os.popupMenu([{
+		text: '加減算',
+		icon: 'ti plus-minus',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: '設定する値',
+				default: 0,
+				min: Number.MIN_SAFE_INTEGER,
+				max: Number.MAX_SAFE_INTEGER,
+				step: 1,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'add', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
+		text: '乗算',
+		icon: 'ti percentage',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: '設定する値',
+				default: 1,
+				min: 0,
+				max: 10000,
+				step: 0.001,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'multipiler', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
+		text: '定数',
+		icon: 'ti letter-n',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: '設定する値',
+				default: 0,
+				min: 0,
+				max: Number.MAX_SAFE_INTEGER,
+				step: 1,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'set', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
 		text: i18n.ts.unassign,
 		icon: 'ti ti-x',
 		danger: true,

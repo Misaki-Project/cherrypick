@@ -491,7 +491,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 			menuItems.push({
 				type: 'parent',
 				icon: 'ti ti-badges',
-				text: 'ExperienceRoles', //i18n.ts.roles,
+				text: i18n.ts.manualLevel, //i18n.ts.roles,
 				children: async () => {
 					const roles = await rolesCache.fetch();
 

@@ -2061,6 +2061,8 @@ _role:
   manualRoles: "マニュアルロール"
   conditional: "コンディショナル"
   conditionalRoles: "コンディショナルロール"
+  manualLevel: "レベル"
+  manualLevelRoles: "レベルロール"
   condition: "条件"
   isConditionalRole: "これはコンディショナルロールです。"
   isPublic: "公開ロール"

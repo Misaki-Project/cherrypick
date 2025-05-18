@@ -7970,6 +7970,14 @@ export interface Locale extends ILocale {
          */
         "conditionalRoles": string;
         /**
+         * レベル
+         */
+        "manualLevel": string;
+        /**
+         * レベルロール
+         */
+        "manualLevelRoles": string;
+        /**
          * 条件
          */
         "condition": string;

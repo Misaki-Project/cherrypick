@@ -43,6 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #caption><div v-html="i18n.ts._role.descriptionOfAssignTarget.replaceAll('\n', '<br>')"></div></template>
 		<option value="manual">{{ i18n.ts._role.manual }}</option>
 		<option value="conditional">{{ i18n.ts._role.conditional }}</option>
+		<option value="manualLevel">{{ i18n.ts._role.manualLevel }}</option>
 	</MkSelect>
 
 	<MkFolder v-if="role.target === 'conditional'" defaultOpen>
@@ -300,7 +301,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkRange>
 				</div>
 			</MkFolder>
-
 
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 				<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
