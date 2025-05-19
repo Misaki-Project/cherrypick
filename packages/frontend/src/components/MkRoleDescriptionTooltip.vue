@@ -32,7 +32,6 @@ import MkTooltip from '@/components/MkTooltip.vue';
 
 defineProps<{
 	showing: boolean;
-	content: string;
 	role: {
 		description: string;
 		experience: {
