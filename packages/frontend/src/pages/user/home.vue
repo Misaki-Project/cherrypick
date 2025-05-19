@@ -60,11 +60,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</MkFukidashi>
 					</div>
 					<div v-if="user.roles.length > 0" class="roles">
-						<span v-for="role in user.roles" :key="role.id" v-tooltip.html="role.description" class="role" :style="{ '--color': role.color }">
+						<span
+							v-for="role in user.roles" :key="role.id" ref="roleEls" class="role" :style="{ '--color': role.color }"
+							@mouseenter="showRoleTooltip($event, role)" @mouseleave="hideRoleTooltip"
+						>
 							<MkA v-adaptive-bg :to="`/roles/${role.id}`">
 								<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%; border-radius: 0.4em;" :src="role.iconUrl"/>
 								{{ role.name }}
 							</MkA>
+							<MkRoleDescriptionTooltip v-if="tooltipRole === role" :role="role" :showing="tooltipShowing" targetElement="tooltipTarget"/>
 						</span>
 					</div>
 					<div v-if="iAmModerator" class="moderationNote">
@@ -236,6 +240,23 @@ import { globalEvents } from '@/events.js';
 import { notesSearchAvailable, canSearchNonLocalNotes } from '@/scripts/check-permissions.js';
 import { youBlockedImageUrl } from '@/instance.js';
 import MkA from '@/components/global/MkA.vue';
+import MkRoleDescriptionTooltip from '@/components/MkRoleDescriptionTooltip.vue';
+
+const tooltipRole = ref(null);
+const tooltipShowing = ref(false);
+const tooltipTarget = ref(null);
+
+function showRoleTooltip(event, role) {
+	tooltipRole.value = role;
+	tooltipShowing.value = true;
+	tooltipTarget.value = event.currentTarget;
+}
+
+function hideRoleTooltip() {
+	tooltipShowing.value = false;
+	tooltipRole.value = null;
+	tooltipTarget.value = null;
+}
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);
