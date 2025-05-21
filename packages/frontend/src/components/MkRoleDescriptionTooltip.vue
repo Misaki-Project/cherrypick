@@ -21,17 +21,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 				></div>
 			</div>
 		</div>
-		{{ role.description }}
+		<Mfm :text="role.description"/>
 	</div>
 </MkTooltip>
 </template>
 
 <script lang="ts" setup>
 import { } from 'vue';
+import * as mfm from 'mfc-js';
 import MkTooltip from '@/components/MkTooltip.vue';
 
 defineProps<{
 	showing: boolean;
+	targetElement?: HTMLElement;
 	role: {
 		description: string;
 		experience: {

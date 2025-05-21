@@ -53,6 +53,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 	</MkFolder>
 
+	<MkFolder v-if="role.target === 'manualLevel'" defaultOpen>
+		<template #label>{{ i18n.ts._role.levelPolicies }}</template>
+		<div class="_gaps">
+			<RolesEditorLevel v-model="role.levelPolicies.experiencePolicies"/>
+		</div>
+	</MkFolder>
+
 	<MkSwitch v-model="role.canEditMembersByModerator" :readonly="readonly">
 		<template #label>{{ i18n.ts._role.canEditMembersByModerator }}</template>
 		<template #caption>{{ i18n.ts._role.descriptionOfCanEditMembersByModerator }}</template>
@@ -1000,6 +1007,7 @@ import { watch, ref, computed } from 'vue';
 import { throttle } from 'throttle-debounce';
 import { ROLE_POLICIES } from '@@/js/const.js';
 import RolesEditorFormula from './RolesEditorFormula.vue';
+import RolesEditorLevel from './RolesEditorLevel.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
@@ -1035,6 +1043,21 @@ for (const ROLE_POLICY of ROLE_POLICIES) {
 			value: instance.policies[ROLE_POLICY],
 		};
 	}
+}
+
+if (!role.value.levelPolicies) {
+	role.value.levelPolicies = {
+		minLevel: 1,
+		maxLevel: 100,
+		experiencePolicies: {
+			'0': {
+				type: 'const',
+				base: 100,
+				additional: 0,
+				exponential: 1,
+			}
+		}
+	};
 }
 
 function updateAvatarDecorationLimit(value: string | number) {

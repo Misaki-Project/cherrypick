@@ -1,0 +1,127 @@
+<!--
+SPDX-FileCopyrightText: syuilo and misskey-project
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
+<template>
+<div class="_gaps">
+	<div :class="$style.header">
+		<FormSlot>
+			<template #label>{{ i18n.ts.navbar }}</template>
+			<MkContainer :showHeader="false">
+				<Sortable
+					v-model="items"
+					itemKey="id"
+					:animation="150"
+					:handle="'.' + $style.itemHandle"
+					@start="e => e.item.classList.add('active')"
+					@end="e => e.item.classList.remove('active')"
+				>
+					<template #item="{element,index}">
+						<div
+							:class="$style.item"
+						>
+							<div :class="$style.itemInfo">
+								<button class="_button" :class="$style.itemHandle"><i class="ti ti-menu"></i></button>
+
+								<MkInput v-if="items[0]!==element" v-model="element.level" type="number" :class="$style.itemBase">
+									<template #suffix>level</template>
+								</MkInput>
+								<MkSelect v-model="element.type" :class="$style.itemSelect">
+									<option value="const">固定値</option>
+									<option value="linear">直線増加</option>
+									<option value="exponential">指数増加</option>
+								</MkSelect>
+								<MkInput v-model="element.base" type="number" :class="$style.itemConst">
+									<template #suffix>const</template>
+								</MkInput>
+								<MkInput v-if="element.type==='linear'" v-model="element.additional" type="number" :class="$style.itemLevel">
+									<template #suffix>value</template>
+								</MkInput>
+								<MkInput v-if="element.type==='exponential'" v-model="element.exponential" type="number" :class="$style.itemLevel">
+									<template #suffix>exponential</template>
+								</MkInput>
+								<button class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+							</div>
+						</div>
+					</template>
+				</Sortable>
+			</MkContainer>
+		</FormSlot>
+		<div class="_buttons">
+			<MkButton rounded style="margin: 0 auto;" @click="add"><i class="ti ti-plus"></i> {{ i18n.ts.addItem }}</MkButton>
+		</div>
+	</div>
+</div>
+</template>
+
+<script lang="ts" setup>
+import { computed, defineAsyncComponent, ref, watch, toRefs } from 'vue';
+import { v4 as uuid } from 'uuid';
+import MkInput from '@/components/MkInput.vue';
+import MkSelect from '@/components/MkSelect.vue';
+import MkButton from '@/components/MkButton.vue';
+import { i18n } from '@/i18n.js';
+import { deepClone } from '@/scripts/clone.js';
+import { rolesCache } from '@/cache.js';
+
+const props = defineProps<{
+	modelValue: any[] //{"modeType":"add","const":100, "value":1.5}
+}>();
+const emit = defineEmits(['update:modelValue']);
+const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
+
+const { modelValue } = toRefs(props);
+const items = computed({
+	get: () => Array.isArray(modelValue.value) ? modelValue.value : Object.values(modelValue.value ?? {}),
+	set: (val) => {
+		// オブジェクトの場合はidをキーに戻す
+		if (!Array.isArray(modelValue.value)) {
+			const obj = {};
+			for (const item of val) {
+				obj[item.id] = item;
+			}
+			emit('update:modelValue', obj);
+		} else {
+			emit('update:modelValue', val);
+		}
+	},
+});
+
+function add() {
+	const newItem = {
+		id: uuid(),
+		level: 0,
+		type: 'const',
+		base: 100,
+		additional: 0,
+		exponential: 1,
+	};
+	items.value = [...items.value, newItem];
+}
+
+function remove(idx: number) {
+	const arr = [...items.value];
+	arr.splice(idx, 1);
+	items.value = arr;
+}
+</script>
+
+<style module lang="scss">
+.item {
+  border: solid 2px var(--MI_THEME-divider);
+  border-radius: var(--MI-radius);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.itemInfo {
+	position: relative;
+	line-height: 2.85rem;
+	display: flex;
+	gap: 8px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	color: var(--MI_THEME-navFg);
+}
+</style>
