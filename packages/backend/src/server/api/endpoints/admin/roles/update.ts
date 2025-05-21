@@ -49,11 +49,11 @@ export const paramDef = {
 		levelPolicies: {
 			type: 'object',
 			properties: {
-				min: { type: 'number', nullable: false },
-				max: { type: 'number', nullable: false },
+				minLevel: { type: 'number', nullable: false },
+				maxLevel: { type: 'number', nullable: false },
 				experiencePolicies: { type: 'array', items: { type: 'object' } },
 			},
-			required: ['min', 'max'],
+			required: ['minLevel', 'maxLevel'],
 		},
 	},
 	required: [

@@ -5442,6 +5442,18 @@ export type components = {
           useDefault?: boolean;
         };
       };
+			levelPolicies: {
+				minLevel: number;
+				maxLevel: number;
+				experiencePolicies: {
+					[key: string]: {
+						type: string;
+						base: number;
+						additional: number;
+						exponential: number;
+					}
+				}
+			}
       usersCount: number;
     });
     RolePolicies: {

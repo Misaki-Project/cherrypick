@@ -1103,6 +1103,7 @@ const save = throttle(100, () => {
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
 		policies: role.value.policies,
+		levelPolicies: role.value.levelPolicies,
 	};
 
 	emit('update:modelValue', data);
