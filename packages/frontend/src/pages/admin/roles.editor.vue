@@ -56,7 +56,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkFolder v-if="role.target === 'manualLevel'" defaultOpen>
 		<template #label>{{ i18n.ts._role.levelPolicies }}</template>
 		<div class="_gaps">
-			<RolesEditorLevel v-model="role.levelPolicies.experiencePolicies"/>
+			<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%;">
+				<MkInput v-model="role.levelPolicies.minLevel" type="number" :readonly="readonly">
+					<template #label>最小レベル</template>
+				</MkInput>
+				<MkInput v-model="role.levelPolicies.maxLevel" type="number" :min="role.levelPolicies.experiencePolicies.minLevel" :readonly="readonly">
+					<template #label>最大レベル</template>
+				</MkInput>
+			</div>
+			<RolesEditorLevel v-model="experiencePolicies" :readonly="readonly"/>
 		</div>
 	</MkFolder>
 
@@ -1006,6 +1014,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { watch, ref, computed } from 'vue';
 import { throttle } from 'throttle-debounce';
 import { ROLE_POLICIES } from '@@/js/const.js';
+import { v4 as uuid } from 'uuid';
 import RolesEditorFormula from './RolesEditorFormula.vue';
 import RolesEditorLevel from './RolesEditorLevel.vue';
 import MkInput from '@/components/MkInput.vue';
@@ -1049,16 +1058,31 @@ if (!role.value.levelPolicies) {
 	role.value.levelPolicies = {
 		minLevel: 1,
 		maxLevel: 100,
-		experiencePolicies: {
-			'0': {
-				type: 'const',
-				base: 100,
-				additional: 0,
-				exponential: 1,
-			}
-		}
+		experiencePolicies: [{
+			level: 0,
+			type: 'const',
+			base: 100,
+			additional: 0,
+			exponential: 1,
+		}],
 	};
 }
+
+type ExperiencePolicy = {
+	type: string;
+	base: number;
+	additional?: number;
+	exponential?: number;
+};
+
+let experiencePolicies = Object.entries(role.value.levelPolicies.experiencePolicies as Record<string, ExperiencePolicy>).map(([key, policy]) => ({
+	id: uuid(),
+	level: Number(key),
+	type: policy.type as 'const' | 'linear' | 'exponential',
+	base: policy.base,
+	additional: policy.additional || 0,
+	exponential: policy.exponential || 1,
+}));
 
 function updateAvatarDecorationLimit(value: string | number) {
 	const numValue = Number(value);
@@ -1103,9 +1127,18 @@ const save = throttle(100, () => {
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
 		policies: role.value.policies,
-		levelPolicies: role.value.levelPolicies,
+		levelPolicies: {
+			minLevel: role.value.levelPolicies.minLevel,
+			maxLevel: role.value.levelPolicies.maxLevel,
+			experiencePolicies: experiencePolicies.map(policy => ({
+				level: policy.level,
+				type: policy.type,
+				base: policy.base,
+				additional: policy.additional,
+				exponential: policy.exponential,
+			})),
+		},
 	};
-
 	emit('update:modelValue', data);
 });
 

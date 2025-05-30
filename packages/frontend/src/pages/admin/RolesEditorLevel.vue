@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<template #label>{{ i18n.ts.navbar }}</template>
 			<MkContainer :showHeader="false">
 				<Sortable
-					v-model="items"
+					v-model="modelValue"
 					itemKey="id"
 					:animation="150"
 					:handle="'.' + $style.itemHandle"
@@ -21,27 +21,38 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div
 							:class="$style.item"
 						>
-							<div :class="$style.itemInfo">
-								<button class="_button" :class="$style.itemHandle"><i class="ti ti-menu"></i></button>
-
-								<MkInput v-if="items[0]!==element" v-model="element.level" type="number" :class="$style.itemBase">
-									<template #suffix>level</template>
-								</MkInput>
-								<MkSelect v-model="element.type" :class="$style.itemSelect">
-									<option value="const">固定値</option>
-									<option value="linear">直線増加</option>
-									<option value="exponential">指数増加</option>
-								</MkSelect>
-								<MkInput v-model="element.base" type="number" :class="$style.itemConst">
-									<template #suffix>const</template>
-								</MkInput>
-								<MkInput v-if="element.type==='linear'" v-model="element.additional" type="number" :class="$style.itemLevel">
-									<template #suffix>value</template>
-								</MkInput>
-								<MkInput v-if="element.type==='exponential'" v-model="element.exponential" type="number" :class="$style.itemLevel">
-									<template #suffix>exponential</template>
-								</MkInput>
-								<button class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+							<div>
+								<div :class="$style.itemInfo">
+									<button class="_button" :class="$style.itemHandle"><i class="ti ti-menu"></i></button>
+									<span>Lv. {{ getTotalLevel(modelValue.findIndex(el => el === element)) }}</span>
+									<MkInput
+										v-model="element.level"
+										:min="modelValue[0]===element ? 0 : 1"
+										:readonly="modelValue[0]===element"
+										type="number"
+										:class="$style.itemBase"
+										@input="updateModelValue([...modelValue])"
+									>
+										<template #suffix>level</template>
+									</MkInput>
+									<MkSelect v-model="element.type" :class="$style.itemSelect" @update:modelValue="updateModelValue([...modelValue])">
+										<option value="const">固定値</option>
+										<option value="linear">直線増加</option>
+										<option value="exponential">指数増加</option>
+									</MkSelect>
+									<button v-if="modelValue[0] !== element" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+								</div>
+								<div :class="$style.itemInfo">
+									<MkInput v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue([...modelValue])">
+										<template #suffix>const</template>
+									</MkInput>
+									<MkInput v-if="element.type==='linear'" v-model="element.additional" type="number" :class="$style.itemLevel" @input="updateModelValue([...modelValue])">
+										<template #suffix>value</template>
+									</MkInput>
+									<MkInput v-if="element.type==='exponential'" v-model="element.exponential" type="number" :class="$style.itemLevel" @input="updateModelValue([...modelValue])">
+										<template #suffix>exponential</template>
+									</MkInput>
+								</div>
 							</div>
 						</div>
 					</template>
@@ -66,44 +77,54 @@ import { deepClone } from '@/scripts/clone.js';
 import { rolesCache } from '@/cache.js';
 
 const props = defineProps<{
-	modelValue: any[] //{"modeType":"add","const":100, "value":1.5}
+	modelValue: {
+		id: string; // UI上のドラッグ用。保存時は除外してもOK
+		level: number;
+		type: 'const' | 'linear' | 'exponential';
+		base: number;
+		additional?: number;
+		exponential?: number;
+	}[]
 }>();
 const emit = defineEmits(['update:modelValue']);
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 
 const { modelValue } = toRefs(props);
-const items = computed({
-	get: () => Array.isArray(modelValue.value) ? modelValue.value : Object.values(modelValue.value ?? {}),
-	set: (val) => {
-		// オブジェクトの場合はidをキーに戻す
-		if (!Array.isArray(modelValue.value)) {
-			const obj = {};
-			for (const item of val) {
-				obj[item.id] = item;
-			}
-			emit('update:modelValue', obj);
-		} else {
-			emit('update:modelValue', val);
-		}
-	},
-});
+
+function updateModelValue(newValue: typeof modelValue.value) {
+	modelValue.value = newValue;
+	emit('update:modelValue', newValue);
+}
 
 function add() {
-	const newItem = {
-		id: uuid(),
-		level: 0,
+	const newItem: {
+		id: string;
+		level: number;
+		type: 'const' | 'linear' | 'exponential';
+		base: number;
+		additional?: number;
+		exponential?: number;
+	} = {
+		id: uuid(), // Always a string
+		level: modelValue.value.length > 0 ? 10 : 0,
 		type: 'const',
 		base: 100,
-		additional: 0,
-		exponential: 1,
 	};
-	items.value = [...items.value, newItem];
+	const current = Array.isArray(modelValue.value) ? modelValue.value : [];
+	modelValue.value = [...current, newItem];
+	console.log(modelValue.value);
+}
+
+function getTotalLevel(index: number) {
+	const arr = modelValue.value;
+	if (index < 0 || index >= arr.length) return 0;
+	return arr.slice(0, index + 1).reduce((sum, item) => sum + item.level, 0);
 }
 
 function remove(idx: number) {
-	const arr = [...items.value];
+	const arr = [...modelValue.value];
 	arr.splice(idx, 1);
-	items.value = arr;
+	modelValue.value = arr;
 }
 </script>
 

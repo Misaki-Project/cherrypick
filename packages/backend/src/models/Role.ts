@@ -179,7 +179,7 @@ export type RoleCondFormulaValue = { id: string } & (
 // 固定値モデル 必要値 : base
 type ExperienceLevelPolicyValueConst = {
 	type: 'const';
-	base: any;
+	base: number;
 };
 
 // 線形モデル 必要値 : base + additional * level
@@ -196,11 +196,12 @@ type ExperienceLevelPolicyValueExponential = {
 	exponential: number;
 };
 
-export type RoleExperienceLevelPolicyValue = Record<number, (
-	ExperienceLevelPolicyValueConst |
-	ExperienceLevelPolicyValueLinear |
-	ExperienceLevelPolicyValueExponential
-)>;
+// Exponentialモデルにlevelを追加した型
+export type RoleExperienceLevelPolicyValue =
+		((ExperienceLevelPolicyValueConst |
+		ExperienceLevelPolicyValueLinear |
+		ExperienceLevelPolicyValueExponential
+	) & { level: number })[];
 
 type ExperiencePolicyCulcValueConst = {
 	type: 'const';
@@ -310,7 +311,7 @@ export class MiRole {
 	public levelPolicies: {
 		minLevel: number;
 		maxLevel: number;
-		experiencePolicies: RoleExperienceLevelPolicyValue;
+		experiencePolicies: RoleExperienceLevelPolicyValue & { level: number; }[];
 	} | null;
 
 	// UIに表示する際の並び順用(大きいほど先頭)

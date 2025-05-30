@@ -70,6 +70,11 @@ export class RoleEntityService {
 			canEditMembersByModerator: role.canEditMembersByModerator,
 			displayOrder: role.displayOrder,
 			policies: policies,
+			levelPolicies: role.levelPolicies ? {
+				minLevel: role.levelPolicies.minLevel,
+				maxLevel: role.levelPolicies.maxLevel,
+				experiencePolicies: role.levelPolicies.experiencePolicies,
+			} : null,
 			usersCount: assignedCount,
 		});
 	}

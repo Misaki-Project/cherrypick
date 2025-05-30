@@ -9,6 +9,7 @@ import type { RolesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleService } from '@/core/RoleService.js';
+import { RoleExperienceLevelPolicyValue } from '@/models/Role.js';
 
 export const meta = {
 	tags: ['admin', 'role'],
@@ -51,9 +52,21 @@ export const paramDef = {
 			properties: {
 				minLevel: { type: 'number', nullable: false },
 				maxLevel: { type: 'number', nullable: false },
-				experiencePolicies: { type: 'array', items: { type: 'object' } },
+				experiencePolicies: { type: 'array', items: {
+					type: 'object',
+					properties: {
+						level: { type: 'number', nullable: false },
+						type: { type: 'string', enum: ['const', 'linear', 'exponential'], nullable: false },
+						base: { type: 'number', nullable: false },
+						additional: { type: 'number', nullable: true },
+						exponential: { type: 'number', nullable: true },
+					},
+				},
+																										required: ['level', 'type', 'base'],
+				},
 			},
-			required: ['minLevel', 'maxLevel'],
+			nullable: false,
+			required: ['minLevel', 'maxLevel', 'experiencePolicies'],
 		},
 	},
 	required: [
@@ -90,6 +103,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				canEditMembersByModerator: ps.canEditMembersByModerator,
 				displayOrder: ps.displayOrder,
 				policies: ps.policies,
+				levelPolicies: ps.levelPolicies ? {
+					minLevel: ps.levelPolicies.minLevel,
+					maxLevel: ps.levelPolicies.maxLevel,
+					experiencePolicies: ps.levelPolicies.experiencePolicies.map(ep => ({
+						level: ep.level ?? 0,
+						type: ep.type === 'exponential' || ep.type === 'linear' || ep.type === 'const' ? ep.type : 'const',
+						base: ep.base ?? 0,
+						additional: ep.additional ?? null,
+						exponential: ep.exponential ?? null,
+					})) as unknown as RoleExperienceLevelPolicyValue & { level: number; }[],
+				} : role.levelPolicies,
 			}, me);
 		});
 	}

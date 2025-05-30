@@ -36,7 +36,6 @@ import { rolesCache } from '@/cache.js';
 import { useRouter } from '@/router/supplier.js';
 
 const router = useRouter();
-
 const props = defineProps<{
 	id?: string;
 }>();
@@ -66,6 +65,18 @@ if (props.id) {
 		canEditMembersByModerator: false,
 		displayOrder: 0,
 		policies: {},
+		levelPolicies: {
+			minLevel: 1,
+			maxLevel: 100,
+			experiencePolicies: [{
+				level: 0,
+				type: 'const',
+				base: 100,
+				additional: 0,
+				exponential: 1,
+			},
+			],
+		},
 	};
 }
 
@@ -81,6 +92,7 @@ async function save() {
 		const created = await os.apiWithDialog('admin/roles/create', {
 			...data.value,
 		});
+		console.log(created); ;
 		router.push('/admin/roles/' + created.id);
 	}
 }
