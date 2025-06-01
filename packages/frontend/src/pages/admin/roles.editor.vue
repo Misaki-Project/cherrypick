@@ -56,15 +56,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkFolder v-if="role.target === 'manualLevel'" defaultOpen>
 		<template #label>{{ i18n.ts._role.levelPolicies }}</template>
 		<div class="_gaps">
-			<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%;">
-				<MkInput v-model="role.levelPolicies.minLevel" type="number" :readonly="readonly">
-					<template #label>最小レベル</template>
-				</MkInput>
-				<MkInput v-model="role.levelPolicies.maxLevel" type="number" :min="role.levelPolicies.experiencePolicies.minLevel" :readonly="readonly">
-					<template #label>最大レベル</template>
-				</MkInput>
-			</div>
-			<RolesEditorLevel v-model="experiencePolicies" :readonly="readonly"/>
+			<RolesEditorLevel v-model="levelPolicies" :readonly="readonly"/>
 		</div>
 	</MkFolder>
 
@@ -1056,8 +1048,7 @@ for (const ROLE_POLICY of ROLE_POLICIES) {
 
 if (!role.value.levelPolicies) {
 	role.value.levelPolicies = {
-		minLevel: 1,
-		maxLevel: 100,
+		baseLevel: 1,
 		experiencePolicies: [{
 			level: 0,
 			type: 'const',
@@ -1075,14 +1066,17 @@ type ExperiencePolicy = {
 	exponential?: number;
 };
 
-let experiencePolicies = Object.entries(role.value.levelPolicies.experiencePolicies as Record<string, ExperiencePolicy>).map(([key, policy]) => ({
-	id: uuid(),
-	level: Number(key),
-	type: policy.type as 'const' | 'linear' | 'exponential',
-	base: policy.base,
-	additional: policy.additional || 0,
-	exponential: policy.exponential || 1,
-}));
+let levelPolicies = {
+	baseLevel: role.value.levelPolicies.baseLevel,
+	experiencePolicies: role.value.levelPolicies.experiencePolicies.map(policy => ({
+		id: uuid(),
+		level: policy.level,
+		type: policy.type as 'const' | 'linear' | 'exponential',
+		base: policy.base,
+		additional: policy.additional || 0,
+		exponential: policy.exponential || 1,
+	})),
+};
 
 function updateAvatarDecorationLimit(value: string | number) {
 	const numValue = Number(value);
@@ -1128,9 +1122,8 @@ const save = throttle(100, () => {
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
 		policies: role.value.policies,
 		levelPolicies: {
-			minLevel: role.value.levelPolicies.minLevel,
-			maxLevel: role.value.levelPolicies.maxLevel,
-			experiencePolicies: experiencePolicies.map(policy => ({
+			baseLevel: levelPolicies.baseLevel,
+			experiencePolicies: levelPolicies.experiencePolicies.map(policy => ({
 				level: policy.level,
 				type: policy.type,
 				base: policy.base,

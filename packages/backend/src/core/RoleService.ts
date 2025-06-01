@@ -30,6 +30,7 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { NotificationService } from '@/core/NotificationService.js';
+import { UserExperience } from '@/models/Role.js';
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 export type RolePolicies = {
@@ -352,48 +353,59 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		level: number;
 		currentLevelExp: number;
 		nextLevelExp: number;
+		minLevel: number;
+		maxLevel: number;
 	} | null {
 		if (role.target !== 'manualLevel' || !role.levelPolicies) return null;
 
 		const exp = Math.max(assign.experience ?? 0, 0);
-		const policies = role.levelPolicies.experiencePolicies
-			.sort((a, b) => a.level - b.level);
-		if (policies.length === 0 || !policies.find(a => a.level === 0)) return {
-			level: role.levelPolicies.minLevel,
+		const policies = role.levelPolicies.experiencePolicies;
+		const baseLevel = role.levelPolicies.baseLevel;
+		const maxLevel = baseLevel + policies.reduce((acc, p) => acc + p.level, 0);
+		if (policies.length === 0) return {
+			level: role.levelPolicies.baseLevel,
 			currentLevelExp: exp,
 			nextLevelExp: Number.NaN,
+			minLevel: baseLevel,
+			maxLevel: maxLevel,
 		};
-		if (!policies.find(a => a.level === 0)) return null;
-		const minLevel = role.levelPolicies.minLevel;
-		const maxLevel = role.levelPolicies.maxLevel;
-		let level = minLevel;
+		let level = 0;
 		let currentExp = 0;
 		let currentLevelExp = 0;
 		let nextLevelExp = 0;
 
 		for (let i = 0; i < policies.length; i++) {
 			const levelPolicy = policies[i];
-			const startLevel = levelPolicy.level;
-			const nextLevel = policies[i + 1] ? policies[i + 1].level : maxLevel;
-			const diffLevel = Math.min(maxLevel - minLevel, nextLevel) - startLevel;
-
-			if (diffLevel < 0) {
-				break;
-			}
-			if (startLevel < 0) {
+			const startLevel = level;
+			const diffLevel = levelPolicy.level;
+			if (startLevel < 0 || diffLevel <= 0) {
+				// TODO: log error or handle invalid diffLevel case
 				continue;
 			}
 			let nextToExp = 0;
 
+			// Calculate the total level increment between policies using the sum of an arithmetic progression (Gauss's formula).
+			// Ensure diffLevel is positive before calculating addLevel.
+			// This accounts for the cumulative increase in levels across the range defined by the policy.
+			const addLevel = diffLevel * (1 + Math.floor((diffLevel - 1 ) / 2)) + (diffLevel % 2 === 0 ? Math.floor(diffLevel / 2) : 0);
+
+			const baseContribution = levelPolicy.base * diffLevel;
 			switch (levelPolicy.type) {
 				case 'const':
-					nextToExp = levelPolicy.base * diffLevel;
+					// Per Level = base
+					nextToExp = baseContribution;
 					break;
 				case 'linear':
-					nextToExp = (levelPolicy.base * diffLevel) + (levelPolicy.additional * (diffLevel * (diffLevel - 1)) / 2);
+					// Per Level = base * additional
+					nextToExp = baseContribution + levelPolicy.additional * addLevel;
 					break;
 				case 'exponential':
-					nextToExp = levelPolicy.base * ((levelPolicy.exponential ** diffLevel) - 1) / (levelPolicy.exponential - 1);
+					{
+						// Per Level = base + additional * exponential ^ level
+						const safeAddLevel = Math.min(diffLevel, Math.floor(Math.log(Number.MAX_SAFE_INTEGER) / Math.log(levelPolicy.exponential)));
+						nextToExp = baseContribution
+            	+ levelPolicy.additional * (Math.pow(levelPolicy.exponential, safeAddLevel) - 1) / (levelPolicy.exponential - 1);
+					}
 					break;
 				default:
 					// TODO: log error
@@ -413,9 +425,55 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 						nextLevelExp = currentExp + levelPolicy.base * (rangeLevel + 1 - startLevel) + levelPolicy.additional * (rangeLevel + 1) * rangeLevel / 2;
 						break;
 					case 'exponential':
-						rangeLevel = startLevel + Math.floor(Math.log((exp - currentExp) * (levelPolicy.exponential - 1) / levelPolicy.base + 1) / Math.log(levelPolicy.exponential));
-						currentLevelExp = currentExp + levelPolicy.base * (Math.pow(levelPolicy.exponential, rangeLevel) - 1) / (levelPolicy.exponential - 1);
-						nextLevelExp = currentExp + levelPolicy.base * (Math.pow(levelPolicy.exponential, rangeLevel + 1) - 1) / (levelPolicy.exponential - 1);
+						// 1レベルごとの必要経験値: base + additional * (exponential ^ level)
+						// 累積経験値: base * n + additional * (exponential^(n+1) - exponential) / (exponential - 1)
+						{
+							const { base, additional, exponential } = levelPolicy;
+							if (exponential <= 1) {
+								// 指数成長しない場合はエラーや警告
+								console.warn('exponential must be greater than 1');
+								return null;
+							}
+							let low = startLevel;
+							let high = Math.min(startLevel + diffLevel, role.levelPolicies.baseLevel + role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0)); // Dynamically calculate upper bound
+							let foundLevel = startLevel;
+
+							const getTotalExp = (level: number) => {
+								if (exponential <= 1) {
+									console.warn('exponential must be greater than 1');
+									return Infinity;
+								}
+								const sumExponential = (Math.pow(exponential, level) - Math.pow(exponential, startLevel)) / (exponential - 1);
+								const sumLinear = additional * sumExponential;
+								const sumBase = base * (level - startLevel);
+								return currentExp + sumBase + sumLinear;
+							};
+
+							let iterations = 0; // Track iterations to prevent infinite loop
+
+							while (low <= high && iterations < diffLevel) {
+								const mid = Math.floor((low + high) / 2);
+								const totalExp = getTotalExp(mid);
+								if (!isFinite(totalExp)) {
+									high = mid - 1;
+									continue;
+								}
+								if (totalExp <= exp) {
+									foundLevel = mid;
+									low = mid + 1;
+								} else {
+									high = mid - 1;
+								}
+								iterations++;
+							}
+							rangeLevel = foundLevel;
+
+							// 現在のレベルに到達するための累積経験値
+							currentLevelExp = getTotalExp(rangeLevel);
+
+							// 次のレベルに到達するための累積経験値
+							nextLevelExp = getTotalExp(rangeLevel + 1);
+						}
 						break;
 					default:
 						// TODO: log error
@@ -429,31 +487,37 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				currentLevelExp = currentExp;
 			}
 		}
-
+		level += baseLevel;
 		if (level >= maxLevel) {
 			return {
 				level: maxLevel,
-				currentLevelExp: exp - currentLevelExp,
+				currentLevelExp: Math.floor(exp - currentLevelExp),
 				nextLevelExp: Number.NaN,
+				minLevel: baseLevel,
+				maxLevel: maxLevel,
 			};
 		} else {
+			let current = exp - currentLevelExp;
+			let next = Math.min(nextLevelExp, Number.MAX_SAFE_INTEGER) - currentLevelExp;
+			if (current % 1 > 0) {
+				next -= current % 1;
+				current = Math.floor(current);
+			}
+			if (next % 1 > 0) {
+				next = Math.floor(next) + 1;
+			}
 			return {
 				level: level,
-				currentLevelExp: exp - currentLevelExp,
-				nextLevelExp: Math.min(nextLevelExp, Number.MAX_SAFE_INTEGER) - currentLevelExp,
+				currentLevelExp: current,
+				nextLevelExp: next,
+				minLevel: baseLevel,
+				maxLevel: maxLevel,
 			};
 		}
 	}
 
 	@bindThis
-	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & {
-		experience?: {
-			level: number;
-			currentExp: number;
-			nextLevelExp: number;
-			totalExp: number;
-		};
-	})[]> {
+	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & UserExperience)[]> {
 		return roles.map(role => {
 			if (role.target === 'manualLevel') {
 				const assign = assigns.find(a => a.roleId === role.id);
@@ -467,8 +531,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 								currentExp: levelInfo.currentLevelExp,
 								nextLevelExp: levelInfo.nextLevelExp,
 								totalExp: assign.experience ?? 0,
-								minLevel: role.levelPolicies?.minLevel ?? 0,
-								maxLevel: role.levelPolicies?.maxLevel ?? number.MAX_SAFE_INTEGER,
+								minLevel: levelInfo.minLevel,
+								maxLevel: levelInfo.maxLevel,
 							},
 						};
 					}
@@ -559,7 +623,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 								for (let i = 0; i < Object.entries(levelPolicy).length; i++) {
 									const [levelStr, policyValue] = Object.entries(levelPolicy)[i];
 									const level = Number.parseInt(levelStr);
-									const nextLevel = Object.entries(levelPolicy)[i + 1] ? Number.parseInt(Object.entries(levelPolicy)[i + 1][0]) : role.levelPolicies.maxLevel;
+									const nextLevel = Object.entries(levelPolicy)[i + 1] ? Number.parseInt(Object.entries(levelPolicy)[i + 1][0]) : role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0) + role.levelPolicies.baseLevel;
 
 									if (levelInfo.level >= level && levelInfo.level < nextLevel) {
 										switch (policyValue.type) {
@@ -822,7 +886,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				actionValue: experience,
 				beforeValue: beforeValue,
 				afterValue: setExperience,
-				note: note,
+				note: note ?? null,
 			});
 		}
 		this.globalEventService.publishInternalEvent('userRoleExperienceUpdated', assign);

@@ -189,10 +189,11 @@ type ExperienceLevelPolicyValueLinear = {
 	additional: number;
 };
 
-// 指数モデル 必要値 : base * (additional ^ level)
+// 指数モデル 必要値 : base + base * (additional ^ level)
 type ExperienceLevelPolicyValueExponential = {
 	type: 'exponential';
 	base: number;
+	additional: number
 	exponential: number;
 };
 
@@ -226,6 +227,15 @@ export type RoleExperiencePolicyCulcValue = Record<number, (
 	ExperiencePolicyCulcValueConst |
 	ExperiencePolicyCulcValueMultiplier
 )>;
+
+export type UserExperience = {
+	currentLevel: number | null;
+	currentExp: number;
+	nextLevelExp: number;
+	totalExp: number;
+	baseLevel: number;
+	maxLevel: number;
+} | undefined;
 
 @Entity('role')
 export class MiRole {
@@ -309,8 +319,7 @@ export class MiRole {
 		default: { },
 	})
 	public levelPolicies: {
-		minLevel: number;
-		maxLevel: number;
+		baseLevel: number;
 		experiencePolicies: RoleExperienceLevelPolicyValue & { level: number; }[];
 	} | null;
 

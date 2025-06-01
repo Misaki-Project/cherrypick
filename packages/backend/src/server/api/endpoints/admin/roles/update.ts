@@ -50,8 +50,7 @@ export const paramDef = {
 		levelPolicies: {
 			type: 'object',
 			properties: {
-				minLevel: { type: 'number', nullable: false },
-				maxLevel: { type: 'number', nullable: false },
+				baseLevel: { type: 'number', nullable: false },
 				experiencePolicies: { type: 'array', items: {
 					type: 'object',
 					properties: {
@@ -66,7 +65,7 @@ export const paramDef = {
 				},
 			},
 			nullable: false,
-			required: ['minLevel', 'maxLevel', 'experiencePolicies'],
+			required: ['baseLevel', 'experiencePolicies'],
 		},
 	},
 	required: [
@@ -104,8 +103,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				displayOrder: ps.displayOrder,
 				policies: ps.policies,
 				levelPolicies: ps.levelPolicies ? {
-					minLevel: ps.levelPolicies.minLevel,
-					maxLevel: ps.levelPolicies.maxLevel,
+					baseLevel: ps.levelPolicies.baseLevel,
 					experiencePolicies: ps.levelPolicies.experiencePolicies.map(ep => ({
 						level: ep.level ?? 0,
 						type: ep.type === 'exponential' || ep.type === 'linear' || ep.type === 'const' ? ep.type : 'const',

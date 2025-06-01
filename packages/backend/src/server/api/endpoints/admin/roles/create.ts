@@ -80,8 +80,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const roleInput = {
 				...restPs,
 				levelPolicies: {
-					minLevel: levelPolicies.min,
-					maxLevel: levelPolicies.max,
+					baseLevel: levelPolicies.baseLevel,
 					experiencePolicies: levelPolicies.experiencePolicies ?? [],
 				},
 			};

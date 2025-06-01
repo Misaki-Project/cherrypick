@@ -5443,8 +5443,7 @@ export type components = {
         };
       };
 			levelPolicies: {
-				minLevel: number;
-				maxLevel: number;
+				baseLevel: number;
 				experiencePolicies: {
 					[key: string]: {
 						type: string;

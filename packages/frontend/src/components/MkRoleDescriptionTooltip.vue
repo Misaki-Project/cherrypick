@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<span>Lv. {{ role.experience.currentLevel }}</span> (<span>{{ role.experience.currentExp }}</span><span v-if="role.experience.nextLevelExp"> / {{ role.experience.nextLevelExp }}</span>)
 		</div>
 		<div v-if="role.experience" style="margin-bottom: 6px;">
-			<div style="background: #eee; border-radius: 4px; height: 2px; width: 100%; overflow: hidden;">
+			<div style="background: #888; border-radius: 4px; height: 2px; width: 100%; overflow: hidden;">
 				<div
 					:style="{
 						background: '#4caf50',
@@ -37,8 +37,7 @@ defineProps<{
 	role: {
 		description: string;
 		experience: {
-			minLevel: number;
-			maxLevel: number;
+			baseLevel: number;
 			currentLevel: number;
 			currentExp: number;
 			nextLevelExp: number;

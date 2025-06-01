@@ -71,8 +71,7 @@ export class RoleEntityService {
 			displayOrder: role.displayOrder,
 			policies: policies,
 			levelPolicies: role.levelPolicies ? {
-				minLevel: role.levelPolicies.minLevel,
-				maxLevel: role.levelPolicies.maxLevel,
+				baseLevel: role.levelPolicies.baseLevel,
 				experiencePolicies: role.levelPolicies.experiencePolicies,
 			} : null,
 			usersCount: assignedCount,

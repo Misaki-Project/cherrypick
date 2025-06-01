@@ -66,8 +66,7 @@ if (props.id) {
 		displayOrder: 0,
 		policies: {},
 		levelPolicies: {
-			minLevel: 1,
-			maxLevel: 100,
+			baseLevel: 1,
 			experiencePolicies: [{
 				level: 0,
 				type: 'const',
