@@ -31,32 +31,32 @@ SPDX-License-Identifier: AGPL-3.0-only
 												@input="updateModelValue({...modelValue})"
 											>
 												<template #prefix>Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i> +</template>
-												<template #suffix><i class="ti ti-arrow-right"></i> Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) + element.level - 1 }}</template>
+												<template #suffix><i class="ti ti-arrow-right"></i> {{ i18n.tsx._experience.levelShort({value: getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) + element.level - 1 }) }}</template>
 											</MkInput>
 											<MkInput v-else :class="$style.itemBase" type="text" readonly style="flex: 1; display: flex; align-items: center;">
 												<template #prefix>Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i></template>
-												<template #suffix><i class="ti ti-arrow-right"></i>最大レベル</template>
+												<template #suffix><i class="ti ti-arrow-right"></i>{{ i18n.ts._experience.maxLevel }}</template>
 											</MkInput>
 											<MkSelect v-model="element.type" :class="$style.itemSelect" style="width: 150px;" @update:modelValue="updateModelValue({...modelValue})">
-												<option value="base">ベース</option>
-												<option value="const">固定値</option>
-												<option v-if="modelValue.type === 'number'" value="multiplier">直線増加</option>
+												<option value="base">{{ i18n.ts._experience._rules.base }}</option>
+												<option value="const">{{ i18n.ts._experience._rules.const }}</option>
+												<option v-if="modelValue.type === 'number'" value="multiplier">{{ i18n.ts._experience._rules.multiplier }}</option>
 											</MkSelect>
 											<button v-if="modelValue.CondFormula.length > 1" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
 										</div>
 									</div>
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px;">
-											<span v-if="element.type==='base'">ベースロールを使用</span>
+											<span v-if="element.type==='base'">{{ i18n.ts._role.useBaseValue }}</span>
 											<MkInput v-if="modelValue.type==='number' && element.type!=='base'" v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
-												<template #label>ベース値</template>
+												<template #label>{{ i18n.ts._experience._values.base }}</template>
 											</MkInput>
 											<MkSwitch v-if="modelValue.type==='boolean' && element.type!=='base'" v-model="element.base" @update:modelValue="updateModelValue({...modelValue})">
 												<template #label>{{ i18n.ts.enable }}</template>
 											</MkSwitch>
 											<span v-if="element.type==='multiplier'"> + </span>
 											<MkInput v-if="element.type==='multiplier'" v-model="element.additional" type="number" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
-												<template #label>加算値</template>
+												<template #label>{{ i18n.ts._experience._values.additional }}</template>
 											</MkInput>
 											<span v-if="element.type==='multiplier'"> *  level </span>
 										</div>

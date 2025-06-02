@@ -7951,6 +7951,7 @@ export interface Locale extends ILocale {
         /**
          * <b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。
          * <b>コンディショナル</b>は条件を設定し、それに合致するユーザーが自動で含まれるようになります。
+         * <b>マニュアルレベル</b>はユーザーの評価値を手動で設定し、評価値を元に異なるポリシーを管理します。
          */
         "descriptionOfAssignTarget": string;
         /**
@@ -7970,7 +7971,7 @@ export interface Locale extends ILocale {
          */
         "conditionalRoles": string;
         /**
-         * レベル
+         * マニュアルレベル
          */
         "manualLevel": string;
         /**
@@ -8053,6 +8054,10 @@ export interface Locale extends ILocale {
          * 優先度
          */
         "priority": string;
+        /**
+         * レベルアップポリシー
+         */
+        "levelPolicies": string;
         "_priority": {
             /**
              * 低
@@ -13125,6 +13130,82 @@ export interface Locale extends ILocale {
          * 自分自身にメッセージを送信することはできません。
          */
         "cannotSendMessagesBecauseToYourself": string;
+    };
+    /**
+     * マニュアルレベル
+     */
+    "manualLevel": string;
+    /**
+     * 経験値
+     */
+    "experience": string;
+    "_experience": {
+        /**
+         * Lv.{value}
+         */
+        "levelShort": ParameterizedString<"value">;
+        /**
+         * ベースレベル
+         */
+        "baseLevel": string;
+        /**
+         * 最大レベル
+         */
+        "maxLevel": string;
+        /**
+         * 設定値
+         */
+        "settingValue": string;
+        "_rules": {
+            /**
+             * ベース
+             */
+            "base": string;
+            /**
+             * 定数
+             */
+            "const": string;
+            /**
+             * 線形
+             */
+            "linear": string;
+            /**
+             * 指数
+             */
+            "exponential": string;
+            /**
+             * 乗数
+             */
+            "multiplier": string;
+        };
+        "_values": {
+            /**
+             * ベース値
+             */
+            "base": string;
+            /**
+             * 加算値
+             */
+            "additional": string;
+            /**
+             * 指数
+             */
+            "exponential": string;
+        };
+        "_calcs": {
+            /**
+             * 加減算
+             */
+            "additional": string;
+            /**
+             * 乗算
+             */
+            "multiplier": string;
+            /**
+             * 固定値
+             */
+            "set": string;
+        };
     };
 }
 declare const locales: {

@@ -65,7 +65,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						>
 							<MkA v-adaptive-bg :to="`/roles/${role.id}`" @mouseenter="showRoleTooltip($event, role)" @mouseleave="hideRoleTooltip">
 								<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%; border-radius: 0.4em;" :src="role.iconUrl"/>
-								<span>{{ role.name }}</span><span v-if="role.experience" style="font-size: 0.85em; opacity: 0.8;"><b> Lv.{{ role.experience.currentLevel }}</b></span>
+								<span>{{ role.name }}</span><span v-if="role.experience" style="font-size: 0.85em; opacity: 0.8; padding-left: 4px"><b> {{ i18n.tsx._experience.levelShort({value: role.experience.currentLevel}) }}</b></span>
 							</MkA>
 							<MkRoleDescriptionTooltip v-if="tooltipRole === role" :role="role" :showing="tooltipShowing"/>
 						</span>

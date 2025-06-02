@@ -472,12 +472,13 @@ async function unassignRole(role, ev) {
 }
 
 async function experienceMenu(role, ev) {
+	console.log(i18n.ts._experience);
 	os.popupMenu([{
-		text: '加減算',
+		text: i18n.ts._experience._calcs.additional,
 		icon: 'ti plus-minus',
 		action: async () => {
 			const { canceled: canceled2, result: value } = await os.inputNumber({
-				title: '設定する値',
+				title: i18n.ts._experience.settingValue,
 				default: 0,
 				min: Number.MIN_SAFE_INTEGER,
 				max: Number.MAX_SAFE_INTEGER,
@@ -496,11 +497,11 @@ async function experienceMenu(role, ev) {
 			).then(refreshUser);
 		},
 	}, {
-		text: '乗算',
+		text: i18n.ts._experience._calcs.multiplier,
 		icon: 'ti percentage',
 		action: async () => {
 			const { canceled: canceled2, result: value } = await os.inputNumber({
-				title: '設定する値',
+				title: i18n.ts._experience.settingValue,
 				default: 1,
 				min: 0,
 				max: 10000,
@@ -515,15 +516,15 @@ async function experienceMenu(role, ev) {
 			});
 			if (canceled3) return;
 			await os.apiWithDialog('admin/roles/change-exp',
-				{ roleId: role.id, userId: user.value.id, setMode: 'multipiler', value: value, assignForce: true, note: note },
+				{ roleId: role.id, userId: user.value.id, setMode: 'multiplier', value: value, assignForce: true, note: note },
 			).then(refreshUser);
 		},
 	}, {
-		text: '定数',
+		text: i18n.ts._experience._calcs.set,
 		icon: 'ti letter-n',
 		action: async () => {
 			const { canceled: canceled2, result: value } = await os.inputNumber({
-				title: '設定する値',
+				title: i18n.ts._experience.settingValue,
 				default: 0,
 				min: 0,
 				max: Number.MAX_SAFE_INTEGER,

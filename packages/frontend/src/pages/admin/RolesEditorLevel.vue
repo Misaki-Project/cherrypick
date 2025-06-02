@@ -8,10 +8,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div>
 		<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; width: 100%;">
 			<MkInput v-model="modelValue.baseLevel" type="number" @input="updateModelValue({...modelValue})">
-				<template #label>最小レベル</template>
+				<template #label>{{ i18n.ts._experience.baseLevel }}</template>
 			</MkInput>
 			<MkInput v-model="computedMaxLevel" type="number" readonly>
-				<template #label>最大レベル</template>
+				<template #label>{{ i18n.ts._experience.maxLevel }}</template>
 			</MkInput>
 		</div>
 		<div :class="$style.header">
@@ -38,9 +38,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 												<template #suffix><i class="ti ti-arrow-right"></i> Lv. {{ getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) + element.level - 1 }}</template>
 											</MkInput>
 											<MkSelect v-model="element.type" :class="$style.itemSelect" @update:modelValue="updateModelValue({...modelValue})">
-												<option value="const">固定値</option>
-												<option value="linear">直線増加</option>
-												<option value="exponential">指数増加</option>
+												<option value="const">{{ i18n.ts._experience._rules.const }}</option>
+												<option value="linear">{{ i18n.ts._experience._rules.linear }}</option>
+												<option value="exponential">{{ i18n.ts._experience._rules.exponential }}</option>
 											</MkSelect>
 											<button v-if="modelValue.experiencePolicies[0] !== element" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
 										</div>
@@ -48,15 +48,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px;">
 											<MkInput v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
-												<template #label>ベース値</template>
+												<template #label>{{ i18n.ts._experience._values.base }}</template>
 											</MkInput>
 											<span v-if="element.type!=='const'"> + </span>
 											<MkInput v-if="element.type!=='const'" v-model="element.additional" type="number" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
-												<template #label>加算値</template>
+												<template #label>{{ i18n.ts._experience._values.additional }}</template>
 											</MkInput>
 											<span v-if="element.type==='exponential'"> * ( </span>
 											<MkInput v-if="element.type==='exponential'" v-model="element.exponential" type="number" step="0.001" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
-												<template #label>乗算値</template>
+												<template #label>{{ i18n.ts._experience._values.exponential }}</template>
 											</MkInput>
 											<span v-if="element.type==='linear'"> * </span>
 											<span v-if="element.type==='exponential'"> ^ </span>

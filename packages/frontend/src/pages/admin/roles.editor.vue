@@ -1306,7 +1306,7 @@ type ExperiencePolicy = {
 	exponential?: number;
 };
 
-let levelPolicies = {
+let levelPolicies = ref({
 	baseLevel: role.value.levelPolicies.baseLevel,
 	experiencePolicies: role.value.levelPolicies.experiencePolicies.map(policy => ({
 		id: uuid(),
@@ -1316,8 +1316,9 @@ let levelPolicies = {
 		additional: policy.additional || 0,
 		exponential: policy.exponential || 1,
 	})),
-};
-let levelCondPolicies = Object.fromEntries(
+});
+
+let levelCondPolicies = ref(Object.fromEntries(
 	Object.entries(role.value.policies).map(([name, policy]) => {
 		const typedPolicy = policy as { value: any; policyAsLevel?: any[] };
 		return [
@@ -1335,15 +1336,42 @@ let levelCondPolicies = Object.fromEntries(
 						id: uuid(),
 						level: p.level,
 						type: p.type as 'base' | 'const' | 'multiplier',
-						base: p.base,
+						base: p.base ?? instance.policies[name].value,
 						additional: p.additional || 0,
 					}))
 					: [],
 			},
 		];
 	}),
-);
-console.log(levelCondPolicies);
+));
+
+watch(levelPolicies, (val) => {
+	console.log('levelPolicies changed', val);
+	role.value.levelPolicies = {
+		baseLevel: val.baseLevel,
+		experiencePolicies: val.experiencePolicies.map(policy => ({
+			level: policy.level,
+			type: policy.type,
+			base: policy.base,
+			additional: policy.additional || 0,
+			exponential: policy.exponential || 1,
+		})),
+	};
+}, { deep: true });
+
+watch(levelCondPolicies, (val) => {
+	console.log('levelCondPolicies changed', val);
+	for (const key in val) {
+		if (role.value.policies[key]) {
+			role.value.policies[key].policyAsLevel = val[key].CondFormula.map(p => ({
+				level: p.level,
+				type: p.type,
+				base: p.base,
+				additional: p.additional || 0,
+			}));
+		}
+	}
+}, { deep: true });
 
 function updateAvatarDecorationLimit(value: string | number) {
 	const numValue = Number(value);
@@ -1387,33 +1415,8 @@ const save = throttle(100, () => {
 		isExplorable: role.value.isExplorable,
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
-		policies: Object.fromEntries(
-			Object.entries(role.value.policies).map(([key, policy]) => ([
-				key,
-				{
-					useDefault: policy.useDefault,
-					priority: policy.priority,
-					value: policy.value,
-					policyAsLevel: levelCondPolicies[key].CondFormula.map(p => ({
-						level: p.level,
-						type: p.type,
-						base: p.base,
-						additional: p.additional || 0,
-					})),
-				},
-			]))
-		),
-		levelPolicies: {
-			baseLevel: levelPolicies.baseLevel,
-			experiencePolicies: levelPolicies.experiencePolicies.map(policy => ({
-				level: policy.level,
-				type: policy.type,
-				base: policy.base,
-				additional: policy.additional,
-				exponential: policy.exponential,
-			})),
-		},
-
+		policies: role.value.policies,
+		levelPolicies: role.value.levelPolicies,
 	};
 	emit('update:modelValue', data);
 });

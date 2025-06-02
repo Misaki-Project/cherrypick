@@ -499,23 +499,23 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 						text: r.name,
 						action: async () => {
 							const { canceled, result: setMode } = await os.select({
-								title: '経験値' + ': ' + r.name,
+								title: i18n.ts.experience + ': ' + r.name,
 								items: [{
-									value: 'add', text: '加算',
+									value: 'add', text: i18n.ts._experience._calcs.additional,
 								}, {
-									value: 'multipiler', text: '乗算',
+									value: 'multiplier', text: i18n.ts._experience._calcs.multiplier,
 								}, {
-									value: 'set', text: '固定',
+									value: 'set', text: i18n.ts._experience._calcs.set,
 								}],
-								default: 'indefinitely',
+								default: 'add',
 							});
 							if (canceled) return;
 							const { canceled: canceled2, result: value } = await os.inputNumber({
-								title: '設定する値',
-								default: setMode === 'multipiler' ? 1 : 0,
+								title: i18n.ts._experience.settingValue,
+								default: setMode === 'multiplier' ? 1 : 0,
 								min: setMode === 'add' ? Number.MIN_SAFE_INTEGER : 0,
-								max: setMode === 'multipiler' ? 100 : Number.MAX_SAFE_INTEGER,
-								step: setMode === 'multipiler' ? 0.001 : 1,
+								max: setMode === 'multiplier' ? 100 : Number.MAX_SAFE_INTEGER,
+								step: setMode === 'multiplier' ? 0.001 : 1,
 							});
 							if (canceled2) return;
 
@@ -526,6 +526,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 								placeholder: i18n.ts.moderationNote,
 							});
 							if (canceled3) return;
+							if ((setMode === 'add' && value === 0) || (setMode === 'multiplier' && value === 1)) return;
 							os.apiWithDialog('admin/roles/change-exp', { roleId: r.id, userId: user.id, setMode: setMode, value: value, assignForce: true, note: note });
 						},
 					}));

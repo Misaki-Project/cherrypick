@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <MkTooltip ref="tooltip" :showing="showing" :targetElement="targetElement" :maxWidth="250" direction="top" @closed="emit('closed')">
 	<div :class="$style.root">
 		<div v-if="role.experience" style="margin-bottom: 1px;">
-			<span style="font-size: 1.5em;">Lv. {{ role.experience.currentLevel }}</span> (<span>{{ role.experience.currentExp }}</span><span v-if="role.experience.nextLevelExp"> / {{ role.experience.nextLevelExp }}</span>)
+			<span style="font-size: 1.5em;">{{ i18n.tsx._experience.levelShort({value: role.experience.currentLevel}) }}</span> (<span>{{ role.experience.currentExp }}</span><span v-if="role.experience.nextLevelExp"> / {{ role.experience.nextLevelExp }}</span>)
 		</div>
 		<div v-if="role.experience" style="margin-bottom: 6px;">
 			<div
@@ -37,6 +37,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { } from 'vue';
 import * as mfm from 'mfc-js';
+import { i18n } from '@/i18n.js';
 import MkTooltip from '@/components/MkTooltip.vue';
 
 defineProps<{
