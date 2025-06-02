@@ -204,29 +204,35 @@ export type RoleExperienceLevelPolicyValue =
 		ExperienceLevelPolicyValueExponential
 	) & { level: number })[];
 
+// ポリシー
+type ExperiencePolicyCalcValueBase = {
+	type: 'base';
+};
+
 type ExperiencePolicyCulcValueConst = {
 	type: 'const';
-	base: number;
+	base: any;
 };
+
 type ExperiencePolicyCulcValueMultiplier = {
 	type: 'multiplier';
-	offset: number;
 	base: number;
-	multiplier: number;
+	additional: number;
 };
 
 export const RoleExperienceSetMode = {
+	Base: 'base',
 	Add: 'add',
-	Multipiler: 'multipiler',
-	Set: 'set',
+	Multiplier: 'multiplier',
 } as const;
 
 export type RoleExperienceSetMode = typeof RoleExperienceSetMode[keyof typeof RoleExperienceSetMode];
 
-export type RoleExperiencePolicyCulcValue = Record<number, (
+export type RoleExperiencePolicyCulcValue = ((
+	ExperiencePolicyCalcValueBase |
 	ExperiencePolicyCulcValueConst |
 	ExperiencePolicyCulcValueMultiplier
-)>;
+) & { level: number; })[];
 
 export type UserExperience = {
 	currentLevel: number | null;

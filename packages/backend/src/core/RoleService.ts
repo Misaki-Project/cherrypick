@@ -620,23 +620,27 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 							// レベルに応じたポリシー値を設定
 							const levelPolicy = role.policies[name].poricyAsLevel;
 							if (levelPolicy) {
-								for (let i = 0; i < Object.entries(levelPolicy).length; i++) {
-									const [levelStr, policyValue] = Object.entries(levelPolicy)[i];
-									const level = Number.parseInt(levelStr);
-									const nextLevel = Object.entries(levelPolicy)[i + 1] ? Number.parseInt(Object.entries(levelPolicy)[i + 1][0]) : role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0) + role.levelPolicies.baseLevel;
+								let startLevel = 0;
+								for (let i = 0; i < levelPolicy.length; i++) {
+									const policyValue = levelPolicy[i];
+									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + levelPolicy.level) : role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0) + role.levelPolicies.baseLevel;
 
-									if (levelInfo.level >= level && levelInfo.level < nextLevel) {
+									if (levelInfo.level >= startLevel && levelInfo.level <= nextLevel) {
+										policy.useDefault = true;
 										switch (policyValue.type) {
+											case 'base':
+												policy.useDefault = true;
+												break;
 											case 'const':
 												policy.value = policyValue.base;
 												break;
 											case 'multiplier':
-												policy.value = policyValue.offset + policyValue.base * (levelInfo.level - level);
+												policy.value = policyValue.base + policyValue.additional * ( levelInfo.level - startLevel);
 												break;
 										}
-										policy.useDefault = false;
 										break;
 									}
+									startLevel += policyValue.level;
 								}
 							}
 						}

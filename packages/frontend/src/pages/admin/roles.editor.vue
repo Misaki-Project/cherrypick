@@ -96,13 +96,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.rateLimitFactor)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.rateLimitFactor.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkRange :modelValue="role.policies.rateLimitFactor.value * 100" :min="0" :max="400" :step="10" :textConverter="(v) => `${v}%`" @update:modelValue="v => role.policies.rateLimitFactor.value = (v / 100)">
-						<template #label>{{ i18n.ts._role._options.rateLimitFactor }}</template>
-						<template #caption>{{ i18n.ts._role._options.descriptionOfRateLimitFactor }}</template>
-					</MkRange>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.rateLimitFactor" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<span>{{ i18n.ts._role._options.descriptionOfRateLimitFactor }}</span>
+						<MkSwitch v-model="role.policies.rateLimitFactor.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkRange :modelValue="role.policies.rateLimitFactor.value * 100" :min="0" :max="400" :step="10" :textConverter="(v) => `${v}%`" @update:modelValue="v => role.policies.rateLimitFactor.value = (v / 100)">
+							<template #label>{{ i18n.ts._role._options.rateLimitFactor }}</template>
+							<template #caption>{{ i18n.ts._role._options.descriptionOfRateLimitFactor }}</template>
+						</MkRange>
+					</div>
 					<MkRange v-model="role.policies.rateLimitFactor.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -117,12 +123,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.gtlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.gtlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.gtlAvailable.value" :disabled="role.policies.gtlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.gtlAvailable" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.gtlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.gtlAvailable.value" :disabled="role.policies.gtlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.gtlAvailable.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -137,12 +148,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.ltlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.ltlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.ltlAvailable.value" :disabled="role.policies.ltlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.ltlAvailable" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.ltlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.ltlAvailable.value" :disabled="role.policies.ltlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.ltlAvailable.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -157,12 +173,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.btlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.btlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.btlAvailable.value" :disabled="role.policies.btlAvailable.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.btlAvailable" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.btlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.btlAvailable.value" :disabled="role.policies.btlAvailable.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.btlAvailable.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -177,12 +198,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicNote.value" :disabled="role.policies.canPublicNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicNote.value" :disabled="role.policies.canPublicNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -197,12 +223,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicReplyNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicReplyNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicReplyNote.value" :disabled="role.policies.canPublicReplyNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicReplyNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicReplyNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicReplyNote.value" :disabled="role.policies.canPublicReplyNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicReplyNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -217,12 +248,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicQuoteNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicQuoteNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicQuoteNote.value" :disabled="role.policies.canPublicQuoteNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicQuoteNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicQuoteNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicQuoteNote.value" :disabled="role.policies.canPublicQuoteNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicQuoteNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -237,12 +273,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteSelf)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicRenoteSelf.value" :disabled="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicRenoteSelf" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicRenoteSelf.value" :disabled="role.policies.canPublicRenoteSelf.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicRenoteSelf.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -257,12 +298,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteLocalNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.value" :disabled="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicRenoteLocalNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicRenoteLocalNote.value" :disabled="role.policies.canPublicRenoteLocalNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicRenoteLocalNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -277,12 +323,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteRemoteNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.value" :disabled="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicRenoteRemoteNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicRenoteRemoteNote.value" :disabled="role.policies.canPublicRenoteRemoteNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicRenoteRemoteNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -297,12 +348,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNoteWithFile)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPublicNoteWithFile.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPublicNoteWithFile.value" :disabled="role.policies.canPublicNoteWithFile.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPublicNoteWithFile" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPublicNoteWithFile.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPublicNoteWithFile.value" :disabled="role.policies.canPublicNoteWithFile.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPublicNoteWithFile.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -317,12 +373,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPurgeAccount)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canPurgeAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canPurgeAccount.value" :disabled="role.policies.canPurgeAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canPurgeAccount" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canPurgeAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canPurgeAccount.value" :disabled="role.policies.canPurgeAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canPurgeAccount.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -337,12 +398,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canEditNote)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canEditNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canEditNote.value" :disabled="role.policies.canEditNote.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canEditNote" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canEditNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canEditNote.value" :disabled="role.policies.canEditNote.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canEditNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -357,11 +423,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.scheduleNoteMax)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.scheduleNoteMax.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.scheduleNoteMax.value" :disabled="role.policies.scheduleNoteMax.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.scheduleNoteMax" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.scheduleNoteMax.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.scheduleNoteMax.value" :disabled="role.policies.scheduleNoteMax.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.scheduleNoteMax.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -376,11 +447,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.mentionLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.mentionLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.mentionLimit.value" :disabled="role.policies.mentionLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.mentionLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.mentionLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.mentionLimit.value" :disabled="role.policies.mentionLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.mentionLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -395,12 +471,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canInvite)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canInvite.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canInvite.value" :disabled="role.policies.canInvite.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canInvite" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canInvite.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canInvite.value" :disabled="role.policies.canInvite.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canInvite.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -415,11 +496,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.inviteLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.inviteLimit.value" :disabled="role.policies.inviteLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.inviteLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.inviteLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.inviteLimit.value" :disabled="role.policies.inviteLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.inviteLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -434,12 +520,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimitCycle)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.inviteLimitCycle.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.inviteLimitCycle.value" :disabled="role.policies.inviteLimitCycle.useDefault" type="number" :readonly="readonly">
-						<template #suffix>{{ i18n.ts._time.minute }}</template>
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.inviteLimitCycle" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.inviteLimitCycle.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.inviteLimitCycle.value" :disabled="role.policies.inviteLimitCycle.useDefault" type="number" :readonly="readonly">
+							<template #suffix>{{ i18n.ts._time.minute }}</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.inviteLimitCycle.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -454,12 +545,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteExpirationTime)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.inviteExpirationTime.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.inviteExpirationTime.value" :disabled="role.policies.inviteExpirationTime.useDefault" type="number" :readonly="readonly">
-						<template #suffix>{{ i18n.ts._time.minute }}</template>
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.inviteExpirationTime" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.inviteExpirationTime.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.inviteExpirationTime.value" :disabled="role.policies.inviteExpirationTime.useDefault" type="number" :readonly="readonly">
+							<template #suffix>{{ i18n.ts._time.minute }}</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.inviteExpirationTime.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -474,12 +570,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageCustomEmojis)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canManageCustomEmojis.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canManageCustomEmojis.value" :disabled="role.policies.canManageCustomEmojis.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canManageCustomEmojis" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canManageCustomEmojis.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canManageCustomEmojis.value" :disabled="role.policies.canManageCustomEmojis.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canManageCustomEmojis.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -494,12 +595,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageAvatarDecorations)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canManageAvatarDecorations.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canManageAvatarDecorations.value" :disabled="role.policies.canManageAvatarDecorations.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canManageAvatarDecorations" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canManageAvatarDecorations.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canManageAvatarDecorations.value" :disabled="role.policies.canManageAvatarDecorations.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canManageAvatarDecorations.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -514,12 +620,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSearchNotes)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canSearchNotes.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canSearchNotes.value" :disabled="role.policies.canSearchNotes.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canSearchNotes" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canSearchNotes.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canSearchNotes.value" :disabled="role.policies.canSearchNotes.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canSearchNotes.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -534,12 +645,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseTranslator)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canUseTranslator.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canUseTranslator.value" :disabled="role.policies.canUseTranslator.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canUseTranslator" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canUseTranslator.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canUseTranslator.value" :disabled="role.policies.canUseTranslator.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canUseTranslator.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -554,12 +670,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseAutoTranslate)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canUseAutoTranslate.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canUseAutoTranslate.value" :disabled="role.policies.canUseAutoTranslate.useDefault || !role.policies.canUseTranslator.value" :readonly="readonly" @update:modelValue="learnMoreAutoTranslate">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canUseAutoTranslate" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canUseAutoTranslate.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canUseAutoTranslate.value" :disabled="role.policies.canUseAutoTranslate.useDefault || !role.policies.canUseTranslator.value" :readonly="readonly" @update:modelValue="learnMoreAutoTranslate">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canUseAutoTranslate.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -574,12 +695,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.driveCapacityMb)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.driveCapacityMb.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.driveCapacityMb.value" :disabled="role.policies.driveCapacityMb.useDefault" type="number" :readonly="readonly">
-						<template #suffix>MB</template>
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.driveCapacityMb" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.driveCapacityMb.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.driveCapacityMb.value" :disabled="role.policies.driveCapacityMb.useDefault" type="number" :readonly="readonly">
+							<template #suffix>MB</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.driveCapacityMb.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -594,12 +720,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.alwaysMarkNsfw)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.alwaysMarkNsfw.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.alwaysMarkNsfw.value" :disabled="role.policies.alwaysMarkNsfw.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.alwaysMarkNsfw" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.alwaysMarkNsfw.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.alwaysMarkNsfw.value" :disabled="role.policies.alwaysMarkNsfw.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.alwaysMarkNsfw.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -614,12 +745,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUpdateBioMedia)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canUpdateBioMedia.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canUpdateBioMedia.value" :disabled="role.policies.canUpdateBioMedia.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canUpdateBioMedia" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canUpdateBioMedia.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canUpdateBioMedia.value" :disabled="role.policies.canUpdateBioMedia.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canUpdateBioMedia.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -634,11 +770,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.pinLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.pinLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.pinLimit.value" :disabled="role.policies.pinLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.pinLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.pinLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.pinLimit.value" :disabled="role.policies.pinLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.pinLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -653,11 +794,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.antennaLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.antennaLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.antennaLimit.value" :disabled="role.policies.antennaLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.antennaLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.antennaLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.antennaLimit.value" :disabled="role.policies.antennaLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.antennaLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -672,12 +818,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.wordMuteLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.wordMuteLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.wordMuteLimit.value" :disabled="role.policies.wordMuteLimit.useDefault" type="number" :readonly="readonly">
-						<template #suffix>chars</template>
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.wordMuteLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.wordMuteLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.wordMuteLimit.value" :disabled="role.policies.wordMuteLimit.useDefault" type="number" :readonly="readonly">
+							<template #suffix>chars</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.wordMuteLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -692,11 +843,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.webhookLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.webhookLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.webhookLimit.value" :disabled="role.policies.webhookLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.webhookLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.webhookLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.webhookLimit.value" :disabled="role.policies.webhookLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.webhookLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -711,11 +867,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.clipLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.clipLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.clipLimit.value" :disabled="role.policies.clipLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.clipLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.clipLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.clipLimit.value" :disabled="role.policies.clipLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.clipLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -730,11 +891,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteEachClipsLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.noteEachClipsLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.noteEachClipsLimit.value" :disabled="role.policies.noteEachClipsLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.noteEachClipsLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.noteEachClipsLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.noteEachClipsLimit.value" :disabled="role.policies.noteEachClipsLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.noteEachClipsLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -749,11 +915,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userListLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.userListLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.userListLimit.value" :disabled="role.policies.userListLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.userListLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.userListLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.userListLimit.value" :disabled="role.policies.userListLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.userListLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -768,11 +939,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userEachUserListsLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.userEachUserListsLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.userEachUserListsLimit.value" :disabled="role.policies.userEachUserListsLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.userEachUserListsLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.userEachUserListsLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.userEachUserListsLimit.value" :disabled="role.policies.userEachUserListsLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.userEachUserListsLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -787,12 +963,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canHideAds)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canHideAds.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canHideAds.value" :disabled="role.policies.canHideAds.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canHideAds" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canHideAds.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canHideAds.value" :disabled="role.policies.canHideAds.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canHideAds.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -807,12 +988,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.avatarDecorationLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.avatarDecorationLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.avatarDecorationLimit.value" type="number" :min="0" :max="16" @update:modelValue="updateAvatarDecorationLimit">
-						<template #label>{{ i18n.ts._role._options.avatarDecorationLimit }}</template>
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.avatarDecorationLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.avatarDecorationLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.avatarDecorationLimit.value" type="number" :min="0" :max="16" @update:modelValue="updateAvatarDecorationLimit">
+							<template #label>{{ i18n.ts._role._options.avatarDecorationLimit }}</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.avatarDecorationLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -827,12 +1013,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportAntennas)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canImportAntennas.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canImportAntennas.value" :disabled="role.policies.canImportAntennas.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canImportAntennas" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canImportAntennas.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canImportAntennas.value" :disabled="role.policies.canImportAntennas.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canImportAntennas.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -847,12 +1038,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportBlocking)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canImportBlocking.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canImportBlocking.value" :disabled="role.policies.canImportBlocking.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canImportBlocking" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canImportBlocking.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canImportBlocking.value" :disabled="role.policies.canImportBlocking.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canImportBlocking.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -867,12 +1063,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportFollowing)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canImportFollowing.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canImportFollowing.value" :disabled="role.policies.canImportFollowing.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canImportFollowing" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canImportFollowing.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canImportFollowing.value" :disabled="role.policies.canImportFollowing.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canImportFollowing.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -887,12 +1088,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportMuting)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canImportMuting.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canImportMuting.value" :disabled="role.policies.canImportMuting.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canImportMuting" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canImportMuting.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canImportMuting.value" :disabled="role.policies.canImportMuting.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canImportMuting.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -907,12 +1113,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportUserLists)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canImportUserLists.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canImportUserLists.value" :disabled="role.policies.canImportUserLists.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canImportUserLists" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canImportUserLists.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canImportUserLists.value" :disabled="role.policies.canImportUserLists.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canImportUserLists.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -927,11 +1138,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteDraftLimit)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.noteDraftLimit.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.noteDraftLimit.value" :disabled="role.policies.noteDraftLimit.useDefault" type="number" :readonly="readonly">
-					</MkInput>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.noteDraftLimit" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.noteDraftLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.noteDraftLimit.value" :disabled="role.policies.noteDraftLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.noteDraftLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -946,12 +1162,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSetFederationAvatarShape)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canSetFederationAvatarShape.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canSetFederationAvatarShape.value" :disabled="role.policies.canSetFederationAvatarShape.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canSetFederationAvatarShape" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canSetFederationAvatarShape.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canSetFederationAvatarShape.value" :disabled="role.policies.canSetFederationAvatarShape.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canSetFederationAvatarShape.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -966,12 +1187,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canDeleteAccount)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canDeleteAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canDeleteAccount.value" :disabled="role.policies.canDeleteAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canDeleteAccount" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canDeleteAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canDeleteAccount.value" :disabled="role.policies.canDeleteAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canDeleteAccount.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -986,12 +1212,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canTruncateAccount)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.canTruncateAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSwitch v-model="role.policies.canTruncateAccount.value" :disabled="role.policies.canTruncateAccount.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-					</MkSwitch>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.canTruncateAccount" :readonly="readonly"/>
+					</div>
+					<div v-else>
+						<MkSwitch v-model="role.policies.canTruncateAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSwitch v-model="role.policies.canTruncateAccount.value" :disabled="role.policies.canTruncateAccount.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+						</MkSwitch>
+					</div>
 					<MkRange v-model="role.policies.canTruncateAccount.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -1008,6 +1239,7 @@ import { throttle } from 'throttle-debounce';
 import { ROLE_POLICIES } from '@@/js/const.js';
 import { v4 as uuid } from 'uuid';
 import RolesEditorFormula from './RolesEditorFormula.vue';
+import RolesEditorLevelCond from './RolesEditorLevelCond.vue';
 import RolesEditorLevel from './RolesEditorLevel.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
@@ -1044,6 +1276,14 @@ for (const ROLE_POLICY of ROLE_POLICIES) {
 			value: instance.policies[ROLE_POLICY],
 		};
 	}
+	if (role.value.policies[ROLE_POLICY].policyAsLevel == null) {
+		role.value.policies[ROLE_POLICY].policyAsLevel = [{
+			level: 1,
+			type: 'base',
+			value: instance.policies[ROLE_POLICY],
+			additional: 0,
+		}];
+	}
 }
 
 if (!role.value.levelPolicies) {
@@ -1077,6 +1317,33 @@ let levelPolicies = {
 		exponential: policy.exponential || 1,
 	})),
 };
+let levelCondPolicies = Object.fromEntries(
+	Object.entries(role.value.policies).map(([name, policy]) => {
+		const typedPolicy = policy as { value: any; policyAsLevel?: any[] };
+		return [
+			name,
+			{
+				type: typeof policy.value === 'boolean'
+					? 'boolean'
+					: typeof policy.value === 'number'
+						? 'number'
+						: 'string',
+				defaultValue: instance.policies[name],
+				baseLevel: role.value.levelPolicies?.baseLevel,
+				CondFormula: Array.isArray((policy as { policyAsLevel?: any[] }).policyAsLevel)
+					? (policy as { policyAsLevel: any[] }).policyAsLevel.map((p: { level: number; type: string; base: number; additional?: number }) => ({
+						id: uuid(),
+						level: p.level,
+						type: p.type as 'base' | 'const' | 'multiplier',
+						base: p.base,
+						additional: p.additional || 0,
+					}))
+					: [],
+			},
+		];
+	}),
+);
+console.log(levelCondPolicies);
 
 function updateAvatarDecorationLimit(value: string | number) {
 	const numValue = Number(value);
@@ -1120,7 +1387,17 @@ const save = throttle(100, () => {
 		isExplorable: role.value.isExplorable,
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
-		policies: role.value.policies,
+		policies: Object.entries(role.value.policies).map(([key, policy]) => ({
+			useDefault: policy.useDefault,
+			priority: policy.priority,
+			value: policy.value,
+			policyAsLevel: levelCondPolicies[key].CondFormula.map(p => ({
+				level: p.level,
+				type: p.type,
+				base: p.base,
+				additional: p.additional || 0,
+			})),
+		})),
 		levelPolicies: {
 			baseLevel: levelPolicies.baseLevel,
 			experiencePolicies: levelPolicies.experiencePolicies.map(policy => ({
@@ -1131,6 +1408,7 @@ const save = throttle(100, () => {
 				exponential: policy.exponential,
 			})),
 		},
+
 	};
 	emit('update:modelValue', data);
 });

@@ -6,20 +6,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <div class="_gaps">
 	<div>
-		<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 8px; width: 100%;">
-			<MkInput v-model="modelValue.baseLevel" type="number" @input="updateModelValue({...modelValue})">
-				<template #label>最小レベル</template>
-			</MkInput>
-			<MkInput v-model="computedMaxLevel" type="number" readonly>
-				<template #label>最大レベル</template>
-			</MkInput>
-		</div>
 		<div :class="$style.header">
 			<FormSlot>
 				<template #label>{{ i18n.ts.navbar }}</template>
 				<MkContainer :showHeader="false">
 					<Sortable
-						v-model="modelValue.experiencePolicies"
+						v-model="modelValue.CondFormula"
 						itemKey="id"
 						:animation="150"
 						:handle="'.' + $style.itemHandle"
@@ -33,35 +25,40 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<div>
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 8px;">
-											<MkInput v-model="element.level" :min="1" type="number" :class="$style.itemBase" @input="updateModelValue({...modelValue})">
-												<template #prefix>Lv. {{ getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i> +</template>
-												<template #suffix><i class="ti ti-arrow-right"></i> Lv. {{ getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) + element.level - 1 }}</template>
+											<MkInput
+												v-if="modelValue.CondFormula.findIndex(el => el === element) !== modelValue.CondFormula.length-1"
+												v-model="element.level" :min="1" type="number" :class="$style.itemBase" style="flex: 1; display: flex; align-items: center;"
+												@input="updateModelValue({...modelValue})"
+											>
+												<template #prefix>Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i> +</template>
+												<template #suffix><i class="ti ti-arrow-right"></i> Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) + element.level - 1 }}</template>
 											</MkInput>
-											<MkSelect v-model="element.type" :class="$style.itemSelect" @update:modelValue="updateModelValue({...modelValue})">
+											<MkInput v-else :class="$style.itemBase" type="text" readonly style="flex: 1; display: flex; align-items: center;">
+												<template #prefix>Lv. {{ getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i></template>
+												<template #suffix><i class="ti ti-arrow-right"></i>最大レベル</template>
+											</MkInput>
+											<MkSelect v-model="element.type" :class="$style.itemSelect" style="width: 150px;" @update:modelValue="updateModelValue({...modelValue})">
+												<option value="base">ベース</option>
 												<option value="const">固定値</option>
-												<option value="linear">直線増加</option>
-												<option value="exponential">指数増加</option>
+												<option v-if="modelValue.type === 'number'" value="multiplier">直線増加</option>
 											</MkSelect>
-											<button v-if="modelValue.experiencePolicies[0] !== element" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+											<button v-if="modelValue.CondFormula.length > 1" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
 										</div>
 									</div>
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px;">
-											<MkInput v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
+											<span v-if="element.type==='base'">ベースロールを使用</span>
+											<MkInput v-if="modelValue.type==='number' && element.type!=='base'" v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
 												<template #label>ベース値</template>
 											</MkInput>
-											<span v-if="element.type!=='const'"> + </span>
-											<MkInput v-if="element.type!=='const'" v-model="element.additional" type="number" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
+											<MkSwitch v-if="modelValue.type==='boolean' && element.type!=='base'" v-model="element.base" @update:modelValue="updateModelValue({...modelValue})">
+												<template #label>{{ i18n.ts.enable }}</template>
+											</MkSwitch>
+											<span v-if="element.type==='multiplier'"> + </span>
+											<MkInput v-if="element.type==='multiplier'" v-model="element.additional" type="number" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
 												<template #label>加算値</template>
 											</MkInput>
-											<span v-if="element.type==='exponential'"> * ( </span>
-											<MkInput v-if="element.type==='exponential'" v-model="element.exponential" type="number" step="0.001" :class="$style.itemLevel" @input="updateModelValue({...modelValue})">
-												<template #label>乗算値</template>
-											</MkInput>
-											<span v-if="element.type==='linear'"> * </span>
-											<span v-if="element.type==='exponential'"> ^ </span>
-											<span v-if="element.type==='linear' || element.type==='exponential'"> level </span>
-											<span v-if="element.type==='exponential'"> ) </span>
+											<span v-if="element.type==='multiplier'"> *  level </span>
 										</div>
 									</div>
 								</div>
@@ -84,20 +81,22 @@ import { v4 as uuid } from 'uuid';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
 import { i18n } from '@/i18n.js';
 import { deepClone } from '@/scripts/clone.js';
 import { rolesCache } from '@/cache.js';
 
 const props = defineProps<{
 	modelValue: {
+		type: 'boolean' | 'number' | 'string';
+		defaultValue: number | boolean;
 		baseLevel: number;
-		experiencePolicies: {
+		CondFormula: {
 			id: string; // UI上のドラッグ用。保存時は除外してもOK
 			level: number;
-			type: 'const' | 'linear' | 'exponential';
-			base: number;
-			additional?: number;
-			exponential?: number;
+			type: string;
+			base: number | boolean;
+			additional: number;
 		}[];
 	}
 }>();
@@ -105,8 +104,6 @@ const emit = defineEmits(['update:modelValue']);
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 
 const { modelValue } = toRefs(props);
-
-const computedMaxLevel = computed(() => modelValue.value.experiencePolicies.reduce((acc, item) => acc + item.level, 0) + modelValue.value.baseLevel);
 
 function updateModelValue(newValue: typeof modelValue.value) {
 	modelValue.value = newValue;
@@ -117,34 +114,31 @@ function add() {
 	const newItem: {
 		id: string;
 		level: number;
-		type: 'const' | 'linear' | 'exponential';
-		base: number;
+		type: 'const' | 'multiplier' | 'base';
+		base: number | boolean;
 		additional?: number;
-		exponential?: number;
 	} = {
 		id: uuid(), // Always a string
 		level: 10,
-		type: 'const',
-		base: 100,
+		type: 'base',
+		base: modelValue.value.defaultValue,
 		additional: 50,
-		exponential: 1,
 	};
-	const current = Array.isArray(modelValue.value.experiencePolicies) ? modelValue.value.experiencePolicies : [];
-	modelValue.value.experiencePolicies = [...current, newItem];
-	console.log(modelValue.value);
-	modelValue.value.maxLevel = modelValue.value.experiencePolicies.reduce((acc, item) => acc + item.level, 0) + modelValue.value.baseLevel;
+	const current = Array.isArray(modelValue.value.CondFormula ) ? modelValue.value.CondFormula : [];
+	modelValue.value.CondFormula = [...current, newItem];
 	updateModelValue({ ...modelValue.value });
 }
 
 function remove(idx: number) {
-	const arr = [...modelValue.value.experiencePolicies];
+	console.log(modelValue.value.CondFormula);
+	const arr = Array.isArray(modelValue.value.CondFormula) ? [...modelValue.value.CondFormula] : [];
 	arr.splice(idx, 1);
-	modelValue.value.experiencePolicies = arr;
+	modelValue.value.CondFormula = arr;
 	updateModelValue({ ...modelValue.value });
 }
 
 function getTotalLevel(index: number) {
-	const arr = modelValue.value.experiencePolicies;
+	const arr = modelValue.value.CondFormula;
 	if (index < 0 || index >= arr.length) return 0;
 	return arr.slice(0, index).reduce((sum, item) => sum + item.level, 0) + modelValue.value.baseLevel;
 }
