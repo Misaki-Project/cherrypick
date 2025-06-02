@@ -7,13 +7,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 <MkTooltip ref="tooltip" :showing="showing" :targetElement="targetElement" :maxWidth="250" direction="top" @closed="emit('closed')">
 	<div :class="$style.root">
 		<div v-if="role.experience" style="margin-bottom: 1px;">
-			<span>Lv. {{ role.experience.currentLevel }}</span> (<span>{{ role.experience.currentExp }}</span><span v-if="role.experience.nextLevelExp"> / {{ role.experience.nextLevelExp }}</span>)
+			<span style="font-size: 1.5em;">Lv. {{ role.experience.currentLevel }}</span> (<span>{{ role.experience.currentExp }}</span><span v-if="role.experience.nextLevelExp"> / {{ role.experience.nextLevelExp }}</span>)
 		</div>
 		<div v-if="role.experience" style="margin-bottom: 6px;">
-			<div style="background: #888; border-radius: 4px; height: 2px; width: 100%; overflow: hidden;">
+			<div
+				:style="{
+					background: 'var(--MI_THEME-accentedBg)',
+					borderRadius: '4px',
+					height: '5px',
+					width: '100%',
+					overflow: 'hidden'
+				}"
+			>
 				<div
 					:style="{
-						background: '#4caf50',
+						background: 'var(--MI_THEME-accent)',
 						width: Math.min((role.experience.currentExp / (role.experience.nextLevelExp || role.experience.totalExp)) * 100, 100) + '%',
 						height: '100%',
 						transition: 'width 0.3s'
