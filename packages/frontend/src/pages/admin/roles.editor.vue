@@ -1387,17 +1387,22 @@ const save = throttle(100, () => {
 		isExplorable: role.value.isExplorable,
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
-		policies: Object.entries(role.value.policies).map(([key, policy]) => ({
-			useDefault: policy.useDefault,
-			priority: policy.priority,
-			value: policy.value,
-			policyAsLevel: levelCondPolicies[key].CondFormula.map(p => ({
-				level: p.level,
-				type: p.type,
-				base: p.base,
-				additional: p.additional || 0,
-			})),
-		})),
+		policies: Object.fromEntries(
+			Object.entries(role.value.policies).map(([key, policy]) => ([
+				key,
+				{
+					useDefault: policy.useDefault,
+					priority: policy.priority,
+					value: policy.value,
+					policyAsLevel: levelCondPolicies[key].CondFormula.map(p => ({
+						level: p.level,
+						type: p.type,
+						base: p.base,
+						additional: p.additional || 0,
+					})),
+				},
+			]))
+		),
 		levelPolicies: {
 			baseLevel: levelPolicies.baseLevel,
 			experiencePolicies: levelPolicies.experiencePolicies.map(policy => ({

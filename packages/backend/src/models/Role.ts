@@ -342,6 +342,6 @@ export class MiRole {
 		useDefault: boolean;
 		priority: number;
 		value: any;
-		poricyAsLevel: RoleExperiencePolicyCulcValue | null;
+		policyAsLevel: RoleExperiencePolicyCulcValue | null;
 	}>;
 }

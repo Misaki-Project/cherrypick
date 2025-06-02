@@ -517,7 +517,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & UserExperience)[]> {
+	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & (UserExperience | undefined))[]> {
 		return roles.map(role => {
 			if (role.target === 'manualLevel') {
 				const assign = assigns.find(a => a.roleId === role.id);
@@ -607,7 +607,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 		const calc = <T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) => {
 			if (roles.length === 0) return basePolicies[name];
-
 			const policies = roles.map(role => {
 				const policy = role.policies[name] ?? { priority: 0, useDefault: true };
 
@@ -618,24 +617,31 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 						const levelInfo = this.evalRoleLevel(assign, role);
 						if (levelInfo) {
 							// レベルに応じたポリシー値を設定
-							const levelPolicy = role.policies[name].poricyAsLevel;
+							const levelPolicy = role.policies[name].policyAsLevel;
+							const level = levelInfo.level - levelInfo.minLevel;
 							if (levelPolicy) {
 								let startLevel = 0;
 								for (let i = 0; i < levelPolicy.length; i++) {
 									const policyValue = levelPolicy[i];
-									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + levelPolicy.level) : role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0) + role.levelPolicies.baseLevel;
-
-									if (levelInfo.level >= startLevel && levelInfo.level <= nextLevel) {
-										policy.useDefault = true;
+									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + level) : levelInfo.maxLevel - levelInfo.minLevel;
+									if (level >= startLevel && level <= nextLevel) {
 										switch (policyValue.type) {
 											case 'base':
 												policy.useDefault = true;
 												break;
 											case 'const':
+												policy.useDefault = false;
 												policy.value = policyValue.base;
 												break;
 											case 'multiplier':
-												policy.value = policyValue.base + policyValue.additional * ( levelInfo.level - startLevel);
+												policy.useDefault = false;
+												policy.value = Math.min(
+													policyValue.base + policyValue.additional * (levelInfo.level - startLevel),
+													Number.MAX_SAFE_INTEGER,
+												);
+												break;
+											default:
+												console.error(`Unexpected policyValue.type: ${policyValue.type}`);
 												break;
 										}
 										break;
@@ -646,7 +652,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 						}
 					}
 				}
-
 				return policy;
 			});
 
