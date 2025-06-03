@@ -472,7 +472,6 @@ async function unassignRole(role, ev) {
 }
 
 async function experienceMenu(role, ev) {
-	console.log(i18n.ts._experience);
 	os.popupMenu([{
 		text: i18n.ts._experience._calcs.additional,
 		icon: 'ti plus-minus',

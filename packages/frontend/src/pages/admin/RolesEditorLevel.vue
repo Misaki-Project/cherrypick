@@ -129,7 +129,6 @@ function add() {
 	};
 	const current = Array.isArray(modelValue.value.experiencePolicies) ? modelValue.value.experiencePolicies : [];
 	modelValue.value.experiencePolicies = [...current, newItem];
-	console.log(modelValue.value);
 	modelValue.value.maxLevel = modelValue.value.experiencePolicies.reduce((acc, item) => acc + item.level, 0) + modelValue.value.baseLevel;
 	updateModelValue({ ...modelValue.value });
 }

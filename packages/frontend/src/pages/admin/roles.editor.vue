@@ -1394,7 +1394,6 @@ let levelCondPolicies = ref(Object.fromEntries(
 ));
 
 watch(levelPolicies, (val) => {
-	console.log('levelPolicies changed', val);
 	role.value.levelPolicies = {
 		baseLevel: val.baseLevel,
 		experiencePolicies: val.experiencePolicies.map(policy => ({
@@ -1408,7 +1407,6 @@ watch(levelPolicies, (val) => {
 }, { deep: true });
 
 watch(levelCondPolicies, (val) => {
-	console.log('levelCondPolicies changed', val);
 	for (const key in val) {
 		if (role.value.policies[key]) {
 			role.value.policies[key].policyAsLevel = val[key].CondFormula.map(p => ({

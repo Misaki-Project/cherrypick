@@ -173,7 +173,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 		this.rootUserIdCache = new MemorySingleCache<MiUser['id']>(1000 * 60 * 60 * 24 * 7); // 1week. rootユーザのIDは不変なので長めに
 		this.rolesCache = new MemorySingleCache<MiRole[]>(1000 * 60 * 60); // 1h
-		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 5); // 5m
+		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000); // 5m
 
 		this.redisForSub.on('message', this.onMessage);
 	}
@@ -374,46 +374,130 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		}
 
 		let level = 0;
-		let currentExp = 0;
+		let totalExp = 0;
 
 		for (const policy of policies) {
 			if (policy.level <= 0) continue;
-			for (let i = 0; i < policy.level; i++) {
-				let nextExp = 0;
+			const max = policy.level;
+			let diff = max;
+			let estLevel = 0;
+			const currentExp = exp - totalExp;
+			while (diff > 0) {
 				switch (policy.type) {
 					case 'const':
-						nextExp = policy.base;
-						break;
+						if (policy.base * policy.level <= currentExp) {
+							totalExp += policy.base * policy.level;
+							level += policy.level;
+							break;
+						} else {
+							const nextLevel = Math.floor(currentExp / policy.base);
+							const currentLevelExp = Math.floor(exp - totalExp - policy.base * nextLevel);
+							return {
+								level: baseLevel + level + nextLevel,
+								currentLevelExp: currentLevelExp,
+								nextLevelExp: policy.base,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
 					case 'linear':
-						nextExp = policy.base + policy.additional * i;
+						if (currentExp >= this.calculateLinearSum(policy.base, policy.additional, estLevel + diff)) {
+							estLevel += diff;
+						}
 						break;
 					case 'exponential':
-						nextExp = policy.base + policy.additional * Math.pow(policy.exponential, i);
+						if (currentExp >= this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel + diff)) {
+							estLevel += diff;
+						}
 						break;
 				}
-				if (currentExp + nextExp > exp) {
-					const current = Math.floor(exp - currentExp);
-					const next = Math.ceil(nextExp - (exp - currentExp - current));
-					return {
-						level: baseLevel + level,
-						currentLevelExp: current,
-						nextLevelExp: next,
-						minLevel: baseLevel,
-						maxLevel: maxLevel,
-					};
+
+				if (policy.type === 'const') {
+					break;
 				}
-				level++;
-				currentExp += nextExp;
+
+				if (estLevel === max) {
+					switch (policy.type) {
+						case 'linear':
+							totalExp += this.calculateLinearSum(policy.base, policy.additional, max);
+							level += policy.level;
+							break;
+						case 'exponential':
+							totalExp += this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, max);
+							level += policy.level;
+							break;
+					}
+					break;
+				}
+				if (diff !== 1) {
+					diff = Math.floor((diff + 1) / 2);
+				} else {
+					switch (policy.type) {
+						case 'linear':
+						{
+							const current = totalExp + this.calculateLinearSum(policy.base, policy.additional, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * (estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						case 'exponential':
+						{
+							const current = totalExp + this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * Math.pow(policy.exponential, estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						default:
+							return null;
+					}
+				}
 			}
 		}
-
 		return {
 			level: baseLevel + level,
-			currentLevelExp: Math.floor(exp - currentExp),
+			currentLevelExp: Math.floor(exp - totalExp),
 			nextLevelExp: Number.NaN,
 			minLevel: baseLevel,
 			maxLevel: maxLevel,
 		};
+	}
+
+	private calculateExponentialSum(
+		base: number,
+		additional: number,
+		exponential: number,
+		level: number,
+	): number {
+		if (!Number.isInteger(level) || level < 0) {
+			throw new Error('level must be a non-negative integer');
+		}
+		// Case: exponential = 1
+		if (exponential === 1) {
+			return (base + additional) * (level);
+		}
+		// Case: exponential != 1
+		const geometricSum = (1 - Math.pow(exponential, level)) / (1 - exponential);
+		return base * (level) + additional * geometricSum;
+	}
+	private calculateLinearSum(
+		base: number,
+		additional: number,
+		level: number,
+	): number {
+		if (!Number.isInteger(level) || level < 0) {
+			throw new Error('level must be a non-negative integer');
+		}
+		return base * level + additional * (level * (level - 1)) / 2;
 	}
 
 	@bindThis

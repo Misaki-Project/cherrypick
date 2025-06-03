@@ -128,7 +128,6 @@ function add() {
 }
 
 function remove(idx: number) {
-	console.log(modelValue.value.CondFormula);
 	const arr = Array.isArray(modelValue.value.CondFormula) ? [...modelValue.value.CondFormula] : [];
 	arr.splice(idx, 1);
 	modelValue.value.CondFormula = arr;
