@@ -34,8 +34,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 8px;">
 											<MkInput v-model="element.level" :min="1" type="number" :class="$style.itemBase" @input="updateModelValue({...modelValue})">
-												<template #prefix>Lv. {{ getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) }} <i class="ti ti-arrow-right"></i> +</template>
-												<template #suffix><i class="ti ti-arrow-right"></i> Lv. {{ getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) + element.level - 1 }}</template>
+												<template #prefix>{{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element))}) }} <i class="ti ti-arrow-right"></i> +</template>
+												<template #suffix><i class="ti ti-arrow-right"></i> {{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) + element.level - 1}) }}</template>
 											</MkInput>
 											<MkSelect v-model="element.type" :class="$style.itemSelect" @update:modelValue="updateModelValue({...modelValue})">
 												<option value="const">{{ i18n.ts._experience._rules.const }}</option>
@@ -79,14 +79,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, watch, toRefs } from 'vue';
+import { computed, defineAsyncComponent, toRefs } from 'vue';
 import { v4 as uuid } from 'uuid';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
-import { deepClone } from '@/scripts/clone.js';
-import { rolesCache } from '@/cache.js';
 
 const props = defineProps<{
 	modelValue: {

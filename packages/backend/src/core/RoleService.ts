@@ -838,7 +838,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				case 'add':
 					setExperience = experience;
 					break;
-				case 'multipiler':
+				case 'multiplier':
 					setExperience = 0;
 					break;
 			}
@@ -862,7 +862,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				case 'add':
 					setExperience = (assign.experience ?? 0) + experience;
 					break;
-				case 'multipiler':
+				case 'multiplier':
 					setExperience = (assign.experience ?? 0) * experience;
 					break;
 			}

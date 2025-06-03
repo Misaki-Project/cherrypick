@@ -79,7 +79,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.noSuchRole);
 			}
 
-			const query = this.queryService.makePaginationQuery(this.roleAssignmentsRepository.createQueryBuilder('assign'), ps.sinceId, ps.untilId)
+			let query = this.queryService.makePaginationQuery(this.roleAssignmentsRepository.createQueryBuilder('assign'), ps.sinceId, ps.untilId)
 				.andWhere('assign.roleId = :roleId', { roleId: role.id })
 				.andWhere(new Brackets(qb => {
 					qb
@@ -87,7 +87,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						.orWhere('assign.expiresAt > :now', { now: new Date() });
 				}))
 				.innerJoinAndSelect('assign.user', 'user');
-
+			if (role.target === 'manualLevel') {
+				query = query.orderBy('assign.experience', 'DESC');
+			}
 			const assigns = await query
 				.limit(ps.limit)
 				.getMany();

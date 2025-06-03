@@ -91,8 +91,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.rateLimitFactor, 'rateLimitFactor'])">
 				<template #label>{{ i18n.ts._role._options.rateLimitFactor }}</template>
 				<template #suffix>
-					<span v-if="role.policies.rateLimitFactor.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ `${Math.floor(role.policies.rateLimitFactor.value * 100)}%` }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.rateLimitFactor.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{ `${Math.floor(role.policies.rateLimitFactor.value * 100)}%` }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.rateLimitFactor.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.rateLimitFactor)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -118,8 +119,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.gtlAvailable, 'gtlAvailable'])">
 				<template #label>{{ i18n.ts._role._options.gtlAvailable }}</template>
 				<template #suffix>
-					<span v-if="role.policies.gtlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.gtlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.gtlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.gtlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.gtlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.gtlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -143,8 +145,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.ltlAvailable, 'ltlAvailable'])">
 				<template #label>{{ i18n.ts._role._options.ltlAvailable }}</template>
 				<template #suffix>
-					<span v-if="role.policies.ltlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.ltlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.ltlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.ltlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.ltlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.ltlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -168,8 +171,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.btlAvailable, 'btlAvailable'])">
 				<template #label>{{ i18n.ts._role._options.btlAvailable }}</template>
 				<template #suffix>
-					<span v-if="role.policies.btlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.btlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.btlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.btlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.btlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.btlAvailable)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -193,8 +197,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicNote, 'canPublicNote'])">
 				<template #label>{{ i18n.ts._role._options.canPublicNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -218,8 +223,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicReplyNote, 'canPublicReplyNote'])">
 				<template #label>{{ i18n.ts._role._options.canPublicReplyNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicReplyNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicReplyNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicReplyNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicReplyNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicReplyNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicReplyNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -243,8 +249,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicQuoteNote, 'canPublicQuoteNote'])">
 				<template #label>{{ i18n.ts._role._options.canPublicQuoteNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicQuoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicQuoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicQuoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicQuoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicQuoteNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicQuoteNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -268,8 +275,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteSelf, 'canPublicRenoteSelf'])">
 				<template #label>{{ i18n.ts._role._options.canPublicRenoteSelf }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicRenoteSelf.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicRenoteSelf.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteSelf.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicRenoteSelf.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteSelf.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteSelf)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -293,8 +301,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteLocalNote, 'canPublicRenoteLocalNote'])">
 				<template #label>{{ i18n.ts._role._options.canPublicRenoteLocalNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicRenoteLocalNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicRenoteLocalNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteLocalNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicRenoteLocalNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteLocalNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteLocalNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -318,8 +327,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicRenoteRemoteNote, 'canPublicRenoteRemoteNote'])">
 				<template #label>{{ i18n.ts._role._options.canPublicRenoteRemoteNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicRenoteRemoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicRenoteRemoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteRemoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicRenoteRemoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteRemoteNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteRemoteNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -343,8 +353,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPublicNoteWithFile, 'canPublicNoteWithFile'])">
 				<template #label>{{ i18n.ts._role._options.canPublicNoteWithFile }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPublicNoteWithFile.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPublicNoteWithFile.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPublicNoteWithFile.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPublicNoteWithFile.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicNoteWithFile.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNoteWithFile)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -368,8 +379,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 				<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canPurgeAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canPurgeAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canPurgeAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canPurgeAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPurgeAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPurgeAccount)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -393,8 +405,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canEditNote, 'canEditNote'])">
 				<template #label>{{ i18n.ts._role._options.canEditNote }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canEditNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canEditNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canEditNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canEditNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canEditNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canEditNote)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -418,8 +431,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.scheduleNoteMax, 'scheduleNoteMax'])">
 				<template #label>{{ i18n.ts._role._options.scheduleNoteMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.scheduleNoteMax.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.scheduleNoteMax.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.scheduleNoteMax.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.scheduleNoteMax.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.scheduleNoteMax.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.scheduleNoteMax)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -442,8 +456,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.mentionMax, 'mentionLimit'])">
 				<template #label>{{ i18n.ts._role._options.mentionMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.mentionLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.mentionLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.mentionLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.mentionLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.mentionLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.mentionLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -466,8 +481,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canInvite, 'canInvite'])">
 				<template #label>{{ i18n.ts._role._options.canInvite }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canInvite.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canInvite.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canInvite.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canInvite.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canInvite.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canInvite)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -491,8 +507,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.inviteLimit, 'inviteLimit'])">
 				<template #label>{{ i18n.ts._role._options.inviteLimit }}</template>
 				<template #suffix>
-					<span v-if="role.policies.inviteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.inviteLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.inviteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.inviteLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -515,8 +532,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.inviteLimitCycle, 'inviteLimitCycle'])">
 				<template #label>{{ i18n.ts._role._options.inviteLimitCycle }}</template>
 				<template #suffix>
-					<span v-if="role.policies.inviteLimitCycle.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.inviteLimitCycle.value + i18n.ts._time.minute }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.inviteLimitCycle.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.inviteLimitCycle.value + i18n.ts._time.minute }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteLimitCycle.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimitCycle)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -540,8 +558,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.inviteExpirationTime, 'inviteExpirationTime'])">
 				<template #label>{{ i18n.ts._role._options.inviteExpirationTime }}</template>
 				<template #suffix>
-					<span v-if="role.policies.inviteExpirationTime.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.inviteExpirationTime.value + i18n.ts._time.minute }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.inviteExpirationTime.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.inviteExpirationTime.value + i18n.ts._time.minute }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteExpirationTime.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteExpirationTime)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -565,8 +584,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canManageCustomEmojis, 'canManageCustomEmojis'])">
 				<template #label>{{ i18n.ts._role._options.canManageCustomEmojis }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canManageCustomEmojis.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canManageCustomEmojis.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canManageCustomEmojis.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canManageCustomEmojis.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canManageCustomEmojis.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageCustomEmojis)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -590,8 +610,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canManageAvatarDecorations, 'canManageAvatarDecorations'])">
 				<template #label>{{ i18n.ts._role._options.canManageAvatarDecorations }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canManageAvatarDecorations.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canManageAvatarDecorations.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canManageAvatarDecorations.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canManageAvatarDecorations.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canManageAvatarDecorations.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageAvatarDecorations)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -615,8 +636,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canSearchNotes, 'canSearchNotes'])">
 				<template #label>{{ i18n.ts._role._options.canSearchNotes }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canSearchNotes.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canSearchNotes.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canSearchNotes.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canSearchNotes.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canSearchNotes.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSearchNotes)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -640,8 +662,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canUseTranslator, 'canUseTranslator'])">
 				<template #label>{{ i18n.ts._role._options.canUseTranslator }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canUseTranslator.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canUseTranslator.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canUseTranslator.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canUseTranslator.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUseTranslator.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseTranslator)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -665,8 +688,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canUseAutoTranslate, 'canUseAutoTranslate'])">
 				<template #label>{{ i18n.ts._role._options.canUseAutoTranslate }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canUseAutoTranslate.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canUseAutoTranslate.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canUseAutoTranslate.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canUseAutoTranslate.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUseAutoTranslate.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseAutoTranslate)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -690,8 +714,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.driveCapacity, 'driveCapacityMb'])">
 				<template #label>{{ i18n.ts._role._options.driveCapacity }}</template>
 				<template #suffix>
-					<span v-if="role.policies.driveCapacityMb.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.driveCapacityMb.value + 'MB' }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.driveCapacityMb.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.driveCapacityMb.value + 'MB' }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.driveCapacityMb.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.driveCapacityMb)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -715,8 +740,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.alwaysMarkNsfw, 'alwaysMarkNsfw'])">
 				<template #label>{{ i18n.ts._role._options.alwaysMarkNsfw }}</template>
 				<template #suffix>
-					<span v-if="role.policies.alwaysMarkNsfw.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.alwaysMarkNsfw.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.alwaysMarkNsfw.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.alwaysMarkNsfw.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.alwaysMarkNsfw.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.alwaysMarkNsfw)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -740,8 +766,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canUpdateBioMedia, 'canUpdateBioMedia'])">
 				<template #label>{{ i18n.ts._role._options.canUpdateBioMedia }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canUpdateBioMedia.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canUpdateBioMedia.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canUpdateBioMedia.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canUpdateBioMedia.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUpdateBioMedia.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUpdateBioMedia)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -765,8 +792,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.pinMax, 'pinLimit'])">
 				<template #label>{{ i18n.ts._role._options.pinMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.pinLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.pinLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.pinLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.pinLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.pinLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.pinLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -789,8 +817,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.antennaMax, 'antennaLimit'])">
 				<template #label>{{ i18n.ts._role._options.antennaMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.antennaLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.antennaLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.antennaLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.antennaLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.antennaLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.antennaLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -813,8 +842,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.wordMuteMax, 'wordMuteLimit'])">
 				<template #label>{{ i18n.ts._role._options.wordMuteMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.wordMuteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.wordMuteLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.wordMuteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.wordMuteLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.wordMuteLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.wordMuteLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -838,8 +868,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.webhookMax, 'webhookLimit'])">
 				<template #label>{{ i18n.ts._role._options.webhookMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.webhookLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.webhookLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.webhookLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.webhookLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.webhookLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.webhookLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -862,8 +893,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.clipMax, 'clipLimit'])">
 				<template #label>{{ i18n.ts._role._options.clipMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.clipLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.clipLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.clipLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.clipLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.clipLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.clipLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -886,8 +918,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.noteEachClipsMax, 'noteEachClipsLimit'])">
 				<template #label>{{ i18n.ts._role._options.noteEachClipsMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.noteEachClipsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.noteEachClipsLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.noteEachClipsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.noteEachClipsLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.noteEachClipsLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteEachClipsLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -910,8 +943,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.userListMax, 'userListLimit'])">
 				<template #label>{{ i18n.ts._role._options.userListMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.userListLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.userListLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.userListLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.userListLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.userListLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userListLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -934,8 +968,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.userEachUserListsMax, 'userEachUserListsLimit'])">
 				<template #label>{{ i18n.ts._role._options.userEachUserListsMax }}</template>
 				<template #suffix>
-					<span v-if="role.policies.userEachUserListsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.userEachUserListsLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.userEachUserListsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.userEachUserListsLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.userEachUserListsLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userEachUserListsLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -958,8 +993,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canHideAds, 'canHideAds'])">
 				<template #label>{{ i18n.ts._role._options.canHideAds }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canHideAds.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canHideAds.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canHideAds.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canHideAds.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canHideAds.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canHideAds)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -983,8 +1019,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.avatarDecorationLimit, 'avatarDecorationLimit'])">
 				<template #label>{{ i18n.ts._role._options.avatarDecorationLimit }}</template>
 				<template #suffix>
-					<span v-if="role.policies.avatarDecorationLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.avatarDecorationLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.avatarDecorationLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.avatarDecorationLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.avatarDecorationLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.avatarDecorationLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1008,8 +1045,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportAntennas, 'canImportAntennas'])">
 				<template #label>{{ i18n.ts._role._options.canImportAntennas }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canImportAntennas.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canImportAntennas.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canImportAntennas.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canImportAntennas.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportAntennas.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportAntennas)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1033,8 +1071,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportBlocking, 'canImportBlocking'])">
 				<template #label>{{ i18n.ts._role._options.canImportBlocking }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canImportBlocking.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canImportBlocking.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canImportBlocking.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canImportBlocking.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportBlocking.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportBlocking)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1058,8 +1097,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportFollowing, 'canImportFollowing'])">
 				<template #label>{{ i18n.ts._role._options.canImportFollowing }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canImportFollowing.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canImportFollowing.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canImportFollowing.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canImportFollowing.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportFollowing.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportFollowing)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1083,8 +1123,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportMuting, 'canImportMuting'])">
 				<template #label>{{ i18n.ts._role._options.canImportMuting }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canImportMuting.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canImportMuting.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canImportMuting.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canImportMuting.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportMuting.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportMuting)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1108,8 +1149,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportUserLists, 'canImportUserLists'])">
 				<template #label>{{ i18n.ts._role._options.canImportUserLists }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canImportUserLists.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canImportUserLists.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canImportUserLists.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canImportUserLists.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportUserLists.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportUserLists)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1133,8 +1175,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.noteDraftLimit, 'noteDraftLimit'])">
 				<template #label>{{ i18n.ts._role._options.noteDraftLimit }}</template>
 				<template #suffix>
-					<span v-if="role.policies.noteDraftLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.noteDraftLimit.value }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.noteDraftLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.noteDraftLimit.value }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.noteDraftLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteDraftLimit)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1157,8 +1200,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canSetFederationAvatarShape, 'canSetFederationAvatarShape'])">
 				<template #label>{{ i18n.ts._role._options.canSetFederationAvatarShape }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canSetFederationAvatarShape.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canSetFederationAvatarShape.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canSetFederationAvatarShape.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canSetFederationAvatarShape.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canSetFederationAvatarShape.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSetFederationAvatarShape)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1182,8 +1226,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canDeleteAccount, 'canDeleteAccount'])">
 				<template #label>{{ i18n.ts._role._options.canDeleteAccount }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canDeleteAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canDeleteAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canDeleteAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canDeleteAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canDeleteAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canDeleteAccount)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1207,8 +1252,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canTruncateAccount, 'canTruncateAccount'])">
 				<template #label>{{ i18n.ts._role._options.canTruncateAccount }}</template>
 				<template #suffix>
-					<span v-if="role.policies.canTruncateAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.canTruncateAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.canTruncateAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{  role.policies.canTruncateAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canTruncateAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canTruncateAccount)"></i></span>
 				</template>
 				<div class="_gaps">
@@ -1273,17 +1319,23 @@ for (const ROLE_POLICY of ROLE_POLICIES) {
 		role.value.policies[ROLE_POLICY] = {
 			useDefault: true,
 			priority: 0,
-			value: instance.policies[ROLE_POLICY],
+			base: instance.policies[ROLE_POLICY],
 		};
 	}
 	if (role.value.policies[ROLE_POLICY].policyAsLevel == null) {
 		role.value.policies[ROLE_POLICY].policyAsLevel = [{
 			level: 1,
 			type: 'base',
-			value: instance.policies[ROLE_POLICY],
+			base: instance.policies[ROLE_POLICY],
 			additional: 0,
 		}];
 	}
+	role.value.policies[ROLE_POLICY].policyAsLevel.forEach((p) => {
+		p.level = (p.level == null || p.level < 1) ? 1 : p.level;
+		p.base = p.base ?? instance.policies[ROLE_POLICY];
+		p.additional = p.additional ?? 0;
+		p.type = p.type ?? 'base';
+	});
 }
 
 if (!role.value.levelPolicies) {

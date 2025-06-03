@@ -2083,6 +2083,7 @@ _role:
   descriptionOfCanEditMembersByModerator: "オンにすると、管理者に加えてモデレーターもこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると管理者のみが行えます。"
   priority: "優先度"
   levelPolicies: "レベルアップポリシー"
+  countOfCondLevelPolicies: "{value} 件のレベルポリシー"
   _priority:
     low: "低"
     middle: "中"

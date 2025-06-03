@@ -8058,6 +8058,10 @@ export interface Locale extends ILocale {
          * レベルアップポリシー
          */
         "levelPolicies": string;
+        /**
+         * {value} 件のレベルポリシー
+         */
+        "countOfCondLevelPolicies": ParameterizedString<"value">;
         "_priority": {
             /**
              * 低

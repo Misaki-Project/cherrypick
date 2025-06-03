@@ -221,7 +221,7 @@ type ExperiencePolicyCulcValueMultiplier = {
 };
 
 export const RoleExperienceSetMode = {
-	Base: 'base',
+	Set: 'set',
 	Add: 'add',
 	Multiplier: 'multiplier',
 } as const;
