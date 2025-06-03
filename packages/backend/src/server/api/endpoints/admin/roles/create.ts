@@ -44,11 +44,10 @@ export const paramDef = {
 		levelPolicies: {
 			type: 'object',
 			properties: {
-				min: { type: 'number', nullable: false },
-				max: { type: 'number', nullable: false },
+				baseLevel: { type: 'number', nullable: false },
 				experiencePolicies: { type: 'array', items: { type: 'object' } },
 			},
-			required: ['min', 'max'],
+			required: ['baseLevel', 'experiencePolicies'],
 		},
 	},
 	required: [
@@ -75,13 +74,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const levelPolicies = ps.levelPolicies ?? { min: 0, max: 100, experiencePolicies: [] };
+			const levelPolicies = ps.levelPolicies ?? { baseLevel: 0, experiencePolicies: [] };
 			const { levelPolicies: _, ...restPs } = ps;
 			const roleInput = {
 				...restPs,
 				levelPolicies: {
 					baseLevel: levelPolicies.baseLevel,
-					experiencePolicies: levelPolicies.experiencePolicies ?? [],
+					experiencePolicies: levelPolicies.experiencePolicies,
 				},
 			};
 

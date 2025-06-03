@@ -515,6 +515,7 @@ export class UserEntityService implements OnModuleInit {
 			})) : null;
 
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
+
 		const packed = {
 			id: user.id,
 			name: user.name,
