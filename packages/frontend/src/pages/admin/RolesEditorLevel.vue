@@ -32,17 +32,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 							>
 								<div>
 									<div :class="$style.itemInfo">
-										<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 8px;">
-											<MkInput v-model="element.level" :min="1" type="number" :class="$style.itemBase" @input="updateModelValue({...modelValue})">
+										<div style="display: flex; gap: 8px; width: 100%; padding-bottom: 8px;">
+											<MkInput v-model="element.level" :min="1" type="number" :class="$style.itemBase" style="width: 100%;" @input="updateModelValue({...modelValue})">
 												<template #prefix>{{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element))}) }} <i class="ti ti-arrow-right"></i> +</template>
 												<template #suffix><i class="ti ti-arrow-right"></i> {{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.experiencePolicies.findIndex(el => el === element)) + element.level - 1}) }}</template>
 											</MkInput>
-											<MkSelect v-model="element.type" :class="$style.itemSelect" @update:modelValue="updateModelValue({...modelValue})">
+											<MkSelect v-model="element.type" :class="$style.itemSelect" style="width: 120px;" @update:modelValue="updateModelValue({...modelValue})">
 												<option value="const">{{ i18n.ts._experience._rules.const }}</option>
 												<option value="linear">{{ i18n.ts._experience._rules.linear }}</option>
 												<option value="exponential">{{ i18n.ts._experience._rules.exponential }}</option>
 											</MkSelect>
-											<button v-if="modelValue.experiencePolicies[0] !== element" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
+											<button v-if="modelValue.experiencePolicies.length > 1" class="_button" :class="$style.itemRemove" style="margin-left: auto;" @click="remove(index)"><i class="ti ti-x"></i></button>
 										</div>
 									</div>
 									<div :class="$style.itemInfo">

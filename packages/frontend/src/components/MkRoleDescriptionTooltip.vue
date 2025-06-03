@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div
 					:style="{
 						background: 'var(--MI_THEME-accent)',
-						width: Math.min((role.experience.currentExp / (role.experience.nextLevelExp || role.experience.totalExp)) * 100, 100) + '%',
+						width: role.experience.nextLevelExp ? Math.min((role.experience.currentExp / role.experience.nextLevelExp) * 100, 100) + '%' : '100%',
 						height: '100%',
 						transition: 'width 0.3s'
 					}"

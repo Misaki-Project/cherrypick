@@ -24,16 +24,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 							>
 								<div>
 									<div :class="$style.itemInfo">
-										<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 8px;">
+										<div style="display: flex; align-items: center; gap: 8px; width: 100%;padding-bottom: 8px;">
 											<MkInput
 												v-if="modelValue.CondFormula.findIndex(el => el === element) !== modelValue.CondFormula.length-1"
-												v-model="element.level" :min="1" type="number" :class="$style.itemBase" style="flex: 1; display: flex; align-items: center;"
+												v-model="element.level" :min="1" type="number" :class="$style.itemBase" style="width: 100%;"
 												@input="updateModelValue({...modelValue})"
 											>
 												<template #prefix>{{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.CondFormula.findIndex(el => el === element))}) }} <i class="ti ti-arrow-right"></i> +</template>
 												<template #suffix><i class="ti ti-arrow-right"></i> {{ i18n.tsx._experience.levelShort({value: getTotalLevel(modelValue.CondFormula.findIndex(el => el === element)) + element.level - 1 }) }}</template>
 											</MkInput>
-											<MkInput v-else :class="$style.itemBase" type="text" readonly style="flex: 1; display: flex; align-items: center;">
+											<MkInput v-else :class="$style.itemBase" type="text" readonly style="width: 100%;">
 												<template #prefix>{{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.CondFormula.findIndex(el => el === element))}) }} <i class="ti ti-arrow-right"></i></template>
 												<template #suffix><i class="ti ti-arrow-right"></i>{{ i18n.ts._experience.maxLevel }}</template>
 											</MkInput>

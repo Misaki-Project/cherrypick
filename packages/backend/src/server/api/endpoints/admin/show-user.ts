@@ -273,6 +273,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				roleAssigns: roleAssigns.map(a => ({
 					createdAt: this.idService.parse(a.id).date.toISOString(),
 					expiresAt: a.expiresAt ? a.expiresAt.toISOString() : null,
+					experience: a.experience ?? undefined,
 					roleId: a.roleId,
 				})),
 				setFederationAvatarShape: user.setFederationAvatarShape,

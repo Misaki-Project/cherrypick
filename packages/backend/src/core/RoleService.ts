@@ -362,158 +362,58 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		const policies = role.levelPolicies.experiencePolicies;
 		const baseLevel = role.levelPolicies.baseLevel;
 		const maxLevel = baseLevel + policies.reduce((acc, p) => acc + p.level, 0);
-		if (policies.length === 0) return {
-			level: role.levelPolicies.baseLevel,
-			currentLevelExp: exp,
-			nextLevelExp: Number.NaN,
-			minLevel: baseLevel,
-			maxLevel: maxLevel,
-		};
-		let level = 0;
-		let currentExp = 0;
-		let currentLevelExp = 0;
-		let nextLevelExp = 0;
 
-		for (let i = 0; i < policies.length; i++) {
-			const levelPolicy = policies[i];
-			const startLevel = level;
-			const diffLevel = levelPolicy.level;
-			if (startLevel < 0 || diffLevel <= 0) {
-				// TODO: log error or handle invalid diffLevel case
-				continue;
-			}
-			let nextToExp = 0;
-
-			// Calculate the total level increment between policies using the sum of an arithmetic progression (Gauss's formula).
-			// Ensure diffLevel is positive before calculating addLevel.
-			// This accounts for the cumulative increase in levels across the range defined by the policy.
-			const addLevel = diffLevel * (1 + Math.floor((diffLevel - 1 ) / 2)) + (diffLevel % 2 === 0 ? Math.floor(diffLevel / 2) : 0);
-
-			const baseContribution = levelPolicy.base * diffLevel;
-			switch (levelPolicy.type) {
-				case 'const':
-					// Per Level = base
-					nextToExp = baseContribution;
-					break;
-				case 'linear':
-					// Per Level = base * additional
-					nextToExp = baseContribution + levelPolicy.additional * addLevel;
-					break;
-				case 'exponential':
-					{
-						// Per Level = base + additional * exponential ^ level
-						const safeAddLevel = Math.min(diffLevel, Math.floor(Math.log(Number.MAX_SAFE_INTEGER) / Math.log(levelPolicy.exponential)));
-						nextToExp = baseContribution
-            	+ levelPolicy.additional * (Math.pow(levelPolicy.exponential, safeAddLevel) - 1) / (levelPolicy.exponential - 1);
-					}
-					break;
-				default:
-					// TODO: log error
-					return null;
-			}
-			if (currentExp + nextToExp > exp) {
-				let rangeLevel = 0;
-				switch (levelPolicy.type) {
-					case 'const':
-						rangeLevel = startLevel + Math.floor((exp - currentExp) / levelPolicy.base);
-						currentLevelExp = currentExp + levelPolicy.base * (rangeLevel - startLevel);
-						nextLevelExp = currentExp + levelPolicy.base * (rangeLevel + 1 - startLevel);
-						break;
-					case 'linear':
-						rangeLevel = startLevel + Math.floor((-1 + Math.sqrt(1 + 8 * ((exp - currentExp) / levelPolicy.additional))) / 2);
-						currentLevelExp = currentExp + levelPolicy.base * (rangeLevel - startLevel) + levelPolicy.additional * (rangeLevel * (rangeLevel - 1)) / 2;
-						nextLevelExp = currentExp + levelPolicy.base * (rangeLevel + 1 - startLevel) + levelPolicy.additional * (rangeLevel + 1) * rangeLevel / 2;
-						break;
-					case 'exponential':
-						// 1レベルごとの必要経験値: base + additional * (exponential ^ level)
-						// 累積経験値: base * n + additional * (exponential^(n+1) - exponential) / (exponential - 1)
-						{
-							const { base, additional, exponential } = levelPolicy;
-							if (exponential <= 1) {
-								// 指数成長しない場合はエラーや警告
-								console.warn('exponential must be greater than 1');
-								return null;
-							}
-							let low = startLevel;
-							let high = Math.min(startLevel + diffLevel, role.levelPolicies.baseLevel + role.levelPolicies.experiencePolicies.reduce((acc, p) => acc + p.level, 0)); // Dynamically calculate upper bound
-							let foundLevel = startLevel;
-
-							const getTotalExp = (level: number) => {
-								if (exponential <= 1) {
-									console.warn('exponential must be greater than 1');
-									return Infinity;
-								}
-								const sumExponential = (Math.pow(exponential, level) - Math.pow(exponential, startLevel)) / (exponential - 1);
-								const sumLinear = additional * sumExponential;
-								const sumBase = base * (level - startLevel);
-								return currentExp + sumBase + sumLinear;
-							};
-
-							let iterations = 0; // Track iterations to prevent infinite loop
-
-							while (low <= high && iterations < diffLevel) {
-								const mid = Math.floor((low + high) / 2);
-								const totalExp = getTotalExp(mid);
-								if (!isFinite(totalExp)) {
-									high = mid - 1;
-									continue;
-								}
-								if (totalExp <= exp) {
-									foundLevel = mid;
-									low = mid + 1;
-								} else {
-									high = mid - 1;
-								}
-								iterations++;
-							}
-							rangeLevel = foundLevel;
-
-							// 現在のレベルに到達するための累積経験値
-							currentLevelExp = getTotalExp(rangeLevel);
-
-							// 次のレベルに到達するための累積経験値
-							nextLevelExp = getTotalExp(rangeLevel + 1);
-						}
-						break;
-					default:
-						// TODO: log error
-						return null;
-				}
-				level = rangeLevel;
-				break;
-			} else {
-				level += diffLevel;
-				currentExp += nextToExp;
-				currentLevelExp = currentExp;
-			}
-		}
-		level += baseLevel;
-		if (level >= maxLevel) {
+		if (policies.length === 0) {
 			return {
-				level: maxLevel,
-				currentLevelExp: Math.floor(exp - currentLevelExp),
+				level: baseLevel,
+				currentLevelExp: exp,
 				nextLevelExp: Number.NaN,
 				minLevel: baseLevel,
 				maxLevel: maxLevel,
 			};
-		} else {
-			let current = exp - currentLevelExp;
-			let next = Math.min(nextLevelExp, Number.MAX_SAFE_INTEGER) - currentLevelExp;
-			if (current % 1 > 0) {
-				next -= current % 1;
-				current = Math.floor(current);
-			}
-			if (next % 1 > 0) {
-				next = Math.floor(next) + 1;
-			}
-			return {
-				level: level,
-				currentLevelExp: current,
-				nextLevelExp: next,
-				minLevel: baseLevel,
-				maxLevel: maxLevel,
-			};
 		}
+
+		let level = 0;
+		let currentExp = 0;
+
+		for (const policy of policies) {
+			if (policy.level <= 0) continue;
+			for (let i = 0; i < policy.level; i++) {
+				let nextExp = 0;
+				switch (policy.type) {
+					case 'const':
+						nextExp = policy.base;
+						break;
+					case 'linear':
+						nextExp = policy.base + policy.additional * i;
+						break;
+					case 'exponential':
+						nextExp = policy.base + policy.additional * Math.pow(policy.exponential, i);
+						break;
+				}
+				if (currentExp + nextExp > exp) {
+					const current = Math.floor(exp - currentExp);
+					const next = Math.ceil(nextExp - (exp - currentExp - current));
+					return {
+						level: baseLevel + level,
+						currentLevelExp: current,
+						nextLevelExp: next,
+						minLevel: baseLevel,
+						maxLevel: maxLevel,
+					};
+				}
+				level++;
+				currentExp += nextExp;
+			}
+		}
+
+		return {
+			level: baseLevel + level,
+			currentLevelExp: Math.floor(exp - currentExp),
+			nextLevelExp: Number.NaN,
+			minLevel: baseLevel,
+			maxLevel: maxLevel,
+		};
 	}
 
 	@bindThis
