@@ -93,6 +93,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.rateLimitFactor.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ `${Math.floor(role.policies.rateLimitFactor.value * 100)}%` }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('rateLimitFactor')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.rateLimitFactor.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.rateLimitFactor)"></i></span>
 				</template>
@@ -121,6 +122,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.gtlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.gtlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('gtlAvailable')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.gtlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.gtlAvailable)"></i></span>
 				</template>
@@ -147,6 +149,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.ltlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.ltlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('ltlAvailable')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.ltlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.ltlAvailable)"></i></span>
 				</template>
@@ -173,6 +176,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.btlAvailable.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.btlAvailable.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('btlAvailable')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.btlAvailable.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.btlAvailable)"></i></span>
 				</template>
@@ -199,6 +203,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNote)"></i></span>
 				</template>
@@ -225,6 +230,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicReplyNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicReplyNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicReplyNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicReplyNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicReplyNote)"></i></span>
 				</template>
@@ -251,6 +257,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicQuoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicQuoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicQuoteNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicQuoteNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicQuoteNote)"></i></span>
 				</template>
@@ -277,6 +284,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteSelf.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicRenoteSelf.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicRenoteSelf')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteSelf.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteSelf)"></i></span>
 				</template>
@@ -303,6 +311,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteLocalNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicRenoteLocalNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicRenoteLocalNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteLocalNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteLocalNote)"></i></span>
 				</template>
@@ -329,6 +338,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicRenoteRemoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicRenoteRemoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicRenoteRemoteNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicRenoteRemoteNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicRenoteRemoteNote)"></i></span>
 				</template>
@@ -355,6 +365,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPublicNoteWithFile.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPublicNoteWithFile.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPublicNoteWithFile')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPublicNoteWithFile.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPublicNoteWithFile)"></i></span>
 				</template>
@@ -381,6 +392,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canPurgeAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canPurgeAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canPurgeAccount')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canPurgeAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canPurgeAccount)"></i></span>
 				</template>
@@ -407,6 +419,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canEditNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canEditNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canEditNote')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canEditNote.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canEditNote)"></i></span>
 				</template>
@@ -433,6 +446,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.scheduleNoteMax.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.scheduleNoteMax.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('scheduleNoteMax')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.scheduleNoteMax.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.scheduleNoteMax)"></i></span>
 				</template>
@@ -458,6 +472,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.mentionLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.mentionLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('mentionLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.mentionLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.mentionLimit)"></i></span>
 				</template>
@@ -483,6 +498,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canInvite.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canInvite.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canInvite')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canInvite.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canInvite)"></i></span>
 				</template>
@@ -509,6 +525,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.inviteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.inviteLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('inviteLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimit)"></i></span>
 				</template>
@@ -534,6 +551,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.inviteLimitCycle.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.inviteLimitCycle.value + i18n.ts._time.minute }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('inviteLimitCycle')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteLimitCycle.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteLimitCycle)"></i></span>
 				</template>
@@ -560,6 +578,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.inviteExpirationTime.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.inviteExpirationTime.value + i18n.ts._time.minute }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('inviteExpirationTime')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.inviteExpirationTime.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.inviteExpirationTime)"></i></span>
 				</template>
@@ -586,6 +605,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canManageCustomEmojis.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canManageCustomEmojis.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canManageCustomEmojis')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canManageCustomEmojis.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageCustomEmojis)"></i></span>
 				</template>
@@ -612,6 +632,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canManageAvatarDecorations.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canManageAvatarDecorations.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canManageAvatarDecorations')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canManageAvatarDecorations.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canManageAvatarDecorations)"></i></span>
 				</template>
@@ -638,6 +659,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canSearchNotes.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canSearchNotes.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canSearchNotes')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canSearchNotes.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSearchNotes)"></i></span>
 				</template>
@@ -664,6 +686,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canUseTranslator.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canUseTranslator.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canUseTranslator')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUseTranslator.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseTranslator)"></i></span>
 				</template>
@@ -690,6 +713,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canUseAutoTranslate.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canUseAutoTranslate.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canUseAutoTranslate')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUseAutoTranslate.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUseAutoTranslate)"></i></span>
 				</template>
@@ -716,6 +740,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.driveCapacityMb.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.driveCapacityMb.value + 'MB' }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('driveCapacityMb')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.driveCapacityMb.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.driveCapacityMb)"></i></span>
 				</template>
@@ -742,6 +767,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.alwaysMarkNsfw.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.alwaysMarkNsfw.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('alwaysMarkNsfw')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.alwaysMarkNsfw.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.alwaysMarkNsfw)"></i></span>
 				</template>
@@ -768,6 +794,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canUpdateBioMedia.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canUpdateBioMedia.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canUpdateBioMedia')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canUpdateBioMedia.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canUpdateBioMedia)"></i></span>
 				</template>
@@ -794,6 +821,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.pinLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.pinLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('pinLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.pinLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.pinLimit)"></i></span>
 				</template>
@@ -819,6 +847,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.antennaLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.antennaLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('antennaLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.antennaLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.antennaLimit)"></i></span>
 				</template>
@@ -844,6 +873,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.wordMuteLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.wordMuteLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('wordMuteLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.wordMuteLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.wordMuteLimit)"></i></span>
 				</template>
@@ -870,6 +900,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.webhookLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.webhookLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('webhookLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.webhookLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.webhookLimit)"></i></span>
 				</template>
@@ -895,6 +926,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.clipLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.clipLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('clipLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.clipLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.clipLimit)"></i></span>
 				</template>
@@ -920,6 +952,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.noteEachClipsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.noteEachClipsLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('noteEachClipsLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.noteEachClipsLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteEachClipsLimit)"></i></span>
 				</template>
@@ -945,6 +978,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.userListLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.userListLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('userListLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.userListLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userListLimit)"></i></span>
 				</template>
@@ -970,6 +1004,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.userEachUserListsLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.userEachUserListsLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('userEachUserListsLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.userEachUserListsLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.userEachUserListsLimit)"></i></span>
 				</template>
@@ -995,6 +1030,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canHideAds.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canHideAds.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canHideAds')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canHideAds.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canHideAds)"></i></span>
 				</template>
@@ -1021,6 +1057,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.avatarDecorationLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.avatarDecorationLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('avatarDecorationLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.avatarDecorationLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.avatarDecorationLimit)"></i></span>
 				</template>
@@ -1047,6 +1084,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canImportAntennas.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canImportAntennas.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canImportAntennas')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportAntennas.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportAntennas)"></i></span>
 				</template>
@@ -1073,6 +1111,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canImportBlocking.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canImportBlocking.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canImportBlocking')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportBlocking.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportBlocking)"></i></span>
 				</template>
@@ -1099,6 +1138,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canImportFollowing.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canImportFollowing.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canImportFollowing')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportFollowing.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportFollowing)"></i></span>
 				</template>
@@ -1125,6 +1165,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canImportMuting.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canImportMuting.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canImportMuting')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportMuting.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportMuting)"></i></span>
 				</template>
@@ -1151,6 +1192,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canImportUserLists.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canImportUserLists.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canImportUserLists')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canImportUserLists.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canImportUserLists)"></i></span>
 				</template>
@@ -1177,6 +1219,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.noteDraftLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.noteDraftLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('noteDraftLimit')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.noteDraftLimit.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.noteDraftLimit)"></i></span>
 				</template>
@@ -1202,6 +1245,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canSetFederationAvatarShape.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canSetFederationAvatarShape.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canSetFederationAvatarShape')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canSetFederationAvatarShape.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canSetFederationAvatarShape)"></i></span>
 				</template>
@@ -1228,6 +1272,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canDeleteAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canDeleteAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canDeleteAccount')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canDeleteAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canDeleteAccount)"></i></span>
 				</template>
@@ -1253,7 +1298,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts._role._options.canTruncateAccount }}</template>
 				<template #suffix>
 					<span v-if="role.target!=='manualLevel' && role.policies.canTruncateAccount.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.canTruncateAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target !== 'manualLevel'">{{ role.policies.canTruncateAccount.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('canTruncateAccount')">{{ i18n.ts._role.useBaseValue }}</span>
 					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.canTruncateAccount.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canTruncateAccount)"></i></span>
 				</template>
@@ -1444,6 +1490,10 @@ function getPriorityIcon(option) {
 function matchQuery(keywords: string[]): boolean {
 	if (q.value.trim().length === 0) return true;
 	return keywords.some(keyword => keyword.toLowerCase().includes(q.value.toLowerCase()));
+}
+
+function isPolicyLevelDefault(policyName: string): boolean {
+	return levelCondPolicies.value[policyName].CondFormula.length === 1 && levelCondPolicies.value[policyName].CondFormula[0].type === 'base';
 }
 
 const save = throttle(100, () => {
