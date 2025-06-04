@@ -1400,6 +1400,16 @@ if (!role.value.levelPolicies) {
 	};
 }
 
+if (role.value.levelPolicies.experiencePolicies == null) {
+	role.value.levelPolicies.experiencePolicies = [{
+		level: 100,
+		type: 'const',
+		base: 100,
+		additional: 0,
+		exponential: 1,
+	}];
+}
+
 let levelPolicies = ref({
 	baseLevel: role.value.levelPolicies.baseLevel,
 	experiencePolicies: role.value.levelPolicies.experiencePolicies.map(policy => ({
