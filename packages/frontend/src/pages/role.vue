@@ -17,7 +17,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</MkSpacer>
 	<MkSpacer v-else-if="tab === 'users'" :contentMax="1200">
 		<div class="_gaps_s">
-			<div v-if="role">{{ role.description }}</div>
+			<div v-if="role"><Mfm :text="role.description"/></div>
 			<MkUserList v-if="visible" :pagination="users" :extractor="(item) => item.user"/>
 			<div v-else-if="!visible" class="_fullinfo">
 				<img :src="infoImageUrl" class="_ghost"/>

@@ -29,7 +29,7 @@ export const paramDef = {
 		description: { type: 'string' },
 		color: { type: 'string', nullable: true },
 		iconUrl: { type: 'string', nullable: true },
-		target: { type: 'string', enum: ['manual', 'conditional'] },
+		target: { type: 'string', enum: ['manual', 'conditional', 'manualLevel'] },
 		condFormula: { type: 'object' },
 		isPublic: { type: 'boolean' },
 		isModerator: { type: 'boolean' },
@@ -40,6 +40,14 @@ export const paramDef = {
 		displayOrder: { type: 'number' },
 		policies: {
 			type: 'object',
+		},
+		levelPolicies: {
+			type: 'object',
+			properties: {
+				baseLevel: { type: 'number', nullable: false },
+				experiencePolicies: { type: 'array', items: { type: 'object' } },
+			},
+			required: ['baseLevel', 'experiencePolicies'],
 		},
 	},
 	required: [
@@ -66,7 +74,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			const created = await this.roleService.create(ps, me);
+			const levelPolicies = ps.levelPolicies ?? { baseLevel: 0, experiencePolicies: [] };
+			const { levelPolicies: _, ...restPs } = ps;
+			const roleInput = {
+				...restPs,
+				levelPolicies: {
+					baseLevel: levelPolicies.baseLevel,
+					experiencePolicies: levelPolicies.experiencePolicies,
+				},
+			};
+
+			const created = await this.roleService.create(roleInput, me);
 
 			return await this.roleEntityService.pack(created, me);
 		});

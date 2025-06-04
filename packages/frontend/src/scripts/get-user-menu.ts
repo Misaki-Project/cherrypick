@@ -487,6 +487,51 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 					}));
 				},
 			});
+
+			menuItems.push({
+				type: 'parent',
+				icon: 'ti ti-badges',
+				text: i18n.ts.manualLevel, //i18n.ts.roles,
+				children: async () => {
+					const roles = await rolesCache.fetch();
+
+					return roles.filter(r => r.target === 'manualLevel').map(r => ({
+						text: r.name,
+						action: async () => {
+							const { canceled, result: setMode } = await os.select({
+								title: i18n.ts.experience + ': ' + r.name,
+								items: [{
+									value: 'add', text: i18n.ts._experience._calcs.additional,
+								}, {
+									value: 'multiplier', text: i18n.ts._experience._calcs.multiplier,
+								}, {
+									value: 'set', text: i18n.ts._experience._calcs.set,
+								}],
+								default: 'add',
+							});
+							if (canceled) return;
+							const { canceled: canceled2, result: value } = await os.inputNumber({
+								title: i18n.ts._experience.settingValue,
+								default: setMode === 'multiplier' ? 1 : 0,
+								min: setMode === 'add' ? Number.MIN_SAFE_INTEGER : 0,
+								max: setMode === 'multiplier' ? 100 : Number.MAX_SAFE_INTEGER,
+								step: setMode === 'multiplier' ? 0.001 : 1,
+							});
+							if (canceled2) return;
+
+							const { canceled: canceled3, result: note } = await os.inputText({
+								type: 'text',
+								title: i18n.ts.note,
+								default: null,
+								placeholder: i18n.ts.moderationNote,
+							});
+							if (canceled3) return;
+							if ((setMode === 'add' && value === 0) || (setMode === 'multiplier' && value === 1)) return;
+							os.apiWithDialog('admin/roles/change-exp', { roleId: r.id, userId: user.id, setMode: setMode, value: value, assignForce: true, note: note });
+						},
+					}));
+				},
+			});
 		}
 
 		// フォローしたとしても user.isFollowing はリアルタイム更新されないので不便なため

@@ -420,7 +420,7 @@ export const packedRoleSchema = {
 				target: {
 					type: 'string',
 					optional: false, nullable: false,
-					enum: ['manual', 'conditional'],
+					enum: ['manual', 'conditional', 'manualLevel'],
 				},
 				condFormula: {
 					type: 'object',
@@ -477,6 +477,37 @@ export const packedRoleSchema = {
 				usersCount: {
 					type: 'integer',
 					optional: false, nullable: false,
+				},
+				experience: {
+					type: 'object',
+					optional: true, nullable: false,
+					properties: {
+						minLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						maxLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						currentLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						currentExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						nextLevelExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						totalExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+					},
+
 				},
 			},
 		},

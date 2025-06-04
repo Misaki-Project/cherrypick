@@ -2056,11 +2056,13 @@ _role:
   permission: "ロールの権限"
   descriptionOfPermission: "<b>モデレーター</b>は基本的なモデレーションに関する操作を行えます。\n<b>管理者</b>はサーバーの全ての設定を変更できます。"
   assignTarget: "アサイン"
-  descriptionOfAssignTarget: "<b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。\n<b>コンディショナル</b>は条件を設定し、それに合致するユーザーが自動で含まれるようになります。"
+  descriptionOfAssignTarget: "<b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。\n<b>コンディショナル</b>は条件を設定し、それに合致するユーザーが自動で含まれるようになります。\n<b>マニュアルレベル</b>はユーザーの評価値を手動で設定し、評価値を元に異なるポリシーを管理します。"
   manual: "マニュアル"
   manualRoles: "マニュアルロール"
   conditional: "コンディショナル"
   conditionalRoles: "コンディショナルロール"
+  manualLevel: "マニュアルレベル"
+  manualLevelRoles: "レベルロール"
   condition: "条件"
   isConditionalRole: "これはコンディショナルロールです。"
   isPublic: "公開ロール"
@@ -2080,6 +2082,8 @@ _role:
   canEditMembersByModerator: "モデレーターのメンバー編集を許可"
   descriptionOfCanEditMembersByModerator: "オンにすると、管理者に加えてモデレーターもこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると管理者のみが行えます。"
   priority: "優先度"
+  levelPolicies: "レベルアップポリシー"
+  countOfCondLevelPolicies: "{value} 件のレベルポリシー"
   _priority:
     low: "低"
     middle: "中"
@@ -3103,6 +3107,7 @@ _moderationLogTypes:
   deletePage: "ページを削除"
   deleteFlash: "Playを削除"
   deleteGalleryPost: "ギャラリーの投稿を削除"
+  changeExperienceRole: "ロールの経験値を変更"
 
 _fileViewer:
   title: "ファイルの詳細"
@@ -3510,3 +3515,25 @@ _chat:
   cannotSendMessagesToUsersAnymore: "今後、このユーザーにチャットを送信することはできません。"
   cannotSendMessagesBecauseYouBlocking: "このユーザーをブロックしています。"
   cannotSendMessagesBecauseToYourself: "自分自身にメッセージを送信することはできません。"
+
+manualLevel: "マニュアルレベル"
+experience: "経験値"
+_experience:
+  levelShort: "Lv.{value}"
+  baseLevel: "ベースレベル"
+  maxLevel: "最大レベル"
+  settingValue: "設定値"
+  _rules:
+    base: "ベース"
+    const: "定数"
+    linear: "線形"
+    exponential: "指数"
+    multiplier: "乗数"
+  _values:
+    base: "ベース値"
+    additional: "加算値"
+    exponential: "指数"
+  _calcs:
+    additional: "加減算"
+    multiplier: "乗算"
+    set: "固定値"

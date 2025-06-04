@@ -316,7 +316,7 @@ export function role(params: {
 	displayOrder?: number,
 	createdAt?: string,
 	updatedAt?: string,
-	target?: 'manual' | 'conditional',
+	target?: 'manual' | 'conditional' | 'manualLevel',
 	isPublic?: boolean,
 	isExplorable?: boolean,
 	asBadge?: boolean,
