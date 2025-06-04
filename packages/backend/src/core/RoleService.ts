@@ -230,6 +230,14 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 								...cached[index],
 								experience: body.experience,
 							};
+						} else {
+							cached.push({ // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
+								...body,
+								expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
+								user: null, // joinなカラムは通常取ってこないので
+								role: null, // joinなカラムは通常取ってこないので
+								experience: body.experience,
+							});
 						}
 					}
 					break;
