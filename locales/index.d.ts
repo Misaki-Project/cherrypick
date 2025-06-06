@@ -8063,11 +8063,11 @@ export interface Locale extends ILocale {
          */
         "descriptionOfCanEditMembersByModerator": string;
         /**
-         * ユーザーによるロールのプロフィールから非表示を許可
+         * ユーザーによるプロフィールからの非表示を許可
          */
         "canHideProfileByUser": string;
         /**
-         * オンにすると、ユーザーはロールのプロフィールを非表示にできます。オフにすると、ロールのプロフィールは常に表示されます。これは公開ロールのみに適用されます。
+         * オンにすると、ユーザーはロールをプロフィールから非表示にできます。オフにすると、ロールのプロフィールは常に表示されます。これは公開ロールのみに適用されます。
          */
         "descriptionOfcanHideProfileByUser": string;
         /**
