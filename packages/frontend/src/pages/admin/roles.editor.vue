@@ -70,6 +70,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #caption>{{ i18n.ts._role.descriptionOfIsPublic }}</template>
 	</MkSwitch>
 
+	<MkSwitch v-model="role.canHideProfileByUser" :readonly="readonly">
+		<template #label>{{ i18n.ts._role.canHideProfileByUser }}</template>
+		<template #caption>{{ i18n.ts._role.descriptionOfcanHideProfileByUser }}</template>
+	</MkSwitch>
+
 	<MkSwitch v-model="role.asBadge" :readonly="readonly">
 		<template #label>{{ i18n.ts._role.asBadge }}</template>
 		<template #caption>{{ i18n.ts._role.descriptionOfAsBadge }}</template>
@@ -1518,6 +1523,7 @@ const save = throttle(100, () => {
 		isAdministrator: role.value.isAdministrator,
 		isModerator: role.value.isModerator,
 		isPublic: role.value.isPublic,
+		canHideProfileByUser: role.value.canHideProfileByUser,
 		isExplorable: role.value.isExplorable,
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,

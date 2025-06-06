@@ -52,4 +52,9 @@ export class MiRoleAssignment {
 		comment: 'Experience for the role',
 	})
 	public experience: number | null;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public isHideProfile: boolean;
 }

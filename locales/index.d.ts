@@ -4981,6 +4981,18 @@ export interface Locale extends ILocale {
      */
     "rolesAssignedToMe": string;
     /**
+     * これらは自分に割り振られたロールです。プロフィールに表示するロールをカスタマイズすることができます。
+     */
+    "descriptionRolesAssignedToMeOfSetting": string;
+    /**
+     * プロフィールにロールを表示しない
+     */
+    "roleHideProfileTip": string;
+    /**
+     * プロフィールにロールを表示する
+     */
+    "roleShowProfileTip": string;
+    /**
      * パスワードリセットしますか？
      */
     "resetPasswordConfirm": string;
@@ -8050,6 +8062,14 @@ export interface Locale extends ILocale {
          * オンにすると、管理者に加えてモデレーターもこのロールへユーザーをアサイン/アサイン解除できるようになります。オフにすると管理者のみが行えます。
          */
         "descriptionOfCanEditMembersByModerator": string;
+        /**
+         * ユーザーによるロールのプロフィールから非表示を許可
+         */
+        "canHideProfileByUser": string;
+        /**
+         * オンにすると、ユーザーはロールのプロフィールを非表示にできます。オフにすると、ロールのプロフィールは常に表示されます。これは公開ロールのみに適用されます。
+         */
+        "descriptionOfcanHideProfileByUser": string;
         /**
          * 優先度
          */

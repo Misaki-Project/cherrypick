@@ -388,6 +388,7 @@ export * as 'roles/list' from './endpoints/roles/list.js';
 export * as 'roles/notes' from './endpoints/roles/notes.js';
 export * as 'roles/show' from './endpoints/roles/show.js';
 export * as 'roles/users' from './endpoints/roles/users.js';
+export * as 'roles/profile-hide' from './endpoints/roles/profile-hide.js';
 export * as 'server-info' from './endpoints/server-info.js';
 export * as 'stats' from './endpoints/stats.js';
 export * as 'sw/register' from './endpoints/sw/register.js';

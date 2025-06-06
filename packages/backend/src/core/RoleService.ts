@@ -242,6 +242,19 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					}
 					break;
 				}
+				case 'userHideProfileUpdated': {
+					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
+					if (cached) {
+						const index = cached.findIndex(x => x.id === body.id);
+						if (index > -1) {
+							cached[index] = {
+								...cached[index],
+								isHideProfile: body.isHideProfile,
+							};
+						}
+					}
+					break;
+				}
 				case 'userRoleAssigned': {
 					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
 					if (cached) {
@@ -509,7 +522,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & (UserExperience | undefined))[]> {
+	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & (UserExperience | undefined) & { isHideProfile: boolean })[]> {
 		return roles.map(role => {
 			if (role.target === 'manualLevel') {
 				const assign = assigns.find(a => a.roleId === role.id);
@@ -518,6 +531,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					if (levelInfo) {
 						return {
 							...role,
+							isHideProfile: role.canHideProfileByUser ? assign.isHideProfile : false,
 							experience: {
 								currentLevel: levelInfo.level,
 								currentExp: levelInfo.currentLevelExp,
@@ -558,7 +572,10 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			assigns,
 		);
 		const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-		const matchedCondRoles = roles.filter(r => r.target === 'conditional' && user && this.evalCond(user, assignedRoles, r.condFormula));
+		const matchedCondRoles = roles.filter((r): r is MiRole & { isHideProfile: boolean } => r.target === 'conditional' && user !== null && this.evalCond(user, assignedRoles, r.condFormula));
+		matchedCondRoles.forEach(r => {
+			r.isHideProfile = r.canHideProfileByUser ? (assigns.find(a => a.roleId === r.id)?.isHideProfile ?? false) : false;
+		});
 		return [...assignedRoles, ...matchedCondRoles];
 	}
 
@@ -891,6 +908,24 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			});
 		}
 		this.globalEventService.publishInternalEvent('userRoleExperienceUpdated', assign);
+	}
+
+	@bindThis
+	public async hideUserProfileRole(userId: MiUser['id'], roleId: MiRole['id'], isHide: boolean): Promise<void> {
+		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
+
+		const existing = await this.roleAssignmentsRepository.findOneBy({
+			roleId: roleId,
+			userId: userId,
+		});
+
+		if ( existing == null || existing.isHideProfile === isHide || !role.canHideProfileByUser) {
+			return;
+		}
+
+		await this.roleAssignmentsRepository.update(existing.id, { isHideProfile: isHide });
+
+		this.globalEventService.publishInternalEvent('userHideProfileUpdated', { ...existing, isHideProfile: isHide });
 	}
 
 	@bindThis
