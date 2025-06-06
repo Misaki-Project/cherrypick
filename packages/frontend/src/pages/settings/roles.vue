@@ -7,8 +7,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div class="_gaps_m">
 	<FormSection first>
 		<template #label>{{ i18n.ts.rolesAssignedToMe }}</template>
+		<template #description>{{ i18n.ts.descriptionRolesAssignedToMeOfSetting }}</template>
 		<div class="_gaps_s">
-			<MkRolePreview v-for="role in $i.roles" :key="role.id" :role="role" :forModeration="false"/>
+			<div v-for="role in roles" :key="role.id">
+				<div :class="$style.roleItemMain">
+					<MkRolePreview :class="$style.role" :role="role" :forModeration="false" :detailed="false"/>
+					<button v-if="role.isHideUserProfile" v-tooltip="i18n.ts.roleShowProfileTip" class="_button" :class="$style.roleHide" @click="showRole(role, $event)"><i class="ti ti-eye-off"></i></button>
+					<button v-else-if="role.canHideProfileByUser" v-tooltip="i18n.ts.roleHideProfileTip" class="_button" :class="$style.roleHide" @click="hideRole(role, $event)"><i class="ti ti-eye"></i></button>
+				</div>
+			</div>
 		</div>
 	</FormSection>
 	<FormSection>
@@ -23,18 +30,41 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import * as os from '@/os.js';
 import FormSection from '@/components/form/section.vue';
 import { i18n } from '@/i18n.js';
 import { signinRequired } from '@/account.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkRolePreview from '@/components/MkRolePreview.vue';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 
 const $i = signinRequired();
 
 const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
+
+const roles = ref([] as any[]);
+roles.value = $i.roles;
+
+async function refreshUser() {
+	await misskeyApi('i', {}).then(res => {
+		roles.value = res.roles;
+	});
+}
+
+async function hideRole(role: any, event: MouseEvent) {
+	await os.apiWithDialog('roles/profile-hide',
+		{ roleId: role.id, hide: true },
+	).then(refreshUser);
+}
+
+async function showRole(role: any, event: MouseEvent) {
+	await os.apiWithDialog('roles/profile-hide',
+		{ roleId: role.id, hide: false },
+	).then(refreshUser);
+}
 
 definePageMetadata(() => ({
 	title: i18n.ts.roles,
@@ -44,4 +74,19 @@ definePageMetadata(() => ({
 
 <style lang="scss" module>
 
+.role {
+	flex: 1;
+	min-width: 0;
+	margin-right: 8px;
+}
+
+.roleItemMain {
+	display: flex;
+}
+.roleHide {
+	width: 32px;
+	height: 32px;
+	margin-left: 8px;
+	align-self: center;
+}
 </style>

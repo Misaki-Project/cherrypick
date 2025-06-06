@@ -605,6 +605,8 @@ export class UserEntityService implements OnModuleInit {
 					isModerator: role.isModerator,
 					isAdministrator: role.isAdministrator,
 					displayOrder: role.displayOrder,
+					isHideUserProfile: role.isHideProfile,
+					canHideProfileByUser: role.canHideProfileByUser,
 					experience: role.experience ? {
 						currentLevel: role.experience.currentLevel,
 						currentExp: role.experience.currentExp,

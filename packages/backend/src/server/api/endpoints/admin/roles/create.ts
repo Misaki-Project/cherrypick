@@ -35,6 +35,7 @@ export const paramDef = {
 		isModerator: { type: 'boolean' },
 		isAdministrator: { type: 'boolean' },
 		isExplorable: { type: 'boolean', default: false }, // optional for backward compatibility
+		canHideProfileByUser: { type: 'boolean', default: false },
 		asBadge: { type: 'boolean' },
 		canEditMembersByModerator: { type: 'boolean' },
 		displayOrder: { type: 'number' },

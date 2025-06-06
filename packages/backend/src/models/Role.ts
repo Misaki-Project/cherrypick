@@ -320,6 +320,11 @@ export class MiRole {
 	})
 	public canEditMembersByModerator: boolean;
 
+	@Column('boolean', {
+		default: false,
+	})
+	public canHideProfileByUser: boolean;
+
 	// レベル情報
 	@Column('jsonb', {
 		default: { },
