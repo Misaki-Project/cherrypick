@@ -208,6 +208,14 @@ export const packedRolePoliciesSchema = {
 			type: 'integer',
 			optional: false, nullable: false,
 		},
+		followingLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		followerScaledFollowingLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
 		canInvite: {
 			type: 'boolean',
 			optional: false, nullable: false,

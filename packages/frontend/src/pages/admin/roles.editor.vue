@@ -498,6 +498,59 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.followingLimit, 'followingLimit'])">
+				<template #label>{{ i18n.ts._role._options.followingLimit }}</template>
+				<template #suffix>
+					<span v-if="role.target!=='manualLevel' && role.policies.followingLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.followingLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('followingLimit')">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.followingLimit.CondFormula.length}) }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.followingLimit)"></i></span>
+				</template>
+				<div>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.followingLimit" :readonly="readonly"/>
+					</div>
+					<div v-else class="_gaps">
+						<MkSwitch v-model="role.policies.followingLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.followingLimit.value" :disabled="role.policies.followingLimit.useDefault" type="number" :readonly="readonly">
+						</MkInput>
+					</div>
+					<MkRange v-model="role.policies.followingLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.followerScaledFollowingLimit, 'followerScaledFollowingLimit'])">
+				<template #label>{{ i18n.ts._role._options.followerScaledFollowingLimit }}</template>
+				<template #suffix>
+					<span v-if="role.target!=='manualLevel' && role.policies.followerScaledFollowingLimit.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">x {{ role.policies.followerScaledFollowingLimit.value }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('followerScaledFollowingLimit')">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.followerScaledFollowingLimit.CondFormula.length}) }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.followerScaledFollowingLimit)"></i></span>
+				</template>
+				<div>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.followerScaledFollowingLimit" :readonly="readonly"/>
+					</div>
+					<div v-else class="_gaps">
+						<MkSwitch v-model="role.policies.followerScaledFollowingLimit.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.followerScaledFollowingLimit.value" :disabled="role.policies.followerScaledFollowingLimit.useDefault" type="number" :readonly="readonly">
+							<template #suffix>x</template>
+						</MkInput>
+					</div>
+					<MkRange v-model="role.policies.followerScaledFollowingLimit.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canInvite, 'canInvite'])">
 				<template #label>{{ i18n.ts._role._options.canInvite }}</template>
 				<template #suffix>

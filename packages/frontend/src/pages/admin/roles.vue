@@ -138,6 +138,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkInput v-model="policies.mentionLimit" type="number">
 							</MkInput>
 						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.followingLimit, 'followingLimit'])">
+							<template #label>{{ i18n.ts._role._options.followingLimit }}</template>
+							<template #suffix>{{ policies.followingLimit }}</template>
+							<MkInput v-model="policies.followingLimit" type="number">
+							</MkInput>
+						</MkFolder>
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.followerScaledFollowingLimit, 'followerScaledFollowingLimit'])">
+							<template #label>{{ i18n.ts._role._options.followerScaledFollowingLimit }}</template>
+							<template #suffix>{{ policies.followerScaledFollowingLimit }}</template>
+							<MkInput v-model="policies.followerScaledFollowingLimit" type="number">
+							</MkInput>
+						</MkFolder>
 
 						<MkFolder v-if="matchQuery([i18n.ts._role._options.canInvite, 'canInvite'])">
 							<template #label>{{ i18n.ts._role._options.canInvite }}</template>
