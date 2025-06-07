@@ -636,7 +636,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 								let startLevel = 0;
 								for (let i = 0; i < levelPolicy.length; i++) {
 									const policyValue = levelPolicy[i];
-									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + level) : levelInfo.maxLevel - levelInfo.minLevel;
+									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + policyValue.level) : levelInfo.maxLevel - levelInfo.minLevel + 1; // 最大レベルの条件を入れるため
 									if (level >= startLevel && level <= nextLevel) {
 										switch (policyValue.type) {
 											case 'base':
