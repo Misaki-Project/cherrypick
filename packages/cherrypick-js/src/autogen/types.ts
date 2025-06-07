@@ -5467,6 +5467,8 @@ export type components = {
 			canPublicNoteWithFile: boolean;
 			canPurgeAccount: boolean;
       mentionLimit: number;
+			followingLimit: number;
+			followerScaledFollowingLimit: number;
       canInvite: boolean;
       inviteLimit: number;
       inviteLimitCycle: number;

@@ -48,6 +48,8 @@ export type RolePolicies = {
 	canPurgeAccount: boolean;
 	scheduleNoteMax: number;
 	mentionLimit: number;
+	followingLimit: number;
+	followerScaledFollowingLimit: number;
 	canInvite: boolean;
 	inviteLimit: number;
 	inviteLimitCycle: number;
@@ -97,6 +99,8 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canPurgeAccount: true,
 	scheduleNoteMax: 5,
 	mentionLimit: 20,
+	followingLimit: 500,
+	followerScaledFollowingLimit: 1.1,
 	canInvite: false,
 	inviteLimit: 0,
 	inviteLimitCycle: 60 * 24 * 7,
@@ -617,7 +621,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		const calc = <T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) => {
 			if (roles.length === 0) return basePolicies[name];
 			const policies = roles.map(role => {
-				const policy = role.policies[name] ?? { priority: 0, useDefault: true };
+				const policy = role.policies[name] ?? { priority: 0, useDefault: true, policyAsLevel: [] };
 
 				// manualLevelロールの場合、レベルに基づいて制御
 				if (role.target === 'manualLevel' && role.levelPolicies) {
@@ -626,7 +630,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 						const levelInfo = this.evalRoleLevel(assign, role);
 						if (levelInfo) {
 							// レベルに応じたポリシー値を設定
-							const levelPolicy = role.policies[name].policyAsLevel;
+							const levelPolicy = policy.policyAsLevel;
 							const level = levelInfo.level - levelInfo.minLevel;
 							if (levelPolicy) {
 								let startLevel = 0;
@@ -688,6 +692,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canPurgeAccount: calc('canPurgeAccount', vs => vs.some(v => v === true)),
 			scheduleNoteMax: calc('scheduleNoteMax', vs => Math.max(...vs)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),
+			followingLimit: calc('followingLimit', vs => Math.max(...vs)),
+			followerScaledFollowingLimit: calc('followerScaledFollowingLimit', vs => Math.max(...vs)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
 			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
 			inviteLimitCycle: calc('inviteLimitCycle', vs => Math.max(...vs)),

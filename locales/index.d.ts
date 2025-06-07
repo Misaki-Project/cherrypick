@@ -8154,6 +8154,14 @@ export interface Locale extends ILocale {
              */
             "mentionMax": string;
             /**
+             * フォローの上限数
+             */
+            "followingLimit": string;
+            /**
+             * フォロワーの倍率に応じたフォローの上限倍率
+             */
+            "followerScaledFollowingLimit": string;
+            /**
              * サーバー招待コードの発行
              */
             "canInvite": string;

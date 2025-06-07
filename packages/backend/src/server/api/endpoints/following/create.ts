@@ -12,6 +12,7 @@ import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { UserFollowingService } from '@/core/UserFollowingService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
+import { RoleService } from '@/core/RoleService.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
@@ -85,6 +86,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private userEntityService: UserEntityService,
 		private getterService: GetterService,
 		private userFollowingService: UserFollowingService,
+		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const follower = me;
@@ -99,6 +101,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (err.id === '15348ddd-432d-49c2-8a5a-8069753becff') throw new ApiError(meta.errors.noSuchUser);
 				throw err;
 			});
+			const userPolicy = await this.roleService.getUserPolicies(me.id);
+			const followingLimit = Math.max(userPolicy.followingLimit, me.followersCount * userPolicy.followerScaledFollowingLimit);
+
+			if (me.followingCount >= followingLimit ) {
+				throw new ApiError({
+					message: 'You have reached the maximum number of followings.',
+					code: 'MAX_FOLLOWING_REACHED',
+					id: 'f3d124d3-bdae-4020-87f3-f28a8e9acc49',
+					httpStatusCode: 403,
+				});
+			}
 
 			try {
 				await this.userFollowingService.follow(follower, followee, { withReplies: ps.withReplies });

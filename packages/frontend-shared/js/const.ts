@@ -92,6 +92,8 @@ export const ROLE_POLICIES = [
 	'canEditNote',
 	'scheduleNoteMax',
 	'mentionLimit',
+	'followingLimit',
+	'followerScaledFollowingLimit',
 	'canInvite',
 	'inviteLimit',
 	'inviteLimitCycle',
