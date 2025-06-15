@@ -18,8 +18,8 @@ export const meta = {
 	tags: ['messaging'],
 
 	limit: {
-		duration: ms('1hour'),
-		max: 120,
+		duration: ms('1min'),
+		max: 20,
 	},
 
 	requireCredential: true,

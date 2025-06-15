@@ -96,7 +96,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.invalidRoleTarget);
 			}
 
-			await this.roleService.assignExperience(user.id, role.id, ps.value, ps.setMode, me, ps.assignForce ?? false, ps.note);
+			try {
+				await this.roleService.assignExperience(user.id, role.id, ps.value, ps.setMode, me, ps.assignForce ?? true, ps.note);
+			} catch (err : any) {
+				throw new ApiError(err?.id, err?.message);
+			}
+
 			return await this.userEntityService.pack(user.id, me, { schema: 'UserDetailed' });
 		});
 	}
