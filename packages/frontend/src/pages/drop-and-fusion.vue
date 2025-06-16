@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	:moveClass="$style.transition_zoom_move"
 	mode="out-in"
 >
-	<MkSpacer v-if="!gameStarted" :contentMax="800">
+	<div v-if="!gameStarted" class="_spacer" style="--MI_SPACER-w: 800px;">
 		<div :class="$style.root">
 			<div class="_gaps">
 				<div class="_woodenFrame" style="text-align: center;">
@@ -67,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<MkUserName :user="r.user" :nowrap="true"/>
 									<b style="margin-left: auto;">{{ r.score.toLocaleString() }} {{ getScoreUnit(gameMode) }}</b>
 									<div style="margin-left: 8px; width: 50px; font-size: 80%; text-align: right;">
-										<div><MkTime :time="r.registeredAt" :mode="defaultStore.state.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
+										<div><MkTime :time="r.registeredAt" :mode="store.state.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
 									</div>
 								</div>
 							</div>
@@ -98,7 +98,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</div>
 		</div>
-	</MkSpacer>
+	</div>
 	<XGame v-else :gameMode="gameMode" :mute="mute" @end="onGameEnd"/>
 </Transition>
 </template>
@@ -106,13 +106,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import XGame from './drop-and-fusion.game.vue';
-import { defaultStore } from '@/store.js';
-import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { store } from '@/store.js';
+import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
-import { misskeyApiGet } from '@/scripts/misskey-api.js';
+import { misskeyApiGet } from '@/utility/misskey-api.js';
 
 const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
 const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
@@ -189,7 +189,7 @@ function onGameEnd() {
 	gameStarted.value = false;
 }
 
-definePageMetadata(() => ({
+definePage(() => ({
 	title: i18n.ts.bubbleGame,
 	icon: 'ti ti-device-gamepad',
 }));

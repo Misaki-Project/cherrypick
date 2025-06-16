@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Not, IsNull } from 'typeorm';
 import type Logger from '@/logger.js';
 import { RoleService } from '@/core/RoleService.js';
-import type { FollowingsRepository, MiUser, UsersRepository } from '@/models/_.js';
+import type { FollowingsRepository, MiMeta, MiUser, UsersRepository } from '@/models/_.js';
 import { QueueService } from '@/core/QueueService.js';
 import { UserSuspendService } from '@/core/UserSuspendService.js';
 import { DI } from '@/di-symbols.js';
@@ -16,6 +16,7 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { ApRendererService } from '@/core/activitypub/ApRendererService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { SystemAccountService } from '@/core/SystemAccountService.js';
 import { LoggerService } from '@/core/LoggerService.js';
 
 @Injectable()
@@ -23,6 +24,9 @@ export class DeleteAccountService {
 	public logger: Logger;
 
 	constructor(
+		@Inject(DI.meta)
+		private meta: MiMeta,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -37,6 +41,7 @@ export class DeleteAccountService {
 		private queueService: QueueService,
 		private globalEventService: GlobalEventService,
 		private moderationLogService: ModerationLogService,
+		private systemAccountService: SystemAccountService,
 	) {
 		this.logger = this.loggerService.getLogger('delete-account');
 	}
@@ -45,8 +50,13 @@ export class DeleteAccountService {
 	public async deleteAccount(user: MiUser, soft: boolean, me: MiUser | null, moderator: MiUser | null = null): Promise<void> {
 		this.logger.warn(`Delete account requested by ${me ? me.id : 'remote'} for ${user.id} (soft: ${soft})`);
 
+		if (this.meta.rootUserId === user.id) throw new Error('cannot delete a root account');
+
 		const _user = await this.usersRepository.findOneByOrFail({ id: user.id });
-		if (_user.isRoot) throw new Error('cannot delete a root account');
+
+		if (user.host === null && _user.username.includes('.')) {
+			throw new Error('cannot delete a system account');
+		}
 
 		if (moderator != null) {
 			this.moderationLogService.log(moderator, 'deleteAccount', {

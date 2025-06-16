@@ -56,8 +56,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		super(meta, paramDef, async (ps, me) => {
 			const user = await this.usersRepository.findOneBy({ id: ps.userId });
 
-			if (user == null) throw new ApiError(meta.errors.userNotFound);
-			if (await this.roleService.isModerator(user)) throw new ApiError(meta.errors.cannotDeleteModerator);
+			if (user == null) {
+				throw new ApiError(meta.errors.userNotFound);
+			}
+
+			if (await this.roleService.isModerator(user)) {
+				throw new ApiError(meta.errors.cannotDeleteModerator);
+			}
 
 			await this.deleteAccountService.deleteAccount(user, true, me);
 		});
