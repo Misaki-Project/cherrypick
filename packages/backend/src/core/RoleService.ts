@@ -375,7 +375,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		}
 	}
 
-	@bindThis
 	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole): {
 		level: number;
 		currentLevelExp: number;
@@ -400,76 +399,99 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			};
 		}
 
-		let level = baseLevel;
+		let level = 0;
 		let totalExp = 0;
 
 		for (const policy of policies) {
 			if (policy.level <= 0) continue;
-
+			const max = policy.level;
+			let diff = max;
+			let estLevel = 0;
 			const currentExp = exp - totalExp;
+			while (diff > 0) {
+				switch (policy.type) {
+					case 'const':
+						if (policy.base * policy.level <= currentExp) {
+							totalExp += policy.base * policy.level;
+							level += policy.level;
+							break;
+						} else {
+							const nextLevel = Math.floor(currentExp / policy.base);
+							const currentLevelExp = Math.floor(exp - totalExp - policy.base * nextLevel);
+							return {
+								level: baseLevel + level + nextLevel,
+								currentLevelExp: currentLevelExp,
+								nextLevelExp: policy.base,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+					case 'linear':
+						if (currentExp >= this.calculateLinearSum(policy.base, policy.additional, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+					case 'exponential':
+						if (currentExp >= this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+				}
 
-			switch (policy.type) {
-				case 'const': {
-					const maxExp = policy.base * policy.level;
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const nextLevel = Math.floor(currentExp / policy.base);
-						return {
-							level: level + nextLevel,
-							currentLevelExp: currentExp % policy.base,
-							nextLevelExp: policy.base,
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
+				if (policy.type === 'const') {
+					break;
+				}
+
+				if (estLevel === max) {
+					switch (policy.type) {
+						case 'linear':
+							totalExp += this.calculateLinearSum(policy.base, policy.additional, max);
+							level += policy.level;
+							break;
+						case 'exponential':
+							totalExp += this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, max);
+							level += policy.level;
+							break;
 					}
 					break;
 				}
-				case 'linear': {
-					const maxExp = this.calculateLinearSum(policy.base, policy.additional, policy.level);
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const estLevel = this.binarySearchLevel(policy.level, currentExp, (lvl) =>
-							this.calculateLinearSum(policy.base, policy.additional, lvl),
-						);
-						return {
-							level: level + estLevel,
-							currentLevelExp: currentExp - this.calculateLinearSum(policy.base, policy.additional, estLevel),
-							nextLevelExp: policy.base + policy.additional * estLevel,
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
+				if (diff !== 1) {
+					diff = Math.floor((diff + 1) / 2);
+				} else {
+					switch (policy.type) {
+						case 'linear':
+						{
+							const current = totalExp + this.calculateLinearSum(policy.base, policy.additional, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * (estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						case 'exponential':
+						{
+							const current = totalExp + this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * Math.pow(policy.exponential, estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						default:
+							return null;
 					}
-					break;
-				}
-				case 'exponential': {
-					const maxExp = this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, policy.level);
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const estLevel = this.binarySearchLevel(policy.level, currentExp, (lvl) =>
-							this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, lvl),
-						);
-						return {
-							level: level + estLevel,
-							currentLevelExp: currentExp - this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel),
-							nextLevelExp: policy.base + policy.additional * Math.pow(policy.exponential, estLevel),
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
-					}
-					break;
 				}
 			}
 		}
-
 		return {
-			level,
-			currentLevelExp: exp - totalExp,
+			level: baseLevel + level,
+			currentLevelExp: Math.floor(exp - totalExp),
 			nextLevelExp: Number.NaN,
 			minLevel: baseLevel,
 			maxLevel: maxLevel,

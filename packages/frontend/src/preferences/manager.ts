@@ -139,6 +139,10 @@ export class PreferencesManager {
 	}
 
 	public commit<K extends keyof PREF>(key: K, value: ValueOf<K>) {
+		if (typeof value === 'function') {
+			console.warn(`commit: key(${String(key)}) is function, but it should not be.`);
+			value = null;
+		}
 		const v = JSON.parse(JSON.stringify(value)); // deep copy 兼 vueのプロキシ解除
 
 		if (deepEqual(this.s[key], v)) {
