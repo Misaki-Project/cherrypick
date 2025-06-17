@@ -67,7 +67,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<MkUserName :user="r.user" :nowrap="true"/>
 									<b style="margin-left: auto;">{{ r.score.toLocaleString() }} {{ getScoreUnit(gameMode) }}</b>
 									<div style="margin-left: 8px; width: 50px; font-size: 80%; text-align: right;">
-										<div><MkTime :time="r.registeredAt" :mode="store.state.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
+										<div><MkTime :time="r.registeredAt" :mode="prefer.s.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
 									</div>
 								</div>
 							</div>
@@ -113,6 +113,7 @@ import { i18n } from '@/i18n.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/utility/misskey-api.js';
+import { prefer } from '@/preferences';
 
 const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
 const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');

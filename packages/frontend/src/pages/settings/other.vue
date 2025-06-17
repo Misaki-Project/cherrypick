@@ -53,15 +53,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkFolder>
 			</SearchMarker>
 
-			<SearchMarker :keywords="['roles']">
-				<MkFolder>
-					<template #icon><SearchIcon><i class="ti ti-badges"></i></SearchIcon></template>
-					<template #label><SearchLabel>{{ i18n.ts.rolesAssignedToMe }}</SearchLabel></template>
-
-					<MkRolePreview v-for="role in $i.roles" :key="role.id" :role="role" :forModeration="false"/>
-				</MkFolder>
-			</SearchMarker>
-
 			<SearchMarker :keywords="['account', 'move', 'migration']">
 				<MkFolder>
 					<template #icon><SearchIcon><i class="ti ti-plane"></i></SearchIcon></template>

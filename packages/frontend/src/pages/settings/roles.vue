@@ -18,14 +18,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</div>
 	</FormSection>
-	<FormSection>
-		<template #label>{{ i18n.ts._role.policies }}</template>
-		<div class="_gaps_s">
-			<div v-for="policy in Object.keys($i.policies)" :key="policy">
-				{{ policy }} ... {{ $i.policies[policy] }}
-			</div>
-		</div>
-	</FormSection>
 </div>
 </template>
 
@@ -34,12 +26,12 @@ import { computed, ref } from 'vue';
 import * as os from '@/os.js';
 import FormSection from '@/components/form/section.vue';
 import { i18n } from '@/i18n.js';
-import { signinRequired } from '@/account.js';
+import { ensureSignin } from '@/i.js';
 import { definePage } from '@/page.js';
 import MkRolePreview from '@/components/MkRolePreview.vue';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 
-const $i = signinRequired();
+const $i = ensureSignin();
 
 const headerActions = computed(() => []);
 

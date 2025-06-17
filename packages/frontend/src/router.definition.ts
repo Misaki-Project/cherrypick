@@ -119,6 +119,10 @@ export const ROUTE_DEF = [{
 		name: 'security',
 		component: page(() => import('@/pages/settings/security.vue')),
 	}, {
+		path: '/roles',
+		name: 'roles',
+		component: page(() => import('@/pages/settings/roles.vue')),
+	}, {
 		path: '/preferences',
 		name: 'preferences',
 		component: page(() => import('@/pages/settings/preferences.vue')),
