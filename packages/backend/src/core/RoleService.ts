@@ -61,6 +61,7 @@ export type RolePolicies = {
 	canUseAutoTranslate: boolean;
 	canHideAds: boolean;
 	driveCapacityMb: number;
+	maxFileSizeMb: number;
 	alwaysMarkNsfw: boolean;
 	canUpdateBioMedia: boolean;
 	pinLimit: number;
@@ -78,6 +79,7 @@ export type RolePolicies = {
 	canImportFollowing: boolean;
 	canImportMuting: boolean;
 	canImportUserLists: boolean;
+	chatAvailability: 'available' | 'readonly' | 'unavailable';
 	noteDraftLimit: number;
 	canSetFederationAvatarShape: boolean;
 	canDeleteAccount: boolean;
@@ -112,6 +114,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canUseAutoTranslate: false,
 	canHideAds: false,
 	driveCapacityMb: 100,
+	maxFileSizeMb: 10,
 	alwaysMarkNsfw: false,
 	canUpdateBioMedia: true,
 	pinLimit: 5,
@@ -129,6 +132,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canImportFollowing: true,
 	canImportMuting: true,
 	canImportUserLists: true,
+	chatAvailability: 'available',
 	noteDraftLimit: 10,
 	canSetFederationAvatarShape: true,
 	canDeleteAccount: true,
@@ -137,7 +141,6 @@ export const DEFAULT_POLICIES: RolePolicies = {
 
 @Injectable()
 export class RoleService implements OnApplicationShutdown, OnModuleInit {
-	private rootUserIdCache: MemorySingleCache<MiUser['id']>;
 	private rolesCache: MemorySingleCache<MiRole[]>;
 	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
 	private notificationService: NotificationService;
@@ -175,7 +178,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	) {
 		//this.onMessage = this.onMessage.bind(this);
 
-		this.rootUserIdCache = new MemorySingleCache<MiUser['id']>(1000 * 60 * 60 * 24 * 7); // 1week. rootユーザのIDは不変なので長めに
 		this.rolesCache = new MemorySingleCache<MiRole[]>(1000 * 60 * 60); // 1h
 		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 5); // 5m
 
@@ -373,7 +375,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		}
 	}
 
-	@bindThis
 	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole): {
 		level: number;
 		currentLevelExp: number;
@@ -398,76 +399,99 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			};
 		}
 
-		let level = baseLevel;
+		let level = 0;
 		let totalExp = 0;
 
 		for (const policy of policies) {
 			if (policy.level <= 0) continue;
-
+			const max = policy.level;
+			let diff = max;
+			let estLevel = 0;
 			const currentExp = exp - totalExp;
+			while (diff > 0) {
+				switch (policy.type) {
+					case 'const':
+						if (policy.base * policy.level <= currentExp) {
+							totalExp += policy.base * policy.level;
+							level += policy.level;
+							break;
+						} else {
+							const nextLevel = Math.floor(currentExp / policy.base);
+							const currentLevelExp = Math.floor(exp - totalExp - policy.base * nextLevel);
+							return {
+								level: baseLevel + level + nextLevel,
+								currentLevelExp: currentLevelExp,
+								nextLevelExp: policy.base,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+					case 'linear':
+						if (currentExp >= this.calculateLinearSum(policy.base, policy.additional, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+					case 'exponential':
+						if (currentExp >= this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+				}
 
-			switch (policy.type) {
-				case 'const': {
-					const maxExp = policy.base * policy.level;
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const nextLevel = Math.floor(currentExp / policy.base);
-						return {
-							level: level + nextLevel,
-							currentLevelExp: currentExp % policy.base,
-							nextLevelExp: policy.base,
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
+				if (policy.type === 'const') {
+					break;
+				}
+
+				if (estLevel === max) {
+					switch (policy.type) {
+						case 'linear':
+							totalExp += this.calculateLinearSum(policy.base, policy.additional, max);
+							level += policy.level;
+							break;
+						case 'exponential':
+							totalExp += this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, max);
+							level += policy.level;
+							break;
 					}
 					break;
 				}
-				case 'linear': {
-					const maxExp = this.calculateLinearSum(policy.base, policy.additional, policy.level);
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const estLevel = this.binarySearchLevel(policy.level, currentExp, (lvl) =>
-							this.calculateLinearSum(policy.base, policy.additional, lvl),
-						);
-						return {
-							level: level + estLevel,
-							currentLevelExp: currentExp - this.calculateLinearSum(policy.base, policy.additional, estLevel),
-							nextLevelExp: policy.base + policy.additional * estLevel,
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
+				if (diff !== 1) {
+					diff = Math.floor((diff + 1) / 2);
+				} else {
+					switch (policy.type) {
+						case 'linear':
+						{
+							const current = totalExp + this.calculateLinearSum(policy.base, policy.additional, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * (estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						case 'exponential':
+						{
+							const current = totalExp + this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * Math.pow(policy.exponential, estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						default:
+							return null;
 					}
-					break;
-				}
-				case 'exponential': {
-					const maxExp = this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, policy.level);
-					if (currentExp >= maxExp) {
-						totalExp += maxExp;
-						level += policy.level;
-					} else {
-						const estLevel = this.binarySearchLevel(policy.level, currentExp, (lvl) =>
-							this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, lvl),
-						);
-						return {
-							level: level + estLevel,
-							currentLevelExp: currentExp - this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel),
-							nextLevelExp: policy.base + policy.additional * Math.pow(policy.exponential, estLevel),
-							minLevel: baseLevel,
-							maxLevel: maxLevel,
-						};
-					}
-					break;
 				}
 			}
 		}
-
 		return {
-			level,
-			currentLevelExp: exp - totalExp,
+			level: baseLevel + level,
+			currentLevelExp: Math.floor(exp - totalExp),
 			nextLevelExp: Number.NaN,
 			minLevel: baseLevel,
 			maxLevel: maxLevel,
@@ -671,6 +695,12 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			return aggregate(policies.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
 		};
 
+		function aggregateChatAvailability(vs: RolePolicies['chatAvailability'][]) {
+			if (vs.some(v => v === 'available')) return 'available';
+			if (vs.some(v => v === 'readonly')) return 'readonly';
+			return 'unavailable';
+		}
+
 		return {
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
@@ -699,6 +729,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canUseAutoTranslate: calc('canUseAutoTranslate', vs => vs.some(v => v === true)),
 			canHideAds: calc('canHideAds', vs => vs.some(v => v === true)),
 			driveCapacityMb: calc('driveCapacityMb', vs => Math.max(...vs)),
+			maxFileSizeMb: calc('maxFileSizeMb', vs => Math.max(...vs)),
 			alwaysMarkNsfw: calc('alwaysMarkNsfw', vs => vs.some(v => v === true)),
 			canUpdateBioMedia: calc('canUpdateBioMedia', vs => vs.some(v => v === true)),
 			pinLimit: calc('pinLimit', vs => Math.max(...vs)),
@@ -716,6 +747,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canImportFollowing: calc('canImportFollowing', vs => vs.some(v => v === true)),
 			canImportMuting: calc('canImportMuting', vs => vs.some(v => v === true)),
 			canImportUserLists: calc('canImportUserLists', vs => vs.some(v => v === true)),
+			chatAvailability: calc('chatAvailability', aggregateChatAvailability),
 			noteDraftLimit: calc('noteDraftLimit', vs => Math.max(...vs)),
 			canSetFederationAvatarShape: calc('canSetFederationAvatarShape', vs => vs.some(v => v === true)),
 			canDeleteAccount: calc('canDeleteAccount', vs => vs.some(v => v === true)),
@@ -724,15 +756,15 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	}
 
 	@bindThis
-	public async isModerator(user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null): Promise<boolean> {
+	public async isModerator(user: { id: MiUser['id'] } | null): Promise<boolean> {
 		if (user == null) return false;
-		return user.isRoot || (await this.getUserRoles(user.id)).some(r => r.isModerator || r.isAdministrator);
+		return (this.meta.rootUserId === user.id) || (await this.getUserRoles(user.id)).some(r => r.isModerator || r.isAdministrator);
 	}
 
 	@bindThis
-	public async isAdministrator(user: { id: MiUser['id']; isRoot: MiUser['isRoot'] } | null): Promise<boolean> {
+	public async isAdministrator(user: { id: MiUser['id'] } | null): Promise<boolean> {
 		if (user == null) return false;
-		return user.isRoot || (await this.getUserRoles(user.id)).some(r => r.isAdministrator);
+		return (this.meta.rootUserId === user.id) || (await this.getUserRoles(user.id)).some(r => r.isAdministrator);
 	}
 
 	@bindThis
@@ -781,16 +813,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				.map(a => a.userId),
 		);
 
-		if (includeRoot) {
-			const rootUserId = await this.rootUserIdCache.fetch(async () => {
-				const it = await this.usersRepository.createQueryBuilder('users')
-					.select('id')
-					.where({ isRoot: true })
-					.getRawOne<{ id: string }>();
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				return it!.id;
-			});
-			resultSet.add(rootUserId);
+		if (includeRoot && this.meta.rootUserId) {
+			resultSet.add(this.meta.rootUserId);
 		}
 
 		return [...resultSet].sort((x, y) => x.localeCompare(y));
@@ -1053,6 +1077,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			isModerator: values.isModerator,
 			isExplorable: values.isExplorable,
 			asBadge: values.asBadge,
+			preserveAssignmentOnMoveAccount: values.preserveAssignmentOnMoveAccount,
 			canEditMembersByModerator: values.canEditMembersByModerator,
 			displayOrder: values.displayOrder,
 			policies: values.policies,

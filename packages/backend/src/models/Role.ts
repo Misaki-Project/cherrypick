@@ -318,6 +318,11 @@ export class MiRole {
 	@Column('boolean', {
 		default: false,
 	})
+	public preserveAssignmentOnMoveAccount: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public canEditMembersByModerator: boolean;
 
 	@Column('boolean', {
