@@ -48,10 +48,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px;">
 											<span v-if="element.type==='base'">{{ i18n.ts._role.useBaseValue }}</span>
-											<MkInput v-if="modelValue.type==='number' && element.type!=='base'" v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
+											<MkSelect v-if="optionValues.length > 0 && element.type!=='base'" v-model="element.base" :class="$style.itemConst" @update:modelValue="updateModelValue({...modelValue})">
+												<option v-for="value in optionValues" :key="value.value" :value="value.value">{{ value.label }}</option>
+											</MkSelect>
+											<MkInput v-else-if="modelValue.type==='number' && element.type!=='base'" v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
 												<template #label>{{ i18n.ts._experience._values.base }}</template>
 											</MkInput>
-											<MkSwitch v-if="modelValue.type==='boolean' && element.type!=='base'" v-model="element.base" @update:modelValue="updateModelValue({...modelValue})">
+											<MkSwitch v-else-if="modelValue.type==='boolean' && element.type!=='base'" v-model="element.base" @update:modelValue="updateModelValue({...modelValue})">
 												<template #label>{{ i18n.ts.enable }}</template>
 											</MkSwitch>
 											<span v-if="element.type==='multiplier'"> + </span>
@@ -76,18 +79,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, toRefs } from 'vue';
+import { defineAsyncComponent, toRefs, useSlots } from 'vue';
 import { v4 as uuid } from 'uuid';
+import { setupVMContext } from 'happy-dom/lib/PropertySymbol.js';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import { i18n } from '@/i18n.js';
 
+type ItemOption = {
+	type?: 'option';
+	value: string | number | null;
+	label: string;
+};
+
 const props = defineProps<{
 	modelValue: {
 		type: 'boolean' | 'number' | 'string';
-		defaultValue: number | boolean;
+		defaultValue: string | number | boolean;
+
 		baseLevel: number;
 		CondFormula: {
 			id: string; // UI上のドラッグ用。保存時は除外してもOK
@@ -100,6 +111,17 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['update:modelValue']);
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
+
+const slots = useSlots();
+const optionValues = (slots.default?.() ?? [])
+
+	.filter(vnode => vnode.type === 'option')
+	.map(vnode => ({
+		value: vnode.props?.value,
+		label: typeof vnode.children === 'string'
+			? vnode.children
+			: vnode.children?.[0]?.children, // テキストノードの場合
+	}));
 
 const { modelValue } = toRefs(props);
 

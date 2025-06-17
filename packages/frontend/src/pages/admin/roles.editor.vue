@@ -480,20 +480,31 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.chatAvailability, 'chatAvailability'])">
 				<template #label>{{ i18n.ts._role._options.chatAvailability }}</template>
 				<template #suffix>
-					<span v-if="role.policies.chatAvailability.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.chatAvailability.value === 'available' ? i18n.ts.yes : role.policies.chatAvailability.value === 'readonly' ? i18n.ts.readonly : i18n.ts.no }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.chatAvailability.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.chatAvailability.value === 'available' ? i18n.ts.yes : role.policies.chatAvailability.value === 'readonly' ? i18n.ts.readonly : i18n.ts.no }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('chatAvailability')">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.chatAvailability.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.chatAvailability)"></i></span>
 				</template>
 				<div class="_gaps">
-					<MkSwitch v-model="role.policies.chatAvailability.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkSelect v-model="role.policies.chatAvailability.value" :disabled="role.policies.chatAvailability.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts.enable }}</template>
-						<option value="available">{{ i18n.ts.enabled }}</option>
-						<option value="readonly">{{ i18n.ts.readonly }}</option>
-						<option value="unavailable">{{ i18n.ts.disabled }}</option>
-					</MkSelect>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.chatAvailability" :readonly="readonly">
+							<option value="available">{{ i18n.ts.enabled }}</option>
+							<option value="readonly">{{ i18n.ts.readonly }}</option>
+							<option value="unavailable">{{ i18n.ts.disabled }}</option>
+						</RolesEditorLevelCond>
+					</div>
+					<div v-else class="_gaps">
+						<MkSwitch v-model="role.policies.chatAvailability.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSelect v-model="role.policies.chatAvailability.value" :disabled="role.policies.chatAvailability.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+							<option value="available">{{ i18n.ts.enabled }}</option>
+							<option value="readonly">{{ i18n.ts.readonly }}</option>
+							<option value="unavailable">{{ i18n.ts.disabled }}</option>
+						</MkSelect>
+					</div>
 					<MkRange v-model="role.policies.chatAvailability.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
@@ -851,17 +862,24 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.maxFileSize, 'maxFileSizeMb'])">
 				<template #label>{{ i18n.ts._role._options.maxFileSize }}</template>
 				<template #suffix>
-					<span v-if="role.policies.maxFileSizeMb.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
-					<span v-else>{{ role.policies.maxFileSizeMb.value + 'MB' }}</span>
+					<span v-if="role.target!=='manualLevel' && role.policies.maxFileSizeMb.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.maxFileSizeMb.value + 'MB' }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('maxFileSizeMb')">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.maxFileSizeMb.CondFormula.length}) }}</span>
 					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.maxFileSizeMb)"></i></span>
 				</template>
-				<div class="_gaps">
-					<MkSwitch v-model="role.policies.maxFileSizeMb.useDefault" :readonly="readonly">
-						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
-					</MkSwitch>
-					<MkInput v-model="role.policies.maxFileSizeMb.value" :disabled="role.policies.maxFileSizeMb.useDefault" type="number" :readonly="readonly">
-						<template #suffix>MB</template>
-					</MkInput>
+				<div>
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.maxFileSizeMb" :readonly="readonly"/>
+					</div>
+					<div v-else class="_gaps">
+						<MkSwitch v-model="role.policies.maxFileSizeMb.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkInput v-model="role.policies.maxFileSizeMb.value" :disabled="role.policies.maxFileSizeMb.useDefault" type="number" :readonly="readonly">
+							<template #suffix>MB</template>
+						</MkInput>
+					</div>
 					<MkRange v-model="role.policies.maxFileSizeMb.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
 					</MkRange>
