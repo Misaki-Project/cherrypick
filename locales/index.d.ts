@@ -13734,6 +13734,10 @@ export interface Locale extends ILocale {
      */
     "ipAddress": string;
     /**
+     * IPアドレスを検索
+     */
+    "searchIpAddress": string;
+    /**
      * マニュアルレベル
      */
     "manualLevel": string;

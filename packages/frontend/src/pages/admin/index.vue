@@ -247,6 +247,11 @@ const menuDef = computed<SuperMenuDef[]>(() => [{
 		text: i18n.ts.database,
 		to: '/admin/database',
 		active: currentPage.value?.route.name === 'database',
+	}, {
+		icon: 'ti ti-clipboard',
+		text: i18n.ts.searchIpAddress,
+		to: '/admin/users-from-ip',
+		active: currentPage.value?.route.name === 'users-from-ip',
 	}],
 }]);
 
