@@ -61,8 +61,8 @@ const props = withDefaults(defineProps<{
 	show12Hours?: boolean;
 	useCurrentLocation?: boolean;
 }>(), {
-	latitude: 37.566,
-	longtitude: 126.9784,
+	latitude: 35.6811398,
+	longtitude: 139.7655343,
 	setTempUnitFahrenheit: false,
 	showSurfacePressure: false,
 	show12Hours: false,
