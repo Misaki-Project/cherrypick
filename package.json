@@ -1,11 +1,11 @@
 {
-	"name": "cherrypick",
-	"version": "4.16.0-misaki",
+	"name": "misskey",
+	"version": "2025.5.0-cp4.16.0-misaki.1",
 	"basedMisskeyVersion": "2025.5.0",
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/kokonect-link/cherrypick.git"
+		"url": "https://github.com/Misaki-Project/cherrypick.git"
 	},
 	"packageManager": "pnpm@10.10.0",
 	"workspaces": [
