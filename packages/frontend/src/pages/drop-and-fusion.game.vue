@@ -1208,7 +1208,7 @@ onMounted(async () => {
 
 	await start();
 
-	const bgmBuffer = await sound.loadAudio('/client-assets/drop-and-fusion/bgm_1.mp3');
+	const bgmBuffer = await sound.loadAudio('/client-assets/drop-and-fusion/bgm_free_1.mp3');
 	if (!bgmBuffer) return;
 	bgmNodes = sound.createSourceNode(bgmBuffer, {
 		volume: props.mute ? 0 : bgmVolume.value,

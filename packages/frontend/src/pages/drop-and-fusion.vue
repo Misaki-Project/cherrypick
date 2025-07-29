@@ -91,7 +91,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<div><b>Credit</b></div>
 							<div>
 								<div>Ai-chan illustration: @poteriri@misskey.io</div>
-								<div>BGM: @ys@misskey.design</div>
+								<div>BGM: HURT RECORD ABM-047</div>
 							</div>
 						</div>
 					</div>
