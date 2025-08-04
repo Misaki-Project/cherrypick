@@ -97,6 +97,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<template #label>{{ i18n.ts.customSplashText }}</template>
 					<template #caption>{{ i18n.ts.customSplashTextDescription }}</template>
 				</MkTextarea>
+
+				<MkTextarea v-model="customHidedNoteLightText">
+					<template #label>{{ i18n.ts.customHidedNoteLightText }}</template>
+					<template #caption>{{ i18n.ts.customHidedNoteLightTextDescription }}</template>
+				</MkTextarea>
+
+				<MkTextarea v-model="customHidedNoteDarkText">
+					<template #label>{{ i18n.ts.customHidedNoteDarkText }}</template>
+					<template #caption>{{ i18n.ts.customHidedNoteDarkTextDescription }}</template>
+				</MkTextarea>
 			</div>
 		</FormSuspense>
 	</div>
@@ -141,6 +151,8 @@ const repositoryUrl = ref<string | null>(null);
 const feedbackUrl = ref<string | null>(null);
 const manifestJsonOverride = ref<string>('{}');
 const customSplashText = ref<string>('');
+const customHidedNoteLightText = ref<string>('');
+const customHidedNoteDarkText = ref<string>('');
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
@@ -160,6 +172,8 @@ async function init() {
 	feedbackUrl.value = meta.feedbackUrl;
 	manifestJsonOverride.value = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
 	customSplashText.value = meta.customSplashText.join('\n');
+	customHidedNoteLightText.value = meta.customHidedNoteLightText;
+	customHidedNoteDarkText.value = meta.customHidedNoteDarkText;
 }
 
 function save() {
@@ -180,6 +194,8 @@ function save() {
 		feedbackUrl: feedbackUrl.value === '' ? null : feedbackUrl.value,
 		manifestJsonOverride: manifestJsonOverride.value === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride.value)),
 		customSplashText: customSplashText.value.split('\n'),
+		customHidedNoteLightText: customHidedNoteLightText.value === '' ? null : customHidedNoteLightText.value,
+		customHidedNoteDarkText: customHidedNoteDarkText.value === '' ? null : customHidedNoteDarkText.value,
 	}).then(() => {
 		fetchInstance(true);
 	});

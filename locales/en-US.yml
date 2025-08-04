@@ -3531,4 +3531,29 @@ _weather:
 noSendActivity: "Don't send activity"
 
 ipAddress: "IP Address"
+searchIpAddress: "Search IP Address"
 
+manualLevel: "Manual Level"
+experience: "Experience"
+_experience:
+  levelShort: "Lv.{value}"
+  baseLevel: "Base Level"
+  maxLevel: "Max Level"
+  settingValue: "Setting Value"
+  _rules:
+    base: "Based"
+    const: "Constant"
+    linear: "Linear"
+    exponential: "Exponential"
+    multiplier: "Multiplier"
+  _values:
+    base: "Based"
+    additional: "Additional"
+    exponential: "Exponential"
+  _calcs:
+    additional: "Addition"
+    multiplier: "Multiplication"
+    set: "Constant"
+
+_hideReason:
+  privateNote: "This note is private."

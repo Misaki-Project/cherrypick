@@ -654,6 +654,14 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
+			customHidedNoteLightText: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			customHidedNoteDarkText: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
 			deliverSuspendedSoftware: {
 				type: 'array',
 				optional: false, nullable: false,
@@ -850,6 +858,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				skipCherryPickVersion: instance.skipCherryPickVersion,
 				trustedLinkUrlPatterns: instance.trustedLinkUrlPatterns,
 				customSplashText: instance.customSplashText,
+				customHidedNoteLightText: instance.customHidedNoteLightText,
+				customHidedNoteDarkText: instance.customHidedNoteDarkText,
 				disableRegistrationWhenInactive: instance.disableRegistrationWhenInactive,
 				disablePublicNoteWhenInactive: instance.disablePublicNoteWhenInactive,
 				moderatorInactivityLimitDays: instance.moderatorInactivityLimitDays,
