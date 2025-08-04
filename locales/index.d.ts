@@ -173,6 +173,22 @@ export interface Locale extends ILocale {
      */
     "customSplashTextDescription": string;
     /**
+     * 非公開ノートの置き換えテキスト(ライトテーマ時)
+     */
+    "customHidedNoteLightText": string;
+    /**
+     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     */
+    "customHidedNoteLightTextDescription": string;
+    /**
+     * 非公開ノートの置き換えテキスト(ダークテーマ時)
+     */
+    "customHidedNoteDarkText": string;
+    /**
+     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     */
+    "customHidedNoteDarkTextDescription": string;
+    /**
      * キャプション未設定案内
      */
     "showNoAltWarning": string;
@@ -13812,6 +13828,12 @@ export interface Locale extends ILocale {
              */
             "set": string;
         };
+    };
+    "_hideReason": {
+        /**
+         * この投稿は非公開です
+         */
+        "privateNote": string;
     };
 }
 declare const locales: {

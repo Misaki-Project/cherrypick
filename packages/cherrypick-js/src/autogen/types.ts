@@ -9825,6 +9825,8 @@ export type operations = {
             skipCherryPickVersion?: string | null;
             trustedLinkUrlPatterns: string[];
             customSplashText: string[];
+						customHidedNoteLightText: string | null;
+						customHidedNoteDarkText: string | null;
             disableRegistrationWhenInactive: boolean;
             disablePublicNoteWhenInactive: boolean;
             moderatorInactivityLimitDays: number;
