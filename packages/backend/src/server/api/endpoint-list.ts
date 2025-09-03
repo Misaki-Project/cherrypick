@@ -468,3 +468,4 @@ export * as 'chat/rooms/invitations/outbox' from './endpoints/chat/rooms/invitat
 export * as 'chat/history' from './endpoints/chat/history.js';
 export * as 'users/translate' from './endpoints/users/translate.js';
 export * as 'v2/admin/emoji/list' from './endpoints/v2/admin/emoji/list.js';
+export * as 'i/followers-servers' from './endpoints/i/followers-servers.js';
