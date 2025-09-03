@@ -83,6 +83,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
 	<MkSchedulePostEditor v-if="scheduleNote" v-model="scheduleNote" @destroyed="scheduleNote = null"/>
 	<MkScheduledNoteDelete v-if="scheduledNoteDelete" v-model="scheduledNoteDelete" @destroyed="scheduledNoteDelete = null"/>
+	<MkDeliveryTargetEditor v-if="deliveryTargets" v-model="deliveryTargets" @destroyed="deliveryTargets = null"/>
 	<MkNotePreview v-if="showPreview && textLength > 0" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i" :showProfile="showProfilePreview"/>
 	<div v-if="showingOptions" style="padding: 8px 16px;">
 	</div>
@@ -96,6 +97,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-if="postFormActions.length > 0" v-tooltip="i18n.ts.plugins" class="_button" :class="$style.footerButton" @click="showActions"><i class="ti ti-plug"></i></button>
 			<button v-tooltip="i18n.ts.emoji" :class="['_button', $style.footerButton]" @click="insertEmoji"><i class="ti ti-mood-happy"></i></button>
 			<button v-if="showAddMfmFunction" v-tooltip="i18n.ts.addMfmFunction" :class="['_button', $style.footerButton]" @click="insertMfmFunction"><i class="ti ti-palette"></i></button>
+			<button v-tooltip="i18n.ts._deliveryTargetControl.deliveryTargetControl" :class="['_button', $style.footerButton]" @click="toggleDeliveryTargets"><i class="ti ti-target"></i></button>
 			<button v-tooltip="i18n.ts.otherSettings" :class="['_button', $style.footerButton]" @click="showOtherMenu"><i class="ti ti-dots"></i></button>
 		</div>
 		<div :class="$style.footerRight">
@@ -122,6 +124,7 @@ import type { PostFormProps } from '@/types/post-form.js';
 import type { MenuItem } from '@/types/menu.js';
 import type { PollEditorModelValue } from '@/components/MkPollEditor.vue';
 import type { DeleteScheduleEditorModelValue } from '@/components/MkScheduledNoteDelete.vue';
+import type { DeliveryTargetEditorModelValue } from '@/components/MkDeliveryTargetEditor.vue';
 import MkNotePreview from '@/components/MkNotePreview.vue';
 import XPostFormAttaches from '@/components/MkPostFormAttaches.vue';
 import XTextCounter from '@/components/MkPostForm.TextCounter.vue';
@@ -149,6 +152,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/utility/achievements.js';
 import { emojiPicker } from '@/utility/emoji-picker.js';
 import { mfmFunctionPicker } from '@/utility/mfm-function-picker.js';
+import MkDeliveryTargetEditor from '@/components/MkDeliveryTargetEditor.vue';
 import { prefer } from '@/preferences.js';
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
@@ -225,6 +229,8 @@ const disableRightClick = ref(false);
 const saveAsDraft = ref(false);
 const textAreaReadOnly = ref(false);
 const justEndedComposition = ref(false);
+
+const deliveryTargets = ref<DeliveryTargetEditorModelValue | null>(null);
 const renoteTargetNote: ShallowRef<PostFormProps['renote'] | null> = shallowRef(props.renote);
 const postFormActions = getPluginHandlers('post_form_action');
 const replyTargetNote: ShallowRef<PostFormProps['reply'] | null> = shallowRef(props.reply);
@@ -483,6 +489,17 @@ function toggleEvent() {
 			start: (new Date()).toString(),
 			end: null,
 			metadata: {},
+		};
+	}
+}
+
+function toggleDeliveryTargets() {
+	if (deliveryTargets.value) {
+		deliveryTargets.value = null;
+	} else {
+		deliveryTargets.value = {
+			mode: 'include',
+			hosts: [],
 		};
 	}
 }
@@ -1025,6 +1042,7 @@ async function post(ev?: MouseEvent) {
 		noteId: props.updateMode ? props.initialNote?.id : undefined,
 		scheduledDelete: scheduledNoteDelete.value,
 		scheduleNote: scheduleNote.value ?? undefined,
+		deliveryTargets: deliveryTargets.value && !(deliveryTargets.value.mode === 'exclude' && deliveryTargets.value.hosts.length === 0) ? deliveryTargets.value : undefined,
 	};
 
 	if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {

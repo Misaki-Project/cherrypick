@@ -148,6 +148,7 @@ type Option = {
 	url?: string | null;
 	app?: MiApp | null;
 	deleteAt?: Date | null;
+	deliveryTargets?: { mode: 'include' | 'exclude'; hosts: string[] } | null;
 };
 
 @Injectable()
@@ -708,7 +709,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 					// フォロワーに配送
 					if (['public', 'home', 'followers'].includes(note.visibility)) {
-						dm.addFollowersRecipe();
+						if (data.deliveryTargets) {
+							dm.addSelectiveFollowersRecipe(data.deliveryTargets);
+						} else {
+							dm.addFollowersRecipe();
+						}
 					}
 
 					if (['public'].includes(note.visibility)) {

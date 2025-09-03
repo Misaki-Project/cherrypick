@@ -50,6 +50,10 @@ export type MiScheduleNoteType = {
 	apHashtags?: string[] | null;
 	apEmojis?: string[] | null;
 	deleteAt?: Date | null;
+	deliveryTargets?: {
+		mode: 'include' | 'exclude';
+		hosts: string[];
+	} | null;
 };
 
 @Entity('note_schedule')
