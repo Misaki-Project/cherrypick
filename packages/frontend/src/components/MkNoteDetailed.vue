@@ -43,7 +43,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i v-if="appearNote.deliveryTargets.mode === 'include'" class="ti ti-list-check"></i>
 				<i v-else class="ti ti-list-details"></i>
 			</span>
-			<span v-if="!appearNote.deliveryTargets && appearNote.hasDeliveryTargets" v-tooltip="i18n.ts._deliveryTargetControl.hasDeliveryTargets"><i class="ti ti-list-check"></i></span>
 			<span :class="$style.renoteTime">
 				<button ref="renoteTime" class="_button">
 					<i class="ti ti-dots" :class="$style.renoteMenu" @mousedown.prevent="showRenoteMenu()"></i>
