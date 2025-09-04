@@ -467,7 +467,7 @@ export class NoteEntityService implements OnModuleInit {
 				userId: channel.userId,
 			} : undefined,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
-			hasDeliveryTargets: note.deliveryTargets ?? false,
+			hasDeliveryTargets: note.deliveryTargets != null,
 			...((meId === note.userId || iAmModerator) ? {
 				deliveryTargets: note.deliveryTargets ?? undefined,
 			} : {}),
