@@ -449,6 +449,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			reactionAcceptance: data.reactionAcceptance,
 			disableRightClick: data.disableRightClick!,
 			deleteAt: data.deleteAt,
+			deliveryTargets: data.deliveryTargets ?? null,
 			visibility: data.visibility as any,
 			visibleUserIds: data.visibility === 'specified'
 				? data.visibleUsers
