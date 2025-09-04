@@ -13866,6 +13866,10 @@ export interface Locale extends ILocale {
          * 一部のサーバーに非公開
          */
         "deliveryTargetsExclude": string;
+        /**
+         * 配送先が選択されています
+         */
+        "hasDeliveryTargets": string;
     };
     "_hideReason": {
         /**
