@@ -19,6 +19,7 @@ import { ReactionsBufferingService } from '@/core/ReactionsBufferingService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
 import type { ReactionService } from '../ReactionService.js';
+import type { RoleService } from '../RoleService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
 
@@ -54,6 +55,7 @@ export class NoteEntityService implements OnModuleInit {
 	private reactionService: ReactionService;
 	private reactionsBufferingService: ReactionsBufferingService;
 	private idService: IdService;
+	private roleService: RoleService;
 	private noteLoader = new DebounceLoader(this.findNoteOrFail);
 
 	constructor(
@@ -102,6 +104,7 @@ export class NoteEntityService implements OnModuleInit {
 		this.reactionService = this.moduleRef.get('ReactionService');
 		this.reactionsBufferingService = this.moduleRef.get('ReactionsBufferingService');
 		this.idService = this.moduleRef.get('IdService');
+		this.roleService = this.moduleRef.get('RoleService');
 	}
 
 	@bindThis
@@ -394,6 +397,7 @@ export class NoteEntityService implements OnModuleInit {
 		}, options);
 
 		const meId = me ? me.id : null;
+		const iAmModerator = me ? await this.roleService.isModerator(me as MiUser) : false;
 		const note = typeof src === 'object' ? src : await this.noteLoader.load(src);
 		const host = note.userHost;
 
@@ -463,6 +467,10 @@ export class NoteEntityService implements OnModuleInit {
 				userId: channel.userId,
 			} : undefined,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
+			hasDeliveryTargets: note.deliveryTargets != null,
+			...((meId === note.userId || iAmModerator) ? {
+				deliveryTargets: note.deliveryTargets ?? undefined,
+			} : {}),
 			uri: note.uri ?? undefined,
 			url: note.url ?? undefined,
 

@@ -177,7 +177,7 @@ export interface Locale extends ILocale {
      */
     "customHidedNoteLightText": string;
     /**
-     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
      */
     "customHidedNoteLightTextDescription": string;
     /**
@@ -185,7 +185,7 @@ export interface Locale extends ILocale {
      */
     "customHidedNoteDarkText": string;
     /**
-     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
      */
     "customHidedNoteDarkTextDescription": string;
     /**
@@ -13828,6 +13828,48 @@ export interface Locale extends ILocale {
              */
             "set": string;
         };
+    };
+    "_deliveryTargetControl": {
+        /**
+         * 配送先制御
+         */
+        "deliveryTargetControl": string;
+        /**
+         * 選択したサーバーのみに配送
+         */
+        "deliveryTargetInclude": string;
+        /**
+         * 選択したサーバーを除外して配送
+         */
+        "deliveryTargetExclude": string;
+        /**
+         * リモートサーバーのフォロワーがいません
+         */
+        "noFollowersFromRemoteServers": string;
+        /**
+         * サーバー一覧の読み込みに失敗しました
+         */
+        "loadError": string;
+        /**
+         * {count}人のフォロワー
+         */
+        "followersCount": ParameterizedString<"count">;
+        /**
+         * {count}件見つかりました（全{total}件中）
+         */
+        "searchResults": ParameterizedString<"count" | "total">;
+        /**
+         * 一部のサーバーにのみ公開
+         */
+        "deliveryTargetsInclude": string;
+        /**
+         * 一部のサーバーに非公開
+         */
+        "deliveryTargetsExclude": string;
+        /**
+         * 配送先が選択されています
+         */
+        "hasDeliveryTargets": string;
     };
     "_hideReason": {
         /**

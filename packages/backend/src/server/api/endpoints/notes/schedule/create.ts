@@ -216,6 +216,19 @@ export const paramDef = {
 				deleteAfter: { type: 'integer', nullable: true, minimum: 1 },
 			},
 		},
+		deliveryTargets: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				mode: { type: 'string', enum: ['include', 'exclude'] },
+				hosts: {
+					type: 'array',
+					items: { type: 'string' },
+					uniqueItems: true,
+				},
+			},
+			required: ['mode', 'hosts'],
+		},
 	},
 	// (re)note with text, files and poll are optional
 	anyOf: [
@@ -424,6 +437,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				} : undefined,
 				disableRightClick: ps.disableRightClick,
 				deleteAt: ps.scheduledDelete?.deleteAt ? new Date(ps.scheduledDelete.deleteAt) : ps.scheduledDelete?.deleteAfter ? new Date(Date.now() + ps.scheduledDelete.deleteAfter) : null,
+				deliveryTargets: ps.deliveryTargets,
 			};
 
 			if (ps.scheduleNote.scheduledAt) {
