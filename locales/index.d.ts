@@ -177,7 +177,7 @@ export interface Locale extends ILocale {
      */
     "customHidedNoteLightText": string;
     /**
-     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
      */
     "customHidedNoteLightTextDescription": string;
     /**
@@ -185,7 +185,7 @@ export interface Locale extends ILocale {
      */
     "customHidedNoteDarkText": string;
     /**
-     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。
+     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
      */
     "customHidedNoteDarkTextDescription": string;
     /**
