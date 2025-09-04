@@ -394,6 +394,7 @@ export class NoteEntityService implements OnModuleInit {
 		}, options);
 
 		const meId = me ? me.id : null;
+		const iAmModerator = me ? await this.roleService.isModerator(me as MiUser) : false;
 		const note = typeof src === 'object' ? src : await this.noteLoader.load(src);
 		const host = note.userHost;
 
@@ -463,7 +464,10 @@ export class NoteEntityService implements OnModuleInit {
 				userId: channel.userId,
 			} : undefined,
 			mentions: note.mentions.length > 0 ? note.mentions : undefined,
-			deliveryTargets: note.deliveryTargets ?? undefined,
+			hasDeliveryTargets: note.hasDeliveryTargets ?? false,
+			...((meId === note.userId || iAmModerator) ? {
+				deliveryTargets: note.deliveryTargets ?? undefined,
+			} : {}),
 			uri: note.uri ?? undefined,
 			url: note.url ?? undefined,
 
