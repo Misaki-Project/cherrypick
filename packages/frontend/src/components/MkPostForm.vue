@@ -97,7 +97,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-if="postFormActions.length > 0" v-tooltip="i18n.ts.plugins" class="_button" :class="$style.footerButton" @click="showActions"><i class="ti ti-plug"></i></button>
 			<button v-tooltip="i18n.ts.emoji" :class="['_button', $style.footerButton]" @click="insertEmoji"><i class="ti ti-mood-happy"></i></button>
 			<button v-if="showAddMfmFunction" v-tooltip="i18n.ts.addMfmFunction" :class="['_button', $style.footerButton]" @click="insertMfmFunction"><i class="ti ti-palette"></i></button>
-			<button v-tooltip="i18n.ts._deliveryTargetControl.deliveryTargetControl" :class="['_button', $style.footerButton]" @click="toggleDeliveryTargets"><i class="ti ti-target"></i></button>
+			<button v-tooltip="i18n.ts._deliveryTargetControl.deliveryTargetControl" :class="['_button', $style.footerButton]" @click="toggleDeliveryTargets"><i class="ti ti-list-details"></i></button>
 			<button v-tooltip="i18n.ts.otherSettings" :class="['_button', $style.footerButton]" @click="showOtherMenu"><i class="ti ti-dots"></i></button>
 		</div>
 		<div :class="$style.footerRight">
