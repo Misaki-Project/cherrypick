@@ -42,8 +42,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i v-if="appearNote.deliveryTargets.mode === 'include'" class="ti ti-list-check"></i>
 				<i v-else class="ti ti-list-details"></i>
 			</span>
-			<span v-else-if="appearNote.hasDeliveryTargets" v-tooltip="i18n.ts.hasDeliveryTargets" style="margin-right: 0.5em;">
-				<i class="ti ti-list-check"></i>
+			<span v-else-if="appearNote.hasDeliveryTargets" style="margin-right: 0.5em;">
+				<i v-tooltip="i18n.ts.hasDeliveryTargets" class="ti ti-list-check"></i>
 			</span>
 			<span v-if="note.channel" style="margin-right: 0.5em;"><i v-tooltip="note.channel.name" class="ti ti-device-tv"></i></span>
 			<span :class="$style.renoteTime">
