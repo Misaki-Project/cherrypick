@@ -5725,6 +5725,8 @@ export type components = {
 			canTruncateAccount: boolean,
       /** @enum {string} */
       chatAvailability: 'available' | 'readonly' | 'unavailable';
+			/** @enum {string} */
+			reactionAvailability: 'all' | 'nonSensitiveOnly' | 'unicodeOnly' | 'heartOnly' | 'deny';
     };
     ReversiGameLite: {
       /** Format: id */

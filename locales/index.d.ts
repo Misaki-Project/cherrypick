@@ -8885,6 +8885,32 @@ export interface Locale extends ILocale {
              * アカウントの整理の許可
              */
             "canTruncateAccount": string;
+            /**
+             * リアクション作成を許可する絵文字の種類
+             */
+            "reactionAvailability": string;
+            "_reactionAvailability": {
+                /**
+                 * すべて許可
+                 */
+                "all": string;
+                /**
+                 * センシティブ除く絵文字を許可
+                 */
+                "nonSensitiveOnly": string;
+                /**
+                 * Unicode絵文字のみを許可
+                 */
+                "unicodeOnly": string;
+                /**
+                 * ハート絵文字のみを許可
+                 */
+                "heartOnly": string;
+                /**
+                 * すべて拒否
+                 */
+                "deny": string;
+            };
         };
         "_condition": {
             /**

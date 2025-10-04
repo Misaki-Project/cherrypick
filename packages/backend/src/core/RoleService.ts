@@ -84,6 +84,7 @@ export type RolePolicies = {
 	canSetFederationAvatarShape: boolean;
 	canDeleteAccount: boolean;
 	canTruncateAccount: boolean;
+	reactionAvailability: 'all' | 'nonSensitiveOnly' | 'unicodeOnly' | 'heartOnly' | 'deny';
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -137,6 +138,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canSetFederationAvatarShape: true,
 	canDeleteAccount: true,
 	canTruncateAccount: true,
+	reactionAvailability: 'all',
 };
 
 @Injectable()
@@ -701,6 +703,15 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			return 'unavailable';
 		}
 
+		function aggregateReactionAvailability(vs: RolePolicies['reactionAvailability'][]) {
+			if (vs.some(v => v === 'deny')) return 'deny';
+			if (vs.some(v => v === 'heartOnly')) return 'heartOnly';
+			if (vs.some(v => v === 'unicodeOnly')) return 'unicodeOnly';
+			if (vs.some(v => v === 'nonSensitiveOnly')) return 'nonSensitiveOnly';
+			if (vs.some(v => v === 'all')) return 'all';
+			return 'deny';
+		}
+
 		return {
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
@@ -752,6 +763,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canSetFederationAvatarShape: calc('canSetFederationAvatarShape', vs => vs.some(v => v === true)),
 			canDeleteAccount: calc('canDeleteAccount', vs => vs.some(v => v === true)),
 			canTruncateAccount: calc('canTruncateAccount', vs => vs.some(v => v === true)),
+			reactionAvailability: calc('reactionAvailability', aggregateReactionAvailability),
 		};
 	}
 
