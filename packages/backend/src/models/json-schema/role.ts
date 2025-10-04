@@ -370,6 +370,12 @@ export const packedRolePoliciesSchema = {
 			optional: false, nullable: false,
 			enum: ['available', 'readonly', 'unavailable'],
 		},
+
+		reactionAvailability: {
+			type: 'string',
+			optional: false, nullable: false,
+			enum: ['all', 'nonSensitiveOnly', 'unicodeOnly', 'heartOnly', 'deny'],
+		},
 	},
 } as const;
 
