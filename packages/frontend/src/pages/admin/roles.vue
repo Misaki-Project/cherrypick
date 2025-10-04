@@ -111,6 +111,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</MkSwitch>
 					</MkFolder>
 
+					<MkFolder v-if="matchQuery([i18n.ts._role._options.reactionAvailability, 'reactionAvailability'])">
+						<template #label>{{ i18n.ts._role._options.reactionAvailability }}</template>
+						<template #suffix>{{ policies.reactionAvailability ? i18n.ts._role._options._reactionAvailability[policies.reactionAvailability] : "unknown" }}</template>
+						<MkSelect v-model="policies.reactionAvailability">
+							<template #label>{{ i18n.ts.enable }}</template>
+							<option value="all">{{ i18n.ts._role._options._reactionAvailability.all }}</option>
+							<option value="nonSensitiveOnly">{{ i18n.ts._role._options._reactionAvailability.nonSensitiveOnly }}</option>
+							<option value="unicodeOnly">{{ i18n.ts._role._options._reactionAvailability.unicodeOnly }}</option>
+							<option value="heartOnly">{{ i18n.ts._role._options._reactionAvailability.heartOnly }}</option>
+							<option value="deny">{{ i18n.ts._role._options._reactionAvailability.deny }}</option>
+						</MkSelect>
+					</MkFolder>
+
 					<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 						<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
 						<template #suffix>{{ policies.canPurgeAccount ? i18n.ts.yes : i18n.ts.no }}</template>

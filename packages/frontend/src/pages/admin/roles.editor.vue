@@ -397,6 +397,44 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.reactionAvailability, 'reactionAvailability'])">
+				<template #label>{{ i18n.ts._role._options.reactionAvailability }}</template>
+				<template #suffix>
+					<span v-if="role.target!=='manualLevel' && role.policies.reactionAvailability.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else-if="role.target!=='manualLevel'">{{ role.policies.reactionAvailability ? i18n.ts._role._options._reactionAvailability[role.policies.reactionAvailability.value] : "unknown" }}</span>
+					<span v-else-if="role.target === 'manualLevel' && isPolicyLevelDefault('reactionAvailability')">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ i18n.tsx._role.countOfCondLevelPolicies({value:levelCondPolicies.reactionAvailability.CondFormula.length}) }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.reactionAvailability)"></i></span>
+				</template>
+				<div class="_gaps">
+					<div v-if="role.target === 'manualLevel'">
+						<RolesEditorLevelCond v-model="levelCondPolicies.reactionAvailability" :readonly="readonly">
+							<option value="all">{{ i18n.ts._role._options._reactionAvailability.all }}</option>
+							<option value="nonSensitiveOnly">{{ i18n.ts._role._options._reactionAvailability.nonSensitiveOnly }}</option>
+							<option value="unicodeOnly">{{ i18n.ts._role._options._reactionAvailability.unicodeOnly }}</option>
+							<option value="heartOnly">{{ i18n.ts._role._options._reactionAvailability.heartOnly }}</option>
+							<option value="deny">{{ i18n.ts._role._options._reactionAvailability.deny }}</option>
+						</RolesEditorLevelCond>
+					</div>
+					<div v-else class="_gaps">
+						<MkSwitch v-model="role.policies.reactionAvailability.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+						</MkSwitch>
+						<MkSelect v-model="role.policies.reactionAvailability.value" :disabled="role.policies.reactionAvailability.useDefault" :readonly="readonly">
+							<template #label>{{ i18n.ts.enable }}</template>
+							<option value="all">{{ i18n.ts._role._options._reactionAvailability.all }}</option>
+							<option value="nonSensitiveOnly">{{ i18n.ts._role._options._reactionAvailability.nonSensitiveOnly }}</option>
+							<option value="unicodeOnly">{{ i18n.ts._role._options._reactionAvailability.unicodeOnly }}</option>
+							<option value="heartOnly">{{ i18n.ts._role._options._reactionAvailability.heartOnly }}</option>
+							<option value="deny">{{ i18n.ts._role._options._reactionAvailability.deny }}</option>
+						</MkSelect>
+					</div>
+					<MkRange v-model="role.policies.reactionAvailability.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canPurgeAccount, 'canPurgeAccount'])">
 				<template #label>{{ i18n.ts._role._options.canPurgeAccount }}</template>
 				<template #suffix>

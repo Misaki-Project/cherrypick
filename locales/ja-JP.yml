@@ -2297,6 +2297,13 @@ _role:
     canSetFederationAvatarShape: "アイコンの形設定の連合を許可"
     canDeleteAccount: "アカウントの削除の許可"
     canTruncateAccount: "アカウントの整理の許可"
+    reactionAvailability: "リアクション作成を許可する絵文字の種類"
+    _reactionAvailability:
+      all: "すべて許可"
+      nonSensitiveOnly: "センシティブ除く絵文字を許可"
+      unicodeOnly: "Unicode絵文字のみを許可"
+      heartOnly: "ハート絵文字のみを許可"
+      deny: "すべて拒否"
   _condition:
     roleAssignedTo: "マニュアルロールにアサイン済み"
     isLocal: "ローカルユーザー"
