@@ -16,6 +16,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span v-if="suspended" class="suspended">Suspended</span>
 						<span v-if="silenced" class="silenced">Silenced</span>
 						<span v-if="moderator" class="moderator">Moderator</span>
+						<span v-if="limited" class="limited">Limited</span>
+						<span v-if="deleted" class="deleted">Deleted</span>
 					</span>
 				</div>
 			</div>
@@ -136,9 +138,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 			<div v-for="role in info.roles" :key="role.id">
 				<div :class="$style.roleItemMain">
-					<MkRolePreview :class="$style.role" :role="role" :forModeration="true"/>
+					<MkRolePreview :class="$style.role" :role="role" :forModeration="true" :detailed="false"/>
 					<button class="_button" @click="toggleRoleItem(role)"><i class="ti ti-chevron-down"></i></button>
 					<button v-if="role.target === 'manual'" class="_button" :class="$style.roleUnassign" @click="unassignRole(role, $event)"><i class="ti ti-x"></i></button>
+						<button v-else-if="role.target === 'manualLevel'" class="_button" :class="$style.roleUnassign" @click="experienceMenu(role, $event)"><i class="ti ti-pencil"></i></button>
 					<button v-else class="_button" :class="$style.roleUnassign" disabled><i class="ti ti-ban"></i></button>
 				</div>
 				<div v-if="expandedRoleIds.includes(role.id)" :class="$style.roleItemSub">
@@ -261,6 +264,9 @@ const ap = ref<any>(null);
 const moderator = ref(info.value.isModerator);
 const silenced = ref(info.value.isSilenced);
 const suspended = ref(info.value.isSuspended);
+const admin = ref(user.value.isAdmin);
+const limited = ref(info.value.isLimited);
+const deleted = ref(user.value.isDeleted);
 const isSystem = ref(user.value.host == null && user.value.username.includes('.'));
 const moderationNote = ref(info.value.moderationNote);
 const filesPaginator = markRaw(new Paginator('admin/drive/files', {
@@ -318,12 +324,15 @@ async function refreshUser() {
 	silenced.value = info.value.isSilenced;
 	suspended.value = info.value.isSuspended;
 	isSystem.value = user.value.host == null && user.value.username.includes('.');
-	moderationNote.value = info.value.moderationNote;
+	moderationNote.value = info.value.moderationNote;admin.value = info.value.isAdmin;
+	deleted.value = info.value.isDeleted;
+	limited.value = info.value.isLimited;
 }
 
 async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
-	refreshUser();
+	await os.apiWithDialog('federation/update-remote-user', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function resetPassword() {
@@ -352,8 +361,9 @@ async function toggleSuspend(v) {
 	if (confirm.canceled) {
 		suspended.value = !v;
 	} else {
-		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value.id });
-		await refreshUser();
+		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', {
+			userId: user.value.id,
+		}).then(refreshUser);
 	}
 }
 
@@ -363,17 +373,10 @@ async function unsetUserAvatar() {
 		text: i18n.ts.unsetUserAvatarConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/unset-user-avatar', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
-		os.alert({
-			type: 'error',
-			text: err.toString(),
-		});
-	});
-	refreshUser();
+
+	await os.apiWithDialog('admin/unset-user-avatar', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function unsetUserBanner() {
@@ -382,17 +385,10 @@ async function unsetUserBanner() {
 		text: i18n.ts.unsetUserBannerConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/unset-user-banner', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
-		os.alert({
-			type: 'error',
-			text: err.toString(),
-		});
-	});
-	refreshUser();
+
+	await os.apiWithDialog('admin/unset-user-banner', {
+		userId: user.value.id,
+	}).then(refreshUser);
 }
 
 async function deleteAllFiles() {
@@ -401,16 +397,21 @@ async function deleteAllFiles() {
 		text: i18n.ts.deleteAllFilesConfirm,
 	});
 	if (confirm.canceled) return;
-	const process = async () => {
-		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value.id });
-		os.success();
-	};
-	await process().catch(err => {
+	const typed = await os.inputText({
+		text: i18n.tsx.typeToConfirm({ x: user.value?.username }),
+	});
+	if (typed.canceled) return;
+
+	if (typed.result === user.value?.username) {
+		await os.apiWithDialog('admin/drive/delete-all-files-of-a-user', {
+			userId: user.value.id,
+		}).then(refreshUser);
+	} else {
 		os.alert({
 			type: 'error',
-			text: err.toString(),
+			text: 'input not match',
 		});
-	});
+	}
 	await refreshUser();
 }
 
@@ -427,9 +428,9 @@ async function deleteAccount() {
 	if (typed.canceled) return;
 
 	if (typed.result === user.value?.username) {
-		await os.apiWithDialog('admin/delete-account', {
+		await os.apiWithDialog('admin/accounts/delete', {
 			userId: user.value.id,
-		});
+		}).then(refreshUser);
 	} else {
 		os.alert({
 			type: 'error',
@@ -439,7 +440,7 @@ async function deleteAccount() {
 }
 
 async function assignRole() {
-	const roles = await misskeyApi('admin/roles/list').then(it => it.filter(r => r.target === 'manual'));
+	const roles = await misskeyApi('admin/roles/list').then(it => it.filter(r => r.target === 'manual' || r.target === 'manualLevel'));
 
 	const { canceled, result: roleId } = await os.select({
 		title: i18n.ts._role.chooseRoleToAssign,
@@ -471,8 +472,9 @@ async function assignRole() {
 		: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
 		: null;
 
-	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value.id, expiresAt });
-	refreshUser();
+	await os.apiWithDialog('admin/roles/assign', {
+		roleId, userId: user.value.id, expiresAt,
+	}).then(refreshUser);
 }
 
 async function unassignRole(role: typeof info.value.roles[number], ev: MouseEvent) {
@@ -481,8 +483,91 @@ async function unassignRole(role: typeof info.value.roles[number], ev: MouseEven
 		icon: 'ti ti-x',
 		danger: true,
 		action: async () => {
-			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value.id });
-			refreshUser();
+			await os.apiWithDialog('admin/roles/unassign', {
+				roleId: role.id, userId: user.value.id,
+			}).then(refreshUser);
+		},
+	}], ev.currentTarget ?? ev.target);
+}
+
+async function experienceMenu(role, ev) {
+	os.popupMenu([{
+		text: i18n.ts._experience._calcs.additional,
+		icon: 'ti plus-minus',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: i18n.ts._experience.settingValue,
+				default: 0,
+				min: Number.MIN_SAFE_INTEGER,
+				max: Number.MAX_SAFE_INTEGER,
+				step: 1,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'add', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
+		text: i18n.ts._experience._calcs.multiplier,
+		icon: 'ti percentage',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: i18n.ts._experience.settingValue,
+				default: 1,
+				min: 0,
+				max: 10000,
+				step: 0.001,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'multiplier', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
+		text: i18n.ts._experience._calcs.set,
+		icon: 'ti letter-n',
+		action: async () => {
+			const { canceled: canceled2, result: value } = await os.inputNumber({
+				title: i18n.ts._experience.settingValue,
+				default: 0,
+				min: 0,
+				max: Number.MAX_SAFE_INTEGER,
+				step: 1,
+			});
+			if (canceled2) return;
+			const { canceled: canceled3, result: note } = await os.inputText({
+				type: 'text',
+				title: i18n.ts.note,
+				default: null,
+				placeholder: i18n.ts.moderationNote,
+			});
+			if (canceled3) return;
+			await os.apiWithDialog('admin/roles/change-exp',
+				{ roleId: role.id, userId: user.value.id, setMode: 'set', value: value, assignForce: true, note: note },
+			).then(refreshUser);
+		},
+	}, {
+		text: i18n.ts.unassign,
+		icon: 'ti ti-x',
+		danger: true,
+		action: async () => {
+			await os.apiWithDialog('admin/roles/unassign', {
+				roleId: role.id, userId: user.value.id,
+			}).then(refreshUser);
 		},
 	}], ev.currentTarget ?? ev.target);
 }
@@ -606,12 +691,22 @@ definePage(() => ({
 				display: none;
 			}
 
-			> .suspended, > .silenced, > .moderator {
+			> .admin,
+			> .moderator,
+			> .silenced,
+			> .limited,
+			> .suspended,
+			> .deleted {
 				display: inline-block;
 				border: solid 1px;
 				border-radius: 6px;
 				padding: 2px 6px;
 				font-size: 85%;
+			}
+
+			> .admin {
+				color: var(--success);
+				border-color: var(--success);
 			}
 
 			> .suspended {
@@ -627,6 +722,16 @@ definePage(() => ({
 			> .moderator {
 				color: var(--MI_THEME-success);
 				border-color: var(--MI_THEME-success);
+			}
+
+			> .limited {
+				color: var(--error);
+				border-color: var(--error);
+			}
+
+			> .deleted {
+				color: var(--error);
+				border-color: var(--error);
 			}
 		}
 	}

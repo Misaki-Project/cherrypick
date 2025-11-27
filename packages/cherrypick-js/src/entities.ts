@@ -75,6 +75,9 @@ export type ModerationLog = {
 	type: 'assignRole';
 	info: ModerationLogPayloads['assignRole'];
 } | {
+	type: 'changeExperienceRole';
+	info: ModerationLogPayloads['changeExperienceRole'];
+} | {
 	type: 'unassignRole';
 	info: ModerationLogPayloads['unassignRole'];
 } | {

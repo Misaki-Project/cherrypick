@@ -342,6 +342,15 @@ export const packedMetaLiteSchema = {
 			type: 'string',
 			optional: false, nullable: true,
 		},
+
+		customHidedNoteLightText: {
+			type: 'string',
+			optional: false, nullable: true,
+		},
+		customHidedNoteDarkText: {
+			type: 'string',
+			optional: false, nullable: true,
+		},
 	},
 } as const;
 

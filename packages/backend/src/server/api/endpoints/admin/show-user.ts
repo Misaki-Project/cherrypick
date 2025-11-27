@@ -123,6 +123,14 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			/*isLimited: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},*/
+			isDeleted: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			isSuspended: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -256,6 +264,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				notificationRecieveConfig: profile.notificationRecieveConfig,
 				isModerator: isModerator,
 				isSilenced: isSilenced,
+				isLimited: false, //user.isLimited,
+				isDeleted: user.isDeleted,
 				isSuspended: user.isSuspended,
 				isHibernated: user.isHibernated,
 				lastActiveDate: user.lastActiveDate ? user.lastActiveDate.toISOString() : null,
@@ -266,6 +276,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				roleAssigns: roleAssigns.map(a => ({
 					createdAt: this.idService.parse(a.id).date.toISOString(),
 					expiresAt: a.expiresAt ? a.expiresAt.toISOString() : null,
+					experience: a.experience ?? undefined,
 					roleId: a.roleId,
 				})),
 				setFederationAvatarShape: user.setFederationAvatarShape,

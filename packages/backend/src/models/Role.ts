@@ -176,6 +176,73 @@ export type RoleCondFormulaValue = { id: string } & (
 	CondFormulaValueNotesMoreThanOrEq
 );
 
+// 固定値モデル 必要値 : base
+type ExperienceLevelPolicyValueConst = {
+	type: 'const';
+	base: number;
+};
+
+// 線形モデル 必要値 : base + additional * level
+type ExperienceLevelPolicyValueLinear = {
+	type: 'linear';
+	base: number;
+	additional: number;
+};
+
+// 指数モデル 必要値 : base + base * (additional ^ level)
+type ExperienceLevelPolicyValueExponential = {
+	type: 'exponential';
+	base: number;
+	additional: number
+	exponential: number;
+};
+
+// Exponentialモデルにlevelを追加した型
+export type RoleExperienceLevelPolicyValue =
+		((ExperienceLevelPolicyValueConst |
+		ExperienceLevelPolicyValueLinear |
+		ExperienceLevelPolicyValueExponential
+	) & { level: number })[];
+
+// ポリシー
+type ExperiencePolicyCalcValueBase = {
+	type: 'base';
+};
+
+type ExperiencePolicyCulcValueConst = {
+	type: 'const';
+	base: any;
+};
+
+type ExperiencePolicyCulcValueMultiplier = {
+	type: 'multiplier';
+	base: number;
+	additional: number;
+};
+
+export const RoleExperienceSetMode = {
+	Set: 'set',
+	Add: 'add',
+	Multiplier: 'multiplier',
+} as const;
+
+export type RoleExperienceSetMode = typeof RoleExperienceSetMode[keyof typeof RoleExperienceSetMode];
+
+export type RoleExperiencePolicyCulcValue = ((
+	ExperiencePolicyCalcValueBase |
+	ExperiencePolicyCulcValueConst |
+	ExperiencePolicyCulcValueMultiplier
+) & { level: number; })[];
+
+export type UserExperience = {
+	currentLevel: number | null;
+	currentExp: number;
+	nextLevelExp: number;
+	totalExp: number;
+	baseLevel: number;
+	maxLevel: number;
+} | undefined;
+
 @Entity('role')
 export class MiRole {
 	@PrimaryColumn(id())
@@ -212,10 +279,10 @@ export class MiRole {
 	public iconUrl: string | null;
 
 	@Column('enum', {
-		enum: ['manual', 'conditional'],
+		enum: ['manual', 'conditional', 'manualLevel'],
 		default: 'manual',
 	})
-	public target: 'manual' | 'conditional';
+	public target: 'manual' | 'conditional' | 'manualLevel';
 
 	@Column('jsonb', {
 		default: { },
@@ -258,6 +325,20 @@ export class MiRole {
 	})
 	public canEditMembersByModerator: boolean;
 
+	@Column('boolean', {
+		default: false,
+	})
+	public canHideProfileByUser: boolean;
+
+	// レベル情報
+	@Column('jsonb', {
+		default: { },
+	})
+	public levelPolicies: {
+		baseLevel: number;
+		experiencePolicies: RoleExperienceLevelPolicyValue & { level: number; }[];
+	} | null;
+
 	// UIに表示する際の並び順用(大きいほど先頭)
 	@Column('integer', {
 		default: 0,
@@ -271,5 +352,6 @@ export class MiRole {
 		useDefault: boolean;
 		priority: number;
 		value: any;
+		policyAsLevel: RoleExperiencePolicyCulcValue | null;
 	}>;
 }

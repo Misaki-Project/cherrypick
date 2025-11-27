@@ -82,6 +82,8 @@ export type DBExportAntennasData = {
 export type DbUserDeleteJobData = {
 	user: ThinUser;
 	soft?: boolean;
+	force?: boolean;
+	onlyFiles?: boolean;
 };
 
 export type DbUserTruncateJobData = {

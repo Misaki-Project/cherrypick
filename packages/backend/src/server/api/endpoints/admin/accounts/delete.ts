@@ -7,9 +7,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { UsersRepository } from '@/models/_.js';
 import { QueueService } from '@/core/QueueService.js';
+import { RoleService } from '@/core/RoleService.js';
 import { DI } from '@/di-symbols.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DeleteAccountService } from '@/core/DeleteAccountService.js';
+import { ApiError } from '@/server/api/error.js';
 
 export const meta = {
 	tags: ['admin'],
@@ -17,12 +19,27 @@ export const meta = {
 	requireCredential: true,
 	requireAdmin: true,
 	kind: 'write:admin:account',
+
+	errors: {
+		userNotFound: {
+			message: 'User not found.',
+			code: 'USER_NOT_FOUND',
+			id: '6c45276a-525e-46b0-892f-17a5036258bf',
+		},
+
+		cannotDeleteModerator: {
+			message: 'Cannot delete a moderator.',
+			code: 'CANNOT_DELETE_MODERATOR',
+			id: 'd195c621-f21a-4c2f-a634-484c2a616311',
+		},
+	},
 } as const;
 
 export const paramDef = {
 	type: 'object',
 	properties: {
 		userId: { type: 'string', format: 'misskey:id' },
+		soft: { type: 'boolean', default: true, description: 'Since deletion by an administrator is a moderation action, the default is to soft delete.' },
 	},
 	required: ['userId'],
 } as const;
@@ -33,16 +50,21 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		private deleteAccoountService: DeleteAccountService,
+		private roleService: RoleService,
+		private deleteAccountService: DeleteAccountService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const user = await this.usersRepository.findOneBy({ id: ps.userId });
 
 			if (user == null) {
-				throw new Error('user not found');
+				throw new ApiError(meta.errors.userNotFound);
 			}
 
-			await this.deleteAccoountService.deleteAccount(user, me);
+			if (await this.roleService.isModerator(user)) {
+				throw new ApiError(meta.errors.cannotDeleteModerator);
+			}
+
+			await this.deleteAccountService.deleteAccount(user, true, me);
 		});
 	}
 }

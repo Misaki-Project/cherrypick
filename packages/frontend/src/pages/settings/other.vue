@@ -74,7 +74,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</SearchMarker>
 
 			<SearchMarker :keywords="['account', 'close', 'delete']">
-				<MkFolder>
+				<MkFolder v-if="$i.policies.canDeleteAccount">
 					<template #icon><SearchIcon><i class="ti ti-alert-triangle"></i></SearchIcon></template>
 					<template #label><SearchLabel>{{ i18n.ts.closeAccount }}</SearchLabel></template>
 
@@ -88,7 +88,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</SearchMarker>
 
 			<SearchMarker :keywords="['account', 'truncate', 'delete']">
-				<MkFolder>
+				<MkFolder v-if="$i.policies.canTruncateAccount">
 					<template #icon><i class="ti ti-recycle"></i></template>
 					<template #label><SearchLabel>{{ i18n.ts.truncateAccount }}</SearchLabel></template>
 

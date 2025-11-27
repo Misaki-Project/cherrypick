@@ -39,12 +39,30 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="_woodenFrame">
 					<div class="_woodenFrameInner">
 						<div class="_gaps_s" style="padding: 16px;">
-							<div><b>{{ i18n.tsx.lastNDays({ n: 7 }) }} {{ i18n.ts.ranking }}</b> ({{ gameMode.toUpperCase() }})</div>
+							<div style="display: flex;">
+								<div style="height: auto; align-content: center;">
+									<b>{{ i18n.ts.ranking }}</b> ({{ gameMode.toUpperCase() }})
+								</div>
+								<div style="width: auto; margin-left: auto; text-align: right;">
+									<MkSelect v-model="rankingSince" style="margin-left: 8px;">
+										<option value="1h">{{ getHourLocalize("1h") }}</option>
+										<option value="6h">{{ getHourLocalize("6h") }}</option>
+										<option value="24h">{{ getHourLocalize("24h") }}</option>
+										<option value="7d">{{ getHourLocalize("7d") }}</option>
+										<option value="30d">{{ getHourLocalize("30d") }}</option>
+										<option value="1y">{{ getHourLocalize("1y") }}</option>
+										<!--<option value="all">{{ getHourLocalize("all") }}</option>-->
+									</MkSelect>
+								</div>
+							</div>
 							<div v-if="ranking" class="_gaps_s">
 								<div v-for="r in ranking" :key="r.id" :class="$style.rankingRecord">
 									<MkAvatar v-if="r.user" :link="true" style="width: 24px; height: 24px; margin-right: 4px;" :user="r.user"/>
 									<MkUserName v-if="r.user" :user="r.user" :nowrap="true"/>
 									<b style="margin-left: auto;">{{ r.score.toLocaleString() }} {{ getScoreUnit(gameMode) }}</b>
+									<div style="margin-left: 8px; width: 50px; font-size: 80%; text-align: right;">
+										<div><MkTime :time="r.registeredAt" :mode="prefer.s.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
+									</div>
 								</div>
 							</div>
 							<div v-else>{{ i18n.ts.loading }}</div>
@@ -67,7 +85,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<div><b>Credit</b></div>
 							<div>
 								<div>Ai-chan illustration: @poteriri@misskey.io</div>
-								<div>BGM: @ys@misskey.design</div>
+								<div>BGM: HURT RECORD ABM-047</div>
 							</div>
 						</div>
 					</div>
@@ -83,6 +101,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, ref, watch } from 'vue';
 import * as Misskey from 'cherrypick-js';
 import XGame from './drop-and-fusion.game.vue';
+import { store } from '@/store.js';
 import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
@@ -90,27 +109,66 @@ import { useMkSelect } from '@/composables/use-mkselect.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/utility/misskey-api.js';
+import { prefer } from '@/preferences';
 
-const {
-	model: gameMode,
-	def: gameModeDef,
-} = useMkSelect({
-	items: [
-		{ label: 'NORMAL', value: 'normal' },
-		{ label: 'SQUARE', value: 'square' },
-		{ label: 'YEN', value: 'yen' },
-		{ label: 'SWEETS', value: 'sweets' },
-		//{ label: 'SPACE', value: 'space' },
-	],
-	initialValue: 'normal',
-});
+const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
+const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
 const gameStarted = ref(false);
 const mute = ref(false);
 const ranking = ref<Misskey.entities.BubbleGameRankingResponse | null>(null);
 
 watch(gameMode, async () => {
-	ranking.value = await misskeyApiGet('bubble-game/ranking', { gameMode: gameMode.value });
+	await updateRanking();
 }, { immediate: true });
+watch(rankingSince, async () => {
+	await updateRanking();
+}, { immediate: true });
+
+async function updateRanking() {
+	ranking.value = await misskeyApiGet('bubble-game/ranking', { gameMode: gameMode.value, sinceHour: getSinceHours(rankingSince.value) });
+}
+
+function getHourLocalize(time: string) {
+	if (time === 'all') {
+		return i18n.ts.all;
+	}
+	const num = time.slice(0, -1);
+	if (time.endsWith('y')) {
+		return i18n.tsx.lastNYears({ n: num });
+	} else if (time.endsWith('w')) {
+		return i18n.tsx.lastNWeeks({ n: num });
+	} else if (time.endsWith('d')) {
+		return i18n.tsx.lastNDays({ n: num });
+	} else if (time.endsWith('h')) {
+		return i18n.tsx.lastNHours({ n: num });
+	} else {
+		return time;
+	}
+}
+
+function getSinceHours(rankingSince: string) {
+	try {
+		if (rankingSince === 'all') {
+			return 0;
+		}	else if (rankingSince.endsWith('y')) {
+			const num = parseInt(rankingSince.slice(0, -1));
+			return num * 365 * 24;
+		}	else if (rankingSince.endsWith('w')) {
+			const num = parseInt(rankingSince.slice(0, -1));
+			return num * 7 * 24;
+		}	else if (rankingSince.endsWith('d')) {
+			const num = parseInt(rankingSince.slice(0, -1));
+			return num * 24;
+		}	else if (rankingSince.endsWith('h')) {
+			const num = parseInt(rankingSince.slice(0, -1));
+			return num;
+		} else {
+			return 0 as never;
+		}
+	} catch {
+		return 0 as never;
+	}
+}
 
 function getScoreUnit(gameMode: string) {
 	return gameMode === 'normal' ? 'pt' :

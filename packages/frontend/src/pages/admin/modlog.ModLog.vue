@@ -18,6 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					'createAvatarDecoration',
 					'createSystemWebhook',
 					'createAbuseReportNotificationRecipient',
+					'changeExperienceRole',
 				].includes(log.type),
 				[$style.logYellow]: [
 					'markSensitiveDriveFile',
@@ -81,6 +82,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<span v-else-if="log.type === 'deletePage'">: @{{ log.info.pageUserUsername }}</span>
 		<span v-else-if="log.type === 'deleteFlash'">: @{{ log.info.flashUserUsername }}</span>
 		<span v-else-if="log.type === 'deleteGalleryPost'">: @{{ log.info.postUserUsername }}</span>
+		<span v-else-if="log.type === 'changeExperienceRole'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }} {{ log.info.roleName }} <small>{{ Number(log.info.beforeValue).toLocaleString() }}</small><i class="ti ti-arrow-right"></i>{{ Number(log.info.afterValue).toLocaleString() }}</span>
 		<span v-else-if="log.type === 'deleteChatRoom'">: @{{ log.info.room.name }}</span>
 	</template>
 	<template #icon>
@@ -213,7 +215,27 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<CodeDiff :context="5" :hideHeader="true" :oldString="log.info.before ?? ''" :newString="log.info.after ?? ''" maxHeight="300px"/>
 			</div>
 		</template>
-		<template v-else-if="log.type === 'updateProxyAccountDescription'">
+		<template v-if="log.type === 'changeExperienceRole'">
+			<div>{{ i18n.ts.user }}: {{ log.info.userId }}</div>
+			<div>{{ i18n.ts.role }}: {{ log.info.roleName }}</div>
+			<div v-if="log.info.actionType === 'set'">{{ Number(log.info.beforeValue).toLocaleString() }} <i class="ti ti-arrow-right"></i>  {{ Number(log.info.afterValue).toLocaleString() }}</div>
+			<div v-else-if="log.info.actionType === 'add'">
+				{{ Number(log.info.beforeValue).toLocaleString() }} <i class="ti ti-arrow-right"></i>
+				<span v-if="log.info.actionValue >= 0" :class="$style.logGreen">+{{ Number(log.info.actionValue).toLocaleString() }}</span>
+				<span v-else :class="$style.logRed">{{ Number(log.info.actionValue).toLocaleString() }}</span>
+				<i class="ti ti-arrow-right"></i>
+				{{ Number(log.info.afterValue).toLocaleString() }}
+			</div>
+			<div v-else-if="log.info.actionType === 'multipiler'">{{ Number(log.info.beforeValue).toLocaleString() }} <i class="ti ti-arrow-right"></i> x{{ log.info.actionValue }} <i class="ti ti-arrow-right"></i> {{ Number(log.info.afterValue).toLocaleString() }}</div>
+			<div>
+				<MkFolder v-if="log.info.note" :defaultOpen="true">
+					<template #label>
+						{{ i18n.ts.note }}
+					</template>
+					<pre>{{ log.info.note }}</pre>
+				</MkFolder>
+			</div>
+		</template>		<template v-else-if="log.type === 'updateProxyAccountDescription'">
 			<div :class="$style.diff">
 				<CodeDiff :context="5" :hideHeader="true" :oldString="log.info.before ?? ''" :newString="log.info.after ?? ''" maxHeight="300px"/>
 			</div>

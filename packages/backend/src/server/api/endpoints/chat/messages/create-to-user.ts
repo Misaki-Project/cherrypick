@@ -10,7 +10,7 @@ import { GetterService } from '@/server/api/GetterService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { ChatService } from '@/core/ChatService.js';
-import type { DriveFilesRepository, MiUser } from '@/models/_.js';
+import type { BlockingsRepository, DriveFilesRepository, MiUser } from '@/models/_.js';
 
 export const meta = {
 	tags: ['chat'],
@@ -62,6 +62,12 @@ export const meta = {
 			code: 'YOU_HAVE_BEEN_BLOCKED',
 			id: 'c15a5199-7422-4968-941a-2a462c478f7d',
 		},
+
+		youHaveBlocking: {
+			message: 'You cannot send a message because you have blocked this user.',
+			code: 'YOU_HAVE_BLOCKING',
+			id: 'a0f1b8c2-4d3e-4f5b-9a6c-7d0e1f2b3c5d',
+		},
 	},
 } as const;
 
@@ -80,6 +86,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	constructor(
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
+
+		@Inject(DI.blockingsRepository)
+		private blockingsRepository: BlockingsRepository,
 
 		private getterService: GetterService,
 		private chatService: ChatService,
@@ -113,6 +122,23 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (err.id === '15348ddd-432d-49c2-8a5a-8069753becff') throw new ApiError(meta.errors.noSuchUser);
 				throw err;
 			});
+
+			// Check blocking
+			const block = await this.blockingsRepository.findOneBy({
+				blockerId: toUser.id,
+				blockeeId: me.id,
+			});
+			if (block) {
+				throw new ApiError(meta.errors.youHaveBeenBlocked);
+			}
+
+			const blocking = await this.blockingsRepository.findOneBy({
+				blockerId: me.id,
+				blockeeId: toUser.id,
+			});
+			if (blocking) {
+				throw new ApiError(meta.errors.youHaveBlocking);
+			}
 
 			return await this.chatService.createMessageToUser(me, toUser, {
 				text: ps.text,

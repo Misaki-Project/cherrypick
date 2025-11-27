@@ -184,7 +184,39 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canPublicReplyNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicQuoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteSelf: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteLocalNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicRenoteRemoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPublicNoteWithFile: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		followingLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		followerScaledFollowingLimit: {
 			type: 'integer',
 			optional: false, nullable: false,
 		},
@@ -320,10 +352,27 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canPurgeAccount: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		scheduleNoteMax: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
 		canSetFederationAvatarShape: {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canDeleteAccount: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canTruncateAccount: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+
 		chatAvailability: {
 			type: 'string',
 			optional: false, nullable: false,
@@ -340,6 +389,12 @@ export const packedRolePoliciesSchema = {
 		watermarkAvailable: {
 			type: 'boolean',
 			optional: false, nullable: false,
+		},
+
+		reactionAvailability: {
+			type: 'string',
+			optional: false, nullable: false,
+			enum: ['all', 'nonSensitiveOnly', 'unicodeOnly', 'heartOnly', 'deny'],
 		},
 	},
 } as const;
@@ -412,7 +467,7 @@ export const packedRoleSchema = {
 				target: {
 					type: 'string',
 					optional: false, nullable: false,
-					enum: ['manual', 'conditional'],
+					enum: ['manual', 'conditional', 'manualLevel'],
 				},
 				condFormula: {
 					type: 'object',
@@ -474,6 +529,37 @@ export const packedRoleSchema = {
 				usersCount: {
 					type: 'integer',
 					optional: false, nullable: false,
+				},
+				experience: {
+					type: 'object',
+					optional: true, nullable: false,
+					properties: {
+						minLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						maxLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						currentLevel: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						currentExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						nextLevelExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+						totalExp: {
+							type: 'integer',
+							optional: false, nullable: false,
+						},
+					},
+
 				},
 			},
 		},

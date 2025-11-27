@@ -894,6 +894,20 @@ export class MiMeta {
 	})
 	public customSplashText: string[];
 
+	@Column('varchar', {
+		length: 2000,
+		nullable: true,
+		default: '(<reason>)',
+	})
+	public customHidedNoteLightText: string | null;
+
+	@Column('varchar', {
+		length: 2000,
+		nullable: true,
+		default: '(<reason>)',
+	})
+	public customHidedNoteDarkText: string | null;
+
 	@Column('boolean', {
 		default: true,
 	})

@@ -42,8 +42,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div :class="$style.submitInner">
 						<template v-if="posted"></template>
 						<template v-else-if="posting"><MkEllipsis/></template>
-						<template v-else>{{ submitText }}</template>
-						<i style="margin-left: 6px;" :class="submitIcon"></i>
+						<template v-else></template>
+						<i :class="posted ? 'ti ti-check' : saveAsDraft ? 'ti ti-pencil-minus' : replyTargetNote ? 'ti ti-arrow-back-up' : renoteTargetNote ? 'ti ti-quote' : updateMode ? 'ti ti-pencil' : prefer.s.renameTheButtonInPostFormToNya ? 'ti ti-paw-filled' : 'ti ti-send'"></i>
 					</div>
 				</button>
 				<button v-click-anime class="_button" style="margin-left: 2px;" :class="$style.submitButton" @click="showPostMenu">
@@ -173,6 +173,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/utility/achievements.js';
 import { emojiPicker } from '@/utility/emoji-picker.js';
 import { mfmFunctionPicker } from '@/utility/mfm-function-picker.js';
+import MkDeliveryTargetEditor from '@/components/MkDeliveryTargetEditor.vue';
 import { prefer } from '@/preferences.js';
 import { getPluginHandlers } from '@/plugin.js';
 import { DI } from '@/di.js';
@@ -248,6 +249,8 @@ const disableRightClick = ref(false);
 const saveToDraft = ref(false);
 const textAreaReadOnly = ref(false);
 const justEndedComposition = ref(false);
+
+const deliveryTargets = ref<DeliveryTargetEditorModelValue | null>(null);
 const renoteTargetNote: ShallowRef<PostFormProps['renote'] | null> = shallowRef(props.renote);
 const replyTargetNote: ShallowRef<PostFormProps['reply'] | null> = shallowRef(props.reply);
 const targetChannel = shallowRef(props.channel);
@@ -1809,7 +1812,7 @@ defineExpose({
 	line-height: 34px;
 	font-weight: bold;
 	border-radius: 6px 0 0 6px;
-	min-width: 90px;
+	min-width: 34px;
 	box-sizing: border-box;
 	color: var(--MI_THEME-fgOnAccent);
 	// background: linear-gradient(90deg, var(--MI_THEME-buttonGradateA), var(--MI_THEME-buttonGradateB));

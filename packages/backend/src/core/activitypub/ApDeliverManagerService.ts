@@ -24,6 +24,11 @@ interface IFollowersRecipe extends IRecipe {
 	type: 'Followers';
 }
 
+interface ISelectiveFollowersRecipe extends IRecipe {
+	type: 'SelectiveFollowers';
+	deliveryTargets?: { mode: 'include' | 'exclude'; hosts: string[] } | null;
+}
+
 interface IDirectRecipe extends IRecipe {
 	type: 'Direct';
 	to: MiRemoteUser;
@@ -36,6 +41,9 @@ interface ISelectiveFollowersRecipe extends IRecipe {
 
 const isFollowers = (recipe: IRecipe): recipe is IFollowersRecipe =>
 	recipe.type === 'Followers';
+
+const isSelectiveFollowers = (recipe: IRecipe): recipe is ISelectiveFollowersRecipe =>
+	recipe.type === 'SelectiveFollowers';
 
 const isDirect = (recipe: IRecipe): recipe is IDirectRecipe =>
 	recipe.type === 'Direct';
@@ -85,6 +93,19 @@ class DeliverManager {
 	public addFollowersRecipe(): void {
 		const deliver: IFollowersRecipe = {
 			type: 'Followers',
+		};
+
+		this.addRecipe(deliver);
+	}
+
+	/**
+	 * Add recipe for selective followers deliver
+	 */
+	@bindThis
+	public addSelectiveFollowersRecipe(deliveryTargets?: { mode: 'include' | 'exclude'; hosts: string[] } | null): void {
+		const deliver: ISelectiveFollowersRecipe = {
+			type: 'SelectiveFollowers',
+			deliveryTargets,
 		};
 
 		this.addRecipe(deliver);
@@ -165,7 +186,6 @@ class DeliverManager {
 
 			for (const following of followers) {
 				const inbox = following.followerSharedInbox ?? following.followerInbox;
-				//if (inbox === null) throw new Error('inbox is null');
 				if (inbox === null) {
 					this.logger.warn('inbox is null, skipping delivery', {
 						followerSharedInbox: following.followerSharedInbox,
@@ -193,7 +213,6 @@ class DeliverManager {
 
 			for (const following of followers) {
 				const inbox = following.followerSharedInbox ?? following.followerInbox;
-				//if (inbox === null) throw new Error('inbox is null');
 				if (inbox === null) {
 					this.logger.warn('inbox is null, skipping delivery', {
 						followerSharedInbox: following.followerSharedInbox,

@@ -13,7 +13,7 @@ import { lookup } from '@/utility/lookup.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { unisonReload } from '@/utility/unison-reload.js';
-import { donateCherryPick } from '@/utility/donate-cherrypick.js';
+import { donateServer } from '@/utility/donate-server.js';
 
 export const navbarItemDef = reactive({
 	notifications: {
@@ -221,9 +221,9 @@ export const navbarItemDef = reactive({
 	},
 	support: {
 		// title: i18n.tsx.supportThisInstance({ name: instance.name ?? host }),
-		title: i18n.tsx.supportThisInstance({ name: 'CherryPick' }),
+		title: i18n.tsx.supportThisInstance({ name: 'Misaki Project' }),
 		icon: 'ti ti-pig-money',
-		action: (ev) => donateCherryPick(ev),
+		action: (ev) => donateServer(ev),
 	},
 	cacheClear: {
 		title: i18n.ts.clearCache,

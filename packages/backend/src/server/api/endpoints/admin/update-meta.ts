@@ -254,6 +254,12 @@ export const paramDef = {
 		moderatorInactivityLimitDays: { type: 'integer', nullable: false },
 		bubbleInstances: { type: 'array', items: { type: 'string' } },
 		customRobotsTxt: { type: 'string', nullable: true },
+		customHidedNoteLightText: {
+			type: 'string', nullable: true,
+		},
+		customHidedNoteDarkText: {
+			type: 'string', nullable: true,
+		},
 	},
 	required: [],
 } as const;
@@ -931,6 +937,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.customRobotsTxt !== undefined) {
 				set.customRobotsTxt = ps.customRobotsTxt;
+			}
+
+			if (ps.customHidedNoteLightText !== undefined) {
+				set.customHidedNoteLightText = ps.customHidedNoteLightText;
+			}
+
+			if (ps.customHidedNoteDarkText !== undefined) {
+				set.customHidedNoteDarkText = ps.customHidedNoteDarkText;
 			}
 
 			const before = await this.metaService.fetch(true);

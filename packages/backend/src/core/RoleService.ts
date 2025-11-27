@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import exp from 'constants';
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { In } from 'typeorm';
@@ -20,7 +21,7 @@ import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import { CacheService } from '@/core/CacheService.js';
-import type { RoleCondFormulaValue } from '@/models/Role.js';
+import type { RoleCondFormulaValue, RoleExperienceLevelPolicyValue, RoleExperiencePolicyCulcValue, RoleExperienceSetMode } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
@@ -29,6 +30,7 @@ import { ModerationLogService } from '@/core/ModerationLogService.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { NotificationService } from '@/core/NotificationService.js';
+import { UserExperience } from '@/models/Role.js';
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 // cherrypick-js の rolePolicies と同期すべし
@@ -37,8 +39,18 @@ export type RolePolicies = {
 	ltlAvailable: boolean;
 	btlAvailable: boolean;
 	canPublicNote: boolean;
+	canPublicReplyNote: boolean;
+	canPublicQuoteNote: boolean;
+	canPublicRenoteSelf: boolean;
+	canPublicRenoteLocalNote: boolean;
+	canPublicRenoteRemoteNote: boolean;
+	canPublicNoteWithFile: boolean;
 	canEditNote: boolean;
+	canPurgeAccount: boolean;
+	scheduleNoteMax: number;
 	mentionLimit: number;
+	followingLimit: number;
+	followerScaledFollowingLimit: number;
 	canInvite: boolean;
 	inviteLimit: number;
 	inviteLimitCycle: number;
@@ -75,6 +87,9 @@ export type RolePolicies = {
 	scheduledNoteLimit: number;
 	watermarkAvailable: boolean;
 	canSetFederationAvatarShape: boolean;
+	canDeleteAccount: boolean;
+	canTruncateAccount: boolean;
+	reactionAvailability: 'all' | 'nonSensitiveOnly' | 'unicodeOnly' | 'heartOnly' | 'deny';
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -82,8 +97,18 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	ltlAvailable: true,
 	btlAvailable: true,
 	canPublicNote: true,
+	canPublicReplyNote: true,
+	canPublicQuoteNote: true,
+	canPublicRenoteSelf: true,
+	canPublicRenoteLocalNote: true,
+	canPublicRenoteRemoteNote: true,
+	canPublicNoteWithFile: true,
 	canEditNote: true,
+	canPurgeAccount: true,
+	scheduleNoteMax: 5,
 	mentionLimit: 20,
+	followingLimit: 500,
+	followerScaledFollowingLimit: 1.1,
 	canInvite: false,
 	inviteLimit: 0,
 	inviteLimitCycle: 60 * 24 * 7,
@@ -126,6 +151,9 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	scheduledNoteLimit: 3,
 	watermarkAvailable: true,
 	canSetFederationAvatarShape: true,
+	canDeleteAccount: true,
+	canTruncateAccount: true,
+	reactionAvailability: 'all',
 };
 
 @Injectable()
@@ -134,8 +162,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	private roleAssignmentByUserIdCache: MemoryKVCache<MiRoleAssignment[]>;
 	private notificationService: NotificationService;
 
-	public static AlreadyAssignedError = class extends Error {};
-	public static NotAssignedError = class extends Error {};
+	public static AlreadyAssignedError = class extends Error { };
+	public static NotAssignedError = class extends Error { };
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -213,6 +241,40 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 					const cached = this.rolesCache.get();
 					if (cached) {
 						this.rolesCache.set(cached.filter(x => x.id !== body.id));
+					}
+					break;
+				}
+				case 'userRoleExperienceUpdated': {
+					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
+					if (cached) {
+						const index = cached.findIndex(x => x.id === body.id);
+						if (index > -1) {
+							cached[index] = {
+								...cached[index],
+								experience: body.experience,
+							};
+						} else {
+							cached.push({ // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
+								...body,
+								expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
+								user: null, // joinなカラムは通常取ってこないので
+								role: null, // joinなカラムは通常取ってこないので
+								experience: body.experience,
+							});
+						}
+					}
+					break;
+				}
+				case 'userHideProfileUpdated': {
+					const cached = this.roleAssignmentByUserIdCache.get(body.userId);
+					if (cached) {
+						const index = cached.findIndex(x => x.id === body.id);
+						if (index > -1) {
+							cached[index] = {
+								...cached[index],
+								isHideProfile: body.isHideProfile,
+							};
+						}
 					}
 					break;
 				}
@@ -330,6 +392,202 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		}
 	}
 
+	private evalRoleLevel(assign: MiRoleAssignment, role: MiRole): {
+		level: number;
+		currentLevelExp: number;
+		nextLevelExp: number;
+		minLevel: number;
+		maxLevel: number;
+	} | null {
+		if (role.target !== 'manualLevel' || !role.levelPolicies) return null;
+
+		const exp = Math.max(assign.experience ?? 0, 0);
+		const policies = role.levelPolicies.experiencePolicies;
+		const baseLevel = role.levelPolicies.baseLevel;
+		const maxLevel = baseLevel + policies.reduce((acc, p) => acc + p.level, 0);
+
+		if (policies.length === 0) {
+			return {
+				level: baseLevel,
+				currentLevelExp: exp,
+				nextLevelExp: Number.NaN,
+				minLevel: baseLevel,
+				maxLevel: maxLevel,
+			};
+		}
+
+		let level = 0;
+		let totalExp = 0;
+
+		for (const policy of policies) {
+			if (policy.level <= 0) continue;
+			const max = policy.level;
+			let diff = max;
+			let estLevel = 0;
+			const currentExp = exp - totalExp;
+			while (diff > 0) {
+				switch (policy.type) {
+					case 'const':
+						if (policy.base * policy.level <= currentExp) {
+							totalExp += policy.base * policy.level;
+							level += policy.level;
+							break;
+						} else {
+							const nextLevel = Math.floor(currentExp / policy.base);
+							const currentLevelExp = Math.floor(exp - totalExp - policy.base * nextLevel);
+							return {
+								level: baseLevel + level + nextLevel,
+								currentLevelExp: currentLevelExp,
+								nextLevelExp: policy.base,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+					case 'linear':
+						if (currentExp >= this.calculateLinearSum(policy.base, policy.additional, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+					case 'exponential':
+						if (currentExp >= this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel + diff)) {
+							estLevel += diff;
+						}
+						break;
+				}
+
+				if (policy.type === 'const') {
+					break;
+				}
+
+				if (estLevel === max) {
+					switch (policy.type) {
+						case 'linear':
+							totalExp += this.calculateLinearSum(policy.base, policy.additional, max);
+							level += policy.level;
+							break;
+						case 'exponential':
+							totalExp += this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, max);
+							level += policy.level;
+							break;
+					}
+					break;
+				}
+				if (diff !== 1) {
+					diff = Math.floor((diff + 1) / 2);
+				} else {
+					switch (policy.type) {
+						case 'linear':
+						{
+							const current = totalExp + this.calculateLinearSum(policy.base, policy.additional, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * (estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						case 'exponential':
+						{
+							const current = totalExp + this.calculateExponentialSum(policy.base, policy.additional, policy.exponential, estLevel);
+							const next = Math.floor(current % 1 + policy.base + policy.additional * Math.pow(policy.exponential, estLevel));
+							return {
+								level: baseLevel + level + estLevel,
+								currentLevelExp: Math.floor(exp - current),
+								nextLevelExp: next,
+								minLevel: baseLevel,
+								maxLevel: maxLevel,
+							};
+						}
+						default:
+							return null;
+					}
+				}
+			}
+		}
+		return {
+			level: baseLevel + level,
+			currentLevelExp: Math.floor(exp - totalExp),
+			nextLevelExp: Number.NaN,
+			minLevel: baseLevel,
+			maxLevel: maxLevel,
+		};
+	}
+
+	private binarySearchLevel(maxLevel: number, currentExp: number, calculateExp: (level: number) => number): number {
+		let low = 0;
+		let high = maxLevel;
+
+		while (low < high) {
+			const mid = Math.floor((low + high) / 2);
+			const expAtMid = calculateExp(mid);
+
+			if (expAtMid <= currentExp) {
+				low = mid + 1;
+			} else {
+				high = mid;
+			}
+		}
+
+		return low - 1;
+	}
+
+	private calculateExponentialSum(
+		base: number,
+		additional: number,
+		exponential: number,
+		level: number,
+	): number {
+		if (!Number.isInteger(level) || level < 0) {
+			throw new Error('level must be a non-negative integer');
+		}
+		// Case: exponential = 1
+		if (exponential === 1) {
+			return (base + additional) * (level);
+		}
+		// Case: exponential != 1
+		const geometricSum = (1 - Math.pow(exponential, level)) / (1 - exponential);
+		return base * (level) + additional * geometricSum;
+	}
+	private calculateLinearSum(
+		base: number,
+		additional: number,
+		level: number,
+	): number {
+		if (!Number.isInteger(level) || level < 0) {
+			throw new Error('level must be a non-negative integer');
+		}
+		return base * level + additional * (level * (level - 1)) / 2;
+	}
+
+	@bindThis
+	public async attachRoleLevels(roles: MiRole[], assigns: MiRoleAssignment[]): Promise<(MiRole & (UserExperience | undefined) & { isHideProfile: boolean })[]> {
+		return roles.map(role => {
+			if (role.target === 'manualLevel') {
+				const assign = assigns.find(a => a.roleId === role.id);
+				if (assign) {
+					const levelInfo = this.evalRoleLevel(assign, role);
+					if (levelInfo) {
+						return {
+							...role,
+							isHideProfile: role.canHideProfileByUser ? assign.isHideProfile : false,
+							experience: {
+								currentLevel: levelInfo.level,
+								currentExp: levelInfo.currentLevelExp,
+								nextLevelExp: levelInfo.nextLevelExp,
+								totalExp: assign.experience ?? 0,
+								minLevel: levelInfo.minLevel,
+								maxLevel: levelInfo.maxLevel,
+							},
+						};
+					}
+				}
+			}
+			return role;
+		});
+	}
+
 	@bindThis
 	public async getRoles() {
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
@@ -349,9 +607,15 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	public async getUserRoles(userId: MiUser['id']) {
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
 		const assigns = await this.getUserAssigns(userId);
-		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
+		const assignedRoles = await this.attachRoleLevels(
+			roles.filter(r => assigns.map(x => x.roleId).includes(r.id)),
+			assigns,
+		);
 		const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-		const matchedCondRoles = roles.filter(r => r.target === 'conditional' && this.evalCond(user!, assignedRoles, r.condFormula));
+		const matchedCondRoles = roles.filter((r): r is MiRole & { isHideProfile: boolean } => r.target === 'conditional' && user !== null && this.evalCond(user, assignedRoles, r.condFormula));
+		matchedCondRoles.forEach(r => {
+			r.isHideProfile = r.canHideProfileByUser ? (assigns.find(a => a.roleId === r.id)?.isHideProfile ?? false) : false;
+		});
 		return [...assignedRoles, ...matchedCondRoles];
 	}
 
@@ -365,12 +629,16 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		// 期限切れのロールを除外
 		assigns = assigns.filter(a => a.expiresAt == null || (a.expiresAt.getTime() > now));
 		const roles = await this.rolesCache.fetch(() => this.rolesRepository.findBy({}));
-		const assignedRoles = roles.filter(r => assigns.map(x => x.roleId).includes(r.id));
+		const assignedRoles = await this.attachRoleLevels(
+			roles.filter(r => assigns.map(x => x.roleId).includes(r.id)),
+			assigns,
+		);
 		const assignedBadgeRoles = assignedRoles.filter(r => r.asBadge);
 		const badgeCondRoles = roles.filter(r => r.asBadge && (r.target === 'conditional'));
+
 		if (badgeCondRoles.length > 0) {
 			const user = roles.some(r => r.target === 'conditional') ? await this.cacheService.findUserById(userId) : null;
-			const matchedBadgeCondRoles = badgeCondRoles.filter(r => this.evalCond(user!, assignedRoles, r.condFormula));
+			const matchedBadgeCondRoles = user ? badgeCondRoles.filter(r => this.evalCond(user, assignedRoles, r.condFormula)) : [];
 			return [...assignedBadgeRoles, ...matchedBadgeCondRoles];
 		} else {
 			return assignedBadgeRoles;
@@ -384,11 +652,56 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		if (userId == null) return basePolicies;
 
 		const roles = await this.getUserRoles(userId);
+		const assigns = await this.getUserAssigns(userId);
 
-		function calc<T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) {
+		const calc = <T extends keyof RolePolicies>(name: T, aggregate: (values: RolePolicies[T][]) => RolePolicies[T]) => {
 			if (roles.length === 0) return basePolicies[name];
+			const policies = roles.map(role => {
+				const policy = role.policies[name] ?? { priority: 0, useDefault: true, policyAsLevel: [] };
 
-			const policies = roles.map(role => role.policies[name] ?? { priority: 0, useDefault: true });
+				// manualLevelロールの場合、レベルに基づいて制御
+				if (role.target === 'manualLevel' && role.levelPolicies) {
+					const assign = assigns.find(a => a.roleId === role.id);
+					if (assign) {
+						const levelInfo = this.evalRoleLevel(assign, role);
+						if (levelInfo) {
+							// レベルに応じたポリシー値を設定
+							const levelPolicy = policy.policyAsLevel;
+							const level = levelInfo.level - levelInfo.minLevel;
+							if (levelPolicy) {
+								let startLevel = 0;
+								for (let i = 0; i < levelPolicy.length; i++) {
+									const policyValue = levelPolicy[i];
+									const nextLevel = levelPolicy.length - 1 !== i ? (startLevel + policyValue.level) : levelInfo.maxLevel - levelInfo.minLevel + 1; // 最大レベルの条件を入れるため
+									if (level >= startLevel && level <= nextLevel) {
+										switch (policyValue.type) {
+											case 'base':
+												policy.useDefault = true;
+												break;
+											case 'const':
+												policy.useDefault = false;
+												policy.value = policyValue.base;
+												break;
+											case 'multiplier':
+												policy.useDefault = false;
+												policy.value = Math.min(
+													policyValue.base + policyValue.additional * (levelInfo.level - startLevel),
+													Number.MAX_SAFE_INTEGER,
+												);
+												break;
+											default:
+												break;
+										}
+										break;
+									}
+									startLevel += policyValue.level;
+								}
+							}
+						}
+					}
+				}
+				return policy;
+			});
 
 			const p2 = policies.filter(policy => policy.priority === 2);
 			if (p2.length > 0) return aggregate(p2.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
@@ -397,7 +710,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			if (p1.length > 0) return aggregate(p1.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
 
 			return aggregate(policies.map(policy => policy.useDefault ? basePolicies[name] : policy.value));
-		}
+		};
 
 		function aggregateChatAvailability(vs: RolePolicies['chatAvailability'][]) {
 			if (vs.some(v => v === 'available')) return 'available';
@@ -405,13 +718,32 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			return 'unavailable';
 		}
 
+		function aggregateReactionAvailability(vs: RolePolicies['reactionAvailability'][]) {
+			if (vs.some(v => v === 'deny')) return 'deny';
+			if (vs.some(v => v === 'heartOnly')) return 'heartOnly';
+			if (vs.some(v => v === 'unicodeOnly')) return 'unicodeOnly';
+			if (vs.some(v => v === 'nonSensitiveOnly')) return 'nonSensitiveOnly';
+			if (vs.some(v => v === 'all')) return 'all';
+			return 'deny';
+		}
+
 		return {
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
 			btlAvailable: calc('btlAvailable', vs => vs.some(v => v === true)),
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
+			canPublicReplyNote: calc('canPublicReplyNote', vs => vs.some(v => v === true)),
+			canPublicQuoteNote: calc('canPublicQuoteNote', vs => vs.some(v => v === true)),
+			canPublicRenoteSelf: calc('canPublicRenoteSelf', vs => vs.some(v => v === true)),
+			canPublicRenoteLocalNote: calc('canPublicRenoteLocalNote', vs => vs.some(v => v === true)),
+			canPublicRenoteRemoteNote: calc('canPublicRenoteRemoteNote', vs => vs.some(v => v === true)),
+			canPublicNoteWithFile: calc('canPublicNoteWithFile', vs => vs.some(v => v === true)),
 			canEditNote: calc('canEditNote', vs => vs.some(v => v === true)),
+			canPurgeAccount: calc('canPurgeAccount', vs => vs.some(v => v === true)),
+			scheduleNoteMax: calc('scheduleNoteMax', vs => Math.max(...vs)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),
+			followingLimit: calc('followingLimit', vs => Math.max(...vs)),
+			followerScaledFollowingLimit: calc('followerScaledFollowingLimit', vs => Math.max(...vs)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
 			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
 			inviteLimitCycle: calc('inviteLimitCycle', vs => Math.max(...vs)),
@@ -457,6 +789,9 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			scheduledNoteLimit: calc('scheduledNoteLimit', vs => Math.max(...vs)),
 			watermarkAvailable: calc('watermarkAvailable', vs => vs.some(v => v === true)),
 			canSetFederationAvatarShape: calc('canSetFederationAvatarShape', vs => vs.some(v => v === true)),
+			canDeleteAccount: calc('canDeleteAccount', vs => vs.some(v => v === true)),
+			canTruncateAccount: calc('canTruncateAccount', vs => vs.some(v => v === true)),
+			reactionAvailability: calc('reactionAvailability', aggregateReactionAvailability),
 		};
 	}
 
@@ -557,6 +892,104 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			id: In(ids),
 		}) : [];
 		return users;
+	}
+
+	@bindThis
+	public async assignExperience(userId: MiUser['id'], roleId: MiRole['id'], experience: number, setMode: RoleExperienceSetMode, moderator?: MiUser, assignForce?: boolean, note?: string): Promise<void> {
+		const now = Date.now();
+		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
+		let assign = await this.roleAssignmentsRepository.findOneBy({ userId, roleId });
+		let setExperience = 0;
+		let beforeValue = 0;
+		if (!assign) {
+			if (!assignForce) {
+				throw new RoleService.NotAssignedError();
+			}
+			//新規でアサインする
+			switch (setMode) {
+				case 'set':
+				case 'add':
+					setExperience = experience;
+					break;
+				case 'multiplier':
+					setExperience = 0;
+					break;
+			}
+			setExperience = Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER);
+			assign = await this.roleAssignmentsRepository.insertOne({
+				id: this.idService.gen(now),
+				roleId: roleId,
+				userId: userId,
+				experience: setExperience,
+			});
+
+			this.rolesRepository.update(roleId, {
+				lastUsedAt: new Date(),
+			});
+		} else {
+			beforeValue = assign.experience ?? 0;
+			switch (setMode) {
+				case 'set':
+					setExperience = experience;
+					break;
+				case 'add':
+					setExperience = (assign.experience ?? 0) + experience;
+					break;
+				case 'multiplier':
+					setExperience = (assign.experience ?? 0) * experience;
+					break;
+			}
+			setExperience = Math.min(Math.max(Math.floor(setExperience), 0), Number.MAX_SAFE_INTEGER);
+			await this.roleAssignmentsRepository.update(assign.id, { experience: setExperience });
+		}
+
+		this.rolesRepository.update(roleId, {
+			lastUsedAt: new Date(),
+		});
+		const user = await this.usersRepository.findOneByOrFail({ id: userId });
+
+		// ToDo : ここに経験値の通知を追加する
+		/*
+		if (role.isPublic && user.host === null) {
+			this.notificationService.createNotification(userId, 'roleAssigned', {
+				roleId: roleId,
+			});
+		}
+		*/
+
+		if (moderator) {
+			this.moderationLogService.log(moderator, 'changeExperienceRole', {
+				roleId: roleId,
+				roleName: role.name,
+				userId: userId,
+				userUsername: user.username,
+				userHost: user.host,
+				actionType: setMode,
+				actionValue: experience,
+				beforeValue: beforeValue,
+				afterValue: setExperience,
+				note: note ?? null,
+			});
+		}
+		this.globalEventService.publishInternalEvent('userRoleExperienceUpdated', assign);
+	}
+
+	@bindThis
+	public async hideUserProfileRole(userId: MiUser['id'], roleId: MiRole['id'], isHide: boolean): Promise<void> {
+		const role = await this.rolesRepository.findOneByOrFail({ id: roleId });
+
+		const existing = await this.roleAssignmentsRepository.findOneBy({
+			roleId: roleId,
+			userId: userId,
+		});
+
+		if ( existing == null || existing.isHideProfile === isHide || !role.canHideProfileByUser) {
+			return;
+		}
+
+		await this.roleAssignmentsRepository.update(existing.id, { isHideProfile: isHide });
+
+		this.globalEventService.publishInternalEvent('userHideProfileUpdated', { ...existing, isHideProfile: isHide });
 	}
 
 	@bindThis
@@ -688,6 +1121,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canEditMembersByModerator: values.canEditMembersByModerator,
 			displayOrder: values.displayOrder,
 			policies: values.policies,
+			levelPolicies: values.levelPolicies,
 		});
 
 		this.globalEventService.publishInternalEvent('roleCreated', created);

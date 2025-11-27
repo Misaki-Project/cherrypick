@@ -114,6 +114,8 @@ export class MetaEntityService {
 			maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
 			defaultLightTheme,
 			defaultDarkTheme,
+			customHidedNoteLightText: instance.customHidedNoteLightText,
+			customHidedNoteDarkText: instance.customHidedNoteDarkText,
 			clientOptions: instance.clientOptions,
 			ads: ads.map(ad => ({
 				id: ad.id,

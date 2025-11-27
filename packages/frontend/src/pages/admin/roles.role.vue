@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts.info }}</template>
 				<XEditor :modelValue="role" readonly/>
 			</MkFolder>
-			<MkFolder v-if="role.target === 'manual'" defaultOpen>
+			<MkFolder v-if="role.target === 'manual' || role.target == 'manualLevel'" defaultOpen>
 				<template #icon><i class="ti ti-users"></i></template>
 				<template #label>{{ i18n.ts.users }}</template>
 				<template #suffix>{{ role.usersCount }}</template>

@@ -150,7 +150,7 @@ export interface Locale extends ILocale {
      */
     "youBlocked": string;
     /**
-     * {user}さんのフォローやポストの表示はできません。
+     * {user}さんのフォローやノートの表示はできません。
      */
     "youBlockedDescription": ParameterizedString<"user">;
     /**
@@ -224,6 +224,22 @@ export interface Locale extends ILocale {
      * ロード画面に表示されるテキストを設定します。改行で区切って複数設定できます。
      */
     "customSplashTextDescription": string;
+    /**
+     * 非公開ノートの置き換えテキスト(ライトテーマ時)
+     */
+    "customHidedNoteLightText": string;
+    /**
+     * ライトテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
+     */
+    "customHidedNoteLightTextDescription": string;
+    /**
+     * 非公開ノートの置き換えテキスト(ダークテーマ時)
+     */
+    "customHidedNoteDarkText": string;
+    /**
+     * ダークテーマ時に非公開のノートに表示されるテキストを設定します。「<reason>」で理由を置き換えできます。空白にすることで既存の表示に戻せます。
+     */
+    "customHidedNoteDarkTextDescription": string;
     /**
      * キャプション未設定案内
      */
@@ -614,7 +630,7 @@ export interface Locale extends ILocale {
      */
     "initialPasswordForSetupDescription": string;
     /**
-     * パスワードを忘れた
+     * パスワードを忘れましたか？
      */
     "forgotPassword": string;
     /**
@@ -650,7 +666,7 @@ export interface Locale extends ILocale {
      */
     "noNotes": string;
     /**
-     * 通知はありません
+     * 通知はありません…寂しいですね。
      */
     "noNotifications": string;
     /**
@@ -954,6 +970,10 @@ export interface Locale extends ILocale {
      */
     "followers": string;
     /**
+     * 知り合いのフォロワー
+     */
+    "followersYouFollow": string;
+    /**
      * フォローされています
      */
     "followsYou": string;
@@ -1063,6 +1083,7 @@ export interface Locale extends ILocale {
     "cantRenote": string;
     /**
      * リノートをリノートすることはできません。
+     * <small>まるでマトリョーシカですね…</small>
      */
     "cantReRenote": string;
     /**
@@ -1394,6 +1415,15 @@ export interface Locale extends ILocale {
      */
     "followConfirm": ParameterizedString<"name">;
     /**
+     * {name}のフォローリクエストを連合せずに拒否しますか？
+     */
+    "followRequestRejectWithNoActivityConfirm": ParameterizedString<"name">;
+    /**
+     * 連合せずに拒否をすると、直ちにフォローリクエストから削除されますが、相手から見るフォローリクエストは半永久的に承認待ちの状態になります。
+     * この操作を続行しますか？
+     */
+    "followRequestRejectWithNoActivityConfirmDescription": string;
+    /**
      * プロキシアカウント
      */
     "proxyAccount": string;
@@ -1718,7 +1748,7 @@ export interface Locale extends ILocale {
      */
     "usernameOrUserId": string;
     /**
-     * ユーザーが見つかりません
+     * ユーザーが見つからないようです…
      */
     "noSuchUser": string;
     /**
@@ -1853,6 +1883,10 @@ export interface Locale extends ILocale {
      * リモートユーザーのため、情報が不完全です。
      */
     "remoteUserCaution": string;
+    /**
+     * このユーザーは凍結されています。
+     */
+    "suspendedUserCaution": string;
     /**
      * アクティビティ
      */
@@ -2506,7 +2540,7 @@ export interface Locale extends ILocale {
      */
     "notFound": string;
     /**
-     * 指定されたURLに該当するページはありませんでした。
+     * ここには何もないようです…
      */
     "notFoundDescription": string;
     /**
@@ -2610,7 +2644,7 @@ export interface Locale extends ILocale {
      */
     "quoteQuestion": string;
     /**
-     * クリップボードのテキストが長いです。テキストファイルとして添付しますか？
+     * クリップボードのテキストが長過ぎて貼り付けられないようです。ここはテキストファイルとして添付するのはどうでしょう？
      */
     "attachAsFileQuestion": string;
     /**
@@ -2618,7 +2652,7 @@ export interface Locale extends ILocale {
      */
     "onlyOneFileCanBeAttached": string;
     /**
-     * 続行する前に、登録またはログインが必要です
+     * この操作を実行するには、登録またはログインが必要です。
      */
     "signinRequired": string;
     /**
@@ -5031,6 +5065,18 @@ export interface Locale extends ILocale {
      */
     "rolesAssignedToMe": string;
     /**
+     * これらは自分に割り振られたロールです。プロフィールに表示するロールをカスタマイズすることができます。
+     */
+    "descriptionRolesAssignedToMeOfSetting": string;
+    /**
+     * プロフィールにロールを表示しない
+     */
+    "roleHideProfileTip": string;
+    /**
+     * プロフィールにロールを表示する
+     */
+    "roleShowProfileTip": string;
+    /**
      * パスワードリセットしますか？
      */
     "resetPasswordConfirm": string;
@@ -5795,9 +5841,21 @@ export interface Locale extends ILocale {
      */
     "ranking": string;
     /**
+     * 直近{n}時間
+     */
+    "lastNHours": ParameterizedString<"n">;
+    /**
      * 直近{n}日
      */
     "lastNDays": ParameterizedString<"n">;
+    /**
+     * 直近{n}週間
+     */
+    "lastNWeeks": ParameterizedString<"n">;
+    /**
+     * 直近{n}年
+     */
+    "lastNYears": ParameterizedString<"n">;
     /**
      * タイトルへ
      */
@@ -6583,6 +6641,34 @@ export interface Locale extends ILocale {
          * 自分からメッセージを送った相手とはこの設定に関わらずメッセージの送受信が可能です。
          */
         "chatAllowedUsers_note": string;
+        /**
+         * {year}年{month}月から利用しています
+         */
+        "dateSinceRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {year}年{month}月から観測しています
+         */
+        "dateSinceRemoteRegistedBy": ParameterizedString<"year" | "month">;
+        /**
+         * {value} 人のフォロワー
+         */
+        "countOfFollowers": ParameterizedString<"value">;
+        /**
+         * リモートのソフトウェアが対応していない場合、正常に通信ができない場合があります。
+         */
+        "noticeRemoteMessage": string;
+        /**
+         * 今後、このユーザーにチャットを送信することはできません。
+         */
+        "cannotSendMessagesToUsersAnymore": string;
+        /**
+         * このユーザーをブロックしています。
+         */
+        "cannotSendMessagesBecauseYouBlocking": string;
+        /**
+         * 自分自身にメッセージを送信することはできません。
+         */
+        "cannotSendMessagesBecauseToYourself": string;
         "_chatAllowedUsers": {
             /**
              * 誰でも
@@ -6886,7 +6972,7 @@ export interface Locale extends ILocale {
          */
         "makeNotesHiddenBefore": string;
         /**
-         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。
+         * この機能が有効になっている間、設定された日時より過去、または設定された時間を経過しているノートが自分のみ表示可能(非公開化)になります。無効に戻すと、ノートの公開状態も元に戻ります。ピン止めされたノートには影響を受けません。
          */
         "makeNotesHiddenBeforeDescription": string;
         /**
@@ -8861,6 +8947,7 @@ export interface Locale extends ILocale {
         /**
          * <b>マニュアル</b>は誰がこのロールに含まれるかを手動で管理します。
          * <b>コンディショナル</b>は条件を設定し、それに合致するユーザーが自動で含まれるようになります。
+         * <b>マニュアルレベル</b>はユーザーの評価値を手動で設定し、評価値を元に異なるポリシーを管理します。
          */
         "descriptionOfAssignTarget": string;
         /**
@@ -8879,6 +8966,14 @@ export interface Locale extends ILocale {
          * コンディショナルロール
          */
         "conditionalRoles": string;
+        /**
+         * マニュアルレベル
+         */
+        "manualLevel": string;
+        /**
+         * レベルロール
+         */
+        "manualLevelRoles": string;
         /**
          * 条件
          */
@@ -8960,9 +9055,25 @@ export interface Locale extends ILocale {
          */
         "descriptionOfCanEditMembersByModerator": string;
         /**
+         * ユーザーによるプロフィールからの非表示を許可
+         */
+        "canHideProfileByUser": string;
+        /**
+         * オンにすると、ユーザーはロールをプロフィールから非表示にできます。オフにすると、ロールのプロフィールは常に表示されます。これは公開ロールのみに適用されます。
+         */
+        "descriptionOfcanHideProfileByUser": string;
+        /**
          * 優先度
          */
         "priority": string;
+        /**
+         * レベルアップポリシー
+         */
+        "levelPolicies": string;
+        /**
+         * {value} 件のレベルポリシー
+         */
+        "countOfCondLevelPolicies": ParameterizedString<"value">;
         "_priority": {
             /**
              * 低
@@ -8995,6 +9106,30 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * 公開投稿のリプライにパブリック投稿を許可
+             */
+            "canPublicReplyNote": string;
+            /**
+             * 公開投稿の引用にパブリック投稿を許可
+             */
+            "canPublicQuoteNote": string;
+            /**
+             * 自分の投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteSelf": string;
+            /**
+             * ローカル投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteLocalNote": string;
+            /**
+             * リモート投稿のパブリックのリノートを許可
+             */
+            "canPublicRenoteRemoteNote": string;
+            /**
+             * ファイル付きのパブリック投稿を許可
+             */
+            "canPublicNoteWithFile": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
@@ -9002,6 +9137,14 @@ export interface Locale extends ILocale {
              * ノート内の最大メンション数
              */
             "mentionMax": string;
+            /**
+             * フォローの上限数
+             */
+            "followingLimit": string;
+            /**
+             * フォロワーの倍率に応じたフォローの上限倍率
+             */
+            "followerScaledFollowingLimit": string;
             /**
              * サーバー招待コードの発行
              */
@@ -9170,6 +9313,40 @@ export interface Locale extends ILocale {
              * アイコンの形設定の連合を許可
              */
             "canSetFederationAvatarShape": string;
+            /**
+             * アカウントの削除の許可
+             */
+            "canDeleteAccount": string;
+            /**
+             * アカウントの整理の許可
+             */
+            "canTruncateAccount": string;
+            /**
+             * リアクション作成を許可する絵文字の種類
+             */
+            "reactionAvailability": string;
+            "_reactionAvailability": {
+                /**
+                 * すべて許可
+                 */
+                "all": string;
+                /**
+                 * センシティブ除く絵文字を許可
+                 */
+                "nonSensitiveOnly": string;
+                /**
+                 * Unicode絵文字のみを許可
+                 */
+                "unicodeOnly": string;
+                /**
+                 * ハート絵文字のみを許可
+                 */
+                "heartOnly": string;
+                /**
+                 * すべて拒否
+                 */
+                "deny": string;
+            };
         };
         "_condition": {
             /**
@@ -9296,15 +9473,15 @@ export interface Locale extends ILocale {
     };
     "_emailUnavailable": {
         /**
-         * 既に使用されています
+         * 既に使用されているようです
          */
         "used": string;
         /**
-         * 形式が正しくありません
+         * メールアドレスとして形式が正しくありません
          */
         "format": string;
         /**
-         * 恒久的に使用可能なアドレスではありません
+         * 恒久的に使用可能なアドレスではありません。捨てメアドではありませんか？
          */
         "disposable": string;
         /**
@@ -9316,7 +9493,7 @@ export interface Locale extends ILocale {
          */
         "smtp": string;
         /**
-         * このメールアドレスでは登録できません
+         * このメールアドレスでの登録は禁止されています
          */
         "banned": string;
     };
@@ -9336,7 +9513,7 @@ export interface Locale extends ILocale {
     };
     "_signup": {
         /**
-         * ほとんど完了です
+         * 登録完了まであと少しです！
          */
         "almostThere": string;
         /**
@@ -9368,7 +9545,7 @@ export interface Locale extends ILocale {
          */
         "requestAccountDelete": string;
         /**
-         * 削除処理が開始されました。
+         * 削除処理が開始されました。  #Goodbye
          */
         "started": string;
         /**
@@ -11487,6 +11664,28 @@ export interface Locale extends ILocale {
          * フォローを承認制にしている場合、フォローリクエストを許可した時に表示されます。
          */
         "followedMessageDescriptionForLockedAccount": string;
+        "_friendsFollows": {
+            /**
+             * フォローしている人にフォロワーはいません
+             */
+            "noFollows": string;
+            /**
+             * {user}さんにフォローされています
+             */
+            "oneFollow": ParameterizedString<"user">;
+            /**
+             * {user1}さんと{user2}さんにフォローされています
+             */
+            "twoFollows": ParameterizedString<"user1" | "user2">;
+            /**
+             * {user1}さん、{user2}さん、{user3}さんにフォローされています
+             */
+            "threeFollows": ParameterizedString<"user1" | "user2" | "user3">;
+            /**
+             * {user1}さん、{user2}さん、他{count}人にフォローされています
+             */
+            "manyFollows": ParameterizedString<"user1" | "user2" | "count">;
+        };
     };
     "_exportOrImport": {
         /**
@@ -12686,6 +12885,10 @@ export interface Locale extends ILocale {
          * プロキシアカウントの説明を更新
          */
         "updateProxyAccountDescription": string;
+        /**
+         * ロールの経験値を変更
+         */
+        "changeExperienceRole": string;
     };
     "_fileViewer": {
         /**
@@ -13103,7 +13306,7 @@ export interface Locale extends ILocale {
          */
         "title": string;
         /**
-         * サーバーに接続できません
+         * サーバーに接続できないようです…
          */
         "header": string;
     };

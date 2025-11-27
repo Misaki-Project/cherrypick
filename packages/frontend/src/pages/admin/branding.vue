@@ -149,6 +149,20 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #caption>{{ i18n.ts.customSplashTextDescription }}</template>
 					</MkTextarea>
 				</SearchMarker>
+
+				<SearchMarker>
+					<MkTextarea v-model="customHidedNoteLightText">
+						<template #label>{{ i18n.ts.customHidedNoteLightText }}</template>
+						<template #caption>{{ i18n.ts.customHidedNoteLightTextDescription }}</template>
+					</MkTextarea>
+				</SearchMarker>
+
+				<SearchMarker>
+					<MkTextarea v-model="customHidedNoteDarkText">
+						<template #label>{{ i18n.ts.customHidedNoteDarkText }}</template>
+						<template #caption>{{ i18n.ts.customHidedNoteDarkTextDescription }}</template>
+					</MkTextarea>
+				</SearchMarker>
 			</div>
 		</SearchMarker>
 	</div>
@@ -204,6 +218,8 @@ const repositoryUrl = ref(meta.repositoryUrl);
 const feedbackUrl = ref(meta.feedbackUrl);
 const manifestJsonOverride = ref(meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t'));
 const customSplashText = ref(meta.customSplashText.join('\n'));
+const customHidedNoteLightText = ref(meta.customHidedNoteLightText);
+const customHidedNoteDarkText = ref(meta.customHidedNoteDarkText);
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
@@ -228,6 +244,8 @@ function save() {
 		feedbackUrl: feedbackUrl.value === '' ? null : feedbackUrl.value,
 		manifestJsonOverride: manifestJsonOverride.value === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride.value)),
 		customSplashText: customSplashText.value.split('\n'),
+		customHidedNoteLightText: customHidedNoteLightText.value === '' ? null : customHidedNoteLightText.value,
+		customHidedNoteDarkText: customHidedNoteDarkText.value === '' ? null : customHidedNoteDarkText.value,
 	}).then(() => {
 		fetchInstance(true);
 	});

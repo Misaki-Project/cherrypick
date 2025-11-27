@@ -11,6 +11,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { TruncateAccountService } from '@/core/TruncateAccountService.js';
 import { DI } from '@/di-symbols.js';
 import { UserAuthService } from '@/core/UserAuthService.js';
+import { RoleService } from '@/core/RoleService.js';
 
 export const meta = {
 	requireCredential: true,
@@ -38,6 +39,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		private userAuthService: UserAuthService,
 		private truncateAccountService: TruncateAccountService,
+		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const token = ps.token;
@@ -53,6 +55,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				} catch (e) {
 					throw new Error('authentication failed');
 				}
+			}
+
+			const policies = await this.roleService.getUserPolicies(me.id);
+			if (!policies.canTruncateAccount) {
+				throw new Error('permission denied');
 			}
 
 			const userDetailed = await this.usersRepository.findOneByOrFail({ id: me.id });

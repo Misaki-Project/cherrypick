@@ -122,6 +122,13 @@ export class ReactionService {
 			throw new IdentifiableError('12c35529-3c79-4327-b1cc-e2cf63a71925', 'You cannot react to Renote.');
 		}
 
+		// Check if user can react
+		const policy = await this.getReactionAvailability(user.id);
+
+		if (policy === 'deny') {
+			throw new Error('ROLE_PERMISSION_DENIED');
+		}
+
 		let reaction = _reaction ?? FALLBACK;
 
 		if (note.reactionAcceptance === 'likeOnly' || ((note.reactionAcceptance === 'likeOnlyForRemote' || note.reactionAcceptance === 'nonSensitiveOnlyForLocalLikeOnlyForRemote') && (user.host != null))) {
@@ -148,6 +155,11 @@ export class ReactionService {
 							reaction = FALLBACK;
 						}
 
+						// ポリシー
+						if (policy === 'nonSensitiveOnly' && emoji.isSensitive) {
+							reaction = FALLBACK;
+						}
+
 						// for media silenced host, custom emoji reactions are not allowed
 						if (reacterHost != null && this.utilityService.isMediaSilencedHost(this.meta.mediaSilencedHosts, reacterHost)) {
 							reaction = FALLBACK;
@@ -159,8 +171,22 @@ export class ReactionService {
 				} else {
 					reaction = FALLBACK;
 				}
+				// カスタム絵文字を使用する権限がない場合
+				if (policy === 'unicodeOnly') {
+					reaction = FALLBACK;
+				}
 			} else {
 				reaction = this.normalize(reaction);
+
+				if (reaction === '🖕' && policy !== 'all') {
+					// 中指はall権限がないと使えない
+					reaction = FALLBACK;
+				}
+
+				// ハート以外のリアクションを使用する権限がない場合
+				if (policy === 'heartOnly') {
+					reaction = FALLBACK;
+				}
 			}
 		}
 
@@ -419,5 +445,11 @@ export class ReactionService {
 			name: undefined,
 			host: undefined,
 		};
+	}
+
+	@bindThis
+	public async getReactionAvailability(userId: MiUser['id']): Promise<'all' | 'nonSensitiveOnly' | 'unicodeOnly' | 'heartOnly' | 'deny'> {
+		const policies = await this.roleService.getUserPolicies(userId);
+		return policies.reactionAvailability;
 	}
 }

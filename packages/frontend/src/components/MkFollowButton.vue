@@ -174,6 +174,11 @@ async function onClick() {
 		}
 	} catch (err) {
 		console.error(err);
+		await os.alert({
+			type: 'error',
+			title: err.message || i18n.ts.somethingWentWrong,
+			text: err.id,
+		});
 	} finally {
 		wait.value = false;
 	}

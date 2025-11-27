@@ -450,8 +450,24 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const sensitiveWords = this.meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
-				data.visibility = 'home';
+			} else {
+				const role = await this.roleService.getUserPolicies(user.id);
+
+				if (data.reply && !role.canPublicReplyNote) {
+					data.visibility = 'home';
+				} else if (data.renote && data.text && !role.canPublicQuoteNote) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && data.renote.userId === user.id && !role.canPublicRenoteSelf) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && data.renote.userId !== user.id && !data.renote.userHost && !role.canPublicRenoteLocalNote) {
+					data.visibility = 'home';
+				} else if (data.renote && !data.text && data.renote.userHost && !role.canPublicRenoteRemoteNote) {
+					data.visibility = 'home';
+				} else if (data.files && data.files.length > 0 && !role.canPublicNoteWithFile) {
+					data.visibility = 'home';
+				} else if (!(data.files && data.files.length > 0) && !data.renote && !data.reply && !role.canPublicNote) {
+					data.visibility = 'home';
+				}
 			}
 		}
 

@@ -553,10 +553,13 @@ export class QueueService implements OnModuleInit {
 	}
 
 	@bindThis
-	public createDeleteAccountJob(user: ThinUser, opts: { soft?: boolean; } = {}) {
+
+	public createDeleteAccountJob(user: ThinUser, opts: { soft?: boolean, force?: boolean, onlyFiles?: boolean } = {}) {
 		return this.dbQueue.add('deleteAccount', {
 			user: { id: user.id },
 			soft: opts.soft,
+			force: opts.force,
+			onlyFiles: opts.onlyFiles,
 		}, {
 			removeOnComplete: {
 				age: 3600 * 24 * 7, // keep up to 7 days

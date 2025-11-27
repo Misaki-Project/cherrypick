@@ -20,6 +20,7 @@ import { RoleService } from '@/core/RoleService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { CustomEmojiService } from '../CustomEmojiService.js';
 import type { ReactionService } from '../ReactionService.js';
+import type { RoleService } from '../RoleService.js';
 import type { UserEntityService } from './UserEntityService.js';
 import type { DriveFileEntityService } from './DriveFileEntityService.js';
 
@@ -66,6 +67,7 @@ export class NoteEntityService implements OnModuleInit {
 	private reactionService: ReactionService;
 	private reactionsBufferingService: ReactionsBufferingService;
 	private idService: IdService;
+	private roleService: RoleService;
 	private noteLoader = new DebounceLoader(this.findNoteOrFail);
 	private roleService: RoleService;
 
@@ -156,7 +158,12 @@ export class NoteEntityService implements OnModuleInit {
 					|| (hiddenBefore > 0 && (new Date(packedNote.createdAt).getTime() < hiddenBefore * 1000))
 				)
 			) {
-				hide = true;
+				// ピン止めされているノートは非表示にしない
+				if (packedNote.user.pinnedNoteIds.includes(packedNote.id)) {
+					hide = false;
+				} else {
+					hide = true;
+				}
 			}
 		}
 
@@ -210,6 +217,15 @@ export class NoteEntityService implements OnModuleInit {
 			packedNote.poll = undefined;
 			packedNote.cw = null;
 			packedNote.isHidden = true;
+			// リノートの中身を隠す
+			packedNote.renote = null;
+			packedNote.renoteId = null;
+			// リアクション等のユーザー情報を隠す
+			packedNote.reactions = {};
+			packedNote.reactionCount = 0;
+			packedNote.reactionEmojis = [];
+			packedNote.reactionAndUserPairCache = [];
+			packedNote.renoteCount = 0;
 			// TODO: hiddenReason みたいなのを提供しても良さそう
 		}
 	}
@@ -397,6 +413,7 @@ export class NoteEntityService implements OnModuleInit {
 		}, options);
 
 		const meId = me ? me.id : null;
+		const iAmModerator = me ? await this.roleService.isModerator(me as MiUser) : false;
 		const note = typeof src === 'object' ? src : await this.noteLoader.load(src);
 		const host = note.userHost;
 		const iAmModerator = me ? await this.roleService.isModerator(me as MiUser) : false;

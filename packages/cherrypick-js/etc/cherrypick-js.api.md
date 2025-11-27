@@ -2704,6 +2704,9 @@ type IExportFollowingRequest = operations['i___export-following']['requestBody']
 type IFavoritesRequest = operations['i___favorites']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
+type IFollowersServersResponse = operations['i___followers-servers']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
 type IFavoritesResponse = operations['i___favorites']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)

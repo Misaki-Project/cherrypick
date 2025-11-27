@@ -60,8 +60,8 @@ const isBeta = version.includes('-beta') || version.includes('-alpha') || versio
 
 function whatIsNewCherryPick() {
 	// modal.value?.close();
-	window.open(`https://github.com/kokonect-link/cherrypick/blob/develop/CHANGELOG_CHERRYPICK.md#${version.replace(/\./g, '')}`, '_blank');
-}
+	window.open(`https://github.com/Misaki-Project/cherrypick/blob/Misaki-Stable/CHANGELOG_MISAKI.md#${version.replace(/\./g, '')}`, '_blank');
+};
 
 const close = async () => {
 	modal.value?.close();

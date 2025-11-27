@@ -25,10 +25,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<span :class="$style.bodyName">{{ role.name }}</span>
 			<template v-if="detailed && 'target' in role && 'usersCount' in role">
 				<span v-if="role.target === 'manual'" :class="$style.bodyUsers">{{ role.usersCount }} users</span>
+				<span v-else-if="role.target === 'manualLevel' && !role.experience" :class="$style.bodyUsers">{{ role.usersCount }} users</span>
 				<span v-else-if="role.target === 'conditional'" :class="$style.bodyUsers">? users</span>
 			</template>
+			<span v-if="role.experience" :class="$style.bodyUsers">
+				<b>{{ i18n.tsx._experience.levelShort({ value: role.experience.currentLevel }) }}</b>
+				<span v-if="role.experience.nextLevelExp"> ({{ role.experience.currentExp }} / {{ role.experience.nextLevelExp }})</span>
+			</span>
 		</div>
-		<div :class="$style.bodyDescription">{{ role.description }}</div>
+		<div :class="$style.bodyDescription"><Mfm :text="role.description"/></div>
 	</div>
 </MkA>
 </template>
@@ -39,7 +44,14 @@ import * as Misskey from 'cherrypick-js';
 import { i18n } from '@/i18n.js';
 
 const props = withDefaults(defineProps<{
-	role: Misskey.entities.Role | Misskey.entities.IResponse['roles'][number];
+	role: Misskey.entities.Role | Misskey.entities.IResponse['roles'][number] & {
+		experience?: {
+			currentLevel: number;
+			currentExp: number;
+			nextLevelExp?: number;
+			totalExp: number;
+		} | undefined;
+	};
 	forModeration: boolean;
 	detailed?: boolean;
 }>(), {

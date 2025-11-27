@@ -88,8 +88,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						.where('assign.expiresAt IS NULL')
 						.orWhere('assign.expiresAt > :now', { now: new Date() });
 				}))
-				.innerJoinAndSelect('assign.user', 'user');
-
+				.innerJoinAndSelect('assign.user', 'user')
+				.andWhere('user.isSuspended = FALSE'); // 凍結済みのユーザーは表示から除外
+			if (role.target === 'manualLevel') {
+				query = query.orderBy('assign.experience', 'DESC');
+			}
 			const assigns = await query
 				.limit(ps.limit)
 				.getMany();

@@ -27,6 +27,25 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 
 			<div v-else ref="timelineEl" class="_gaps">
+				<div v-if="user && user.id!=$i.id && !canFetchMore" :class="$style.chatInfo">
+					<div>
+						<MkAvatar :user="user" style="width: 64px; height: 64px" indicator link/>
+					</div>
+					<div>
+						<b><Mfm :plain="true" :text="user.name?user.name:('@'+user.username + (user.host?(`@${user.host}`):``))" :author="user" :enableEmojiMenu="!!$i"/></b>
+					</div>
+					<div v-if="user.name!=null" style="font-size: 0.9em; color: var(--MI_THEME-fgTransparentWeak);">
+						<span :class="$style.username">@{{ user.username + (user.host?(`@${user.host}`):"") }}</span>
+					</div>
+					<div>
+						<span>{{ getSinceRegistedBy(user) }}</span>
+						<span style="margin-left: 4px; margin-right: 4px;">・</span>
+						<span v-if="isFollowersVisibleForMe(user)">
+							{{ i18n.tsx._chat.countOfFollowers({value: user.followersCount }) }}
+						</span>
+					</div>
+					<hr style="margin: 16px 0; border: none; border-top: 1px solid var(--MI_THEME-divider);">
+				</div>
 				<div v-if="canFetchMore">
 					<MkButton :class="$style.more" :wait="moreFetching" primary rounded @click="fetchMore">{{ i18n.ts.loadMore }}</MkButton>
 				</div>
@@ -48,6 +67,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</div>
 					</template>
 				</TransitionGroup>
+				<div v-if="(user && !getCanChatThisUser(user)?.canChat)" style="text-align: center; margin-top: 16px">
+					<hr style="margin: 16px 0; border: none; border-top: 1px solid var(--MI_THEME-divider);">
+					<span>{{ getCanChatThisUser(user)?.reason }}</span>
+				</div>
 			</div>
 
 			<div v-if="user && !user.canChat">
@@ -80,7 +103,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</button>
 					</div>
 				</Transition>
-				<XForm v-if="initialized" :user="user" :room="room" :class="$style.form"/>
+				<XForm v-if="initialized && ((user && getCanChatThisUser(user)?.canChat) || room)" :user="user" :room="room" :class="$style.form"/>
 			</div>
 		</div>
 	</template>
@@ -111,6 +134,7 @@ import { useRouter } from '@/router.js';
 import { useMutationObserver } from '@/composables/use-mutation-observer.js';
 import MkInfo from '@/components/MkInfo.vue';
 import { makeDateSeparatedTimelineComputedRef } from '@/utility/timeline-date-separate.js';
+import { isFollowersVisibleForMe } from '@/utility/isFfVisibleForMe.js';
 import { acct as getAcct } from '@/filters/user.js';
 import { isFriendly } from '@/utility/is-friendly.js';
 import { deviceKind } from '@/utility/device-kind.js';
@@ -398,6 +422,54 @@ async function inviteUser() {
 	});
 }
 
+function getSinceRegistedBy(user) {
+	if (user.host) {
+		return i18n.tsx._chat.dateSinceRemoteRegistedBy({ year: new Date(user.createdAt).getFullYear(), month: new Date(user.createdAt).getMonth() });
+	} else {
+		return i18n.tsx._chat.dateSinceRegistedBy({ year: new Date(user.createdAt).getFullYear(), month: new Date(user.createdAt).getMonth() });
+	}
+}
+
+function getCanChatThisUser(user: Misskey.entities.UserDetailed) {
+	if (user.isBlocked) {
+		return { canChat: false, reason: i18n.ts._chat.cannotSendMessagesToUsersAnymore };
+	}
+	if (user.isBlocking) {
+		return { canChat: false, reason: i18n.ts._chat.cannotSendMessagesBecauseYouBlocking };
+	}
+	if (user.id === $i.id) {
+		return { canChat: false, reason: i18n.ts._chat.cannotSendMessagesBecauseToYourself };
+	}
+	if (!user.canChat) {
+		return { canChat: false, reason: i18n.ts._chat.chatNotAvailableInOtherAccount };
+	}
+	return { canChat: true, reason: null };
+	// ToDo: ユーザーのチャット設定は一度送信すると設定に関わらずチャットできるようになるので保留
+	/*
+	switch (user.chatScope) {
+		case 'followers':
+			if (!user.isFollowed) {
+				return { canChat: false, reason: i18n.ts._chat.thisUserAllowsChatOnlyFromFollowers };
+			}
+			break;
+		case 'following':
+			if (!user.isFollowing) {
+				return { canChat: false, reason: i18n.ts._chat.thisUserAllowsChatOnlyFromFollowing };
+			}
+			break;
+		case 'mutual':
+			if (!user.isFollowing || !user.isFollowed) {
+				return { canChat: false, reason: i18n.ts._chat.thisUserAllowsChatOnlyFromMutualFollowing };
+			}
+			break;
+		case 'none':
+			return { canChat: false, reason: i18n.ts._chat.thisUserNotAllowedChatAnyone };
+		default:
+			return { canChat: true, reason: null };
+	}
+	*/
+}
+
 async function leaveRoom() {
 	if (room.value == null) return;
 
@@ -579,5 +651,12 @@ definePage(computed(() => {
 	width: fit-content;
 	padding: 0.5em 1em;
 	margin: 0 auto;
+}
+
+.chatInfo {
+	text-align: center;
+	> div {
+		margin: 5px auto;
+	}
 }
 </style>
