@@ -182,7 +182,6 @@ import { checkDragDataType, getDragData } from '@/drag-and-drop.js';
 import { useUploader } from '@/composables/use-uploader.js';
 import { haptic } from '@/utility/haptic.js';
 import * as sound from '@/utility/sound.js';
-import MkDeliveryTargetEditor from '@/components/MkDeliveryTargetEditor.vue';
 
 const $i = ensureSignin();
 
@@ -254,7 +253,6 @@ const deliveryTargets = ref<DeliveryTargetEditorModelValue | null>(null);
 const renoteTargetNote: ShallowRef<PostFormProps['renote'] | null> = shallowRef(props.renote);
 const replyTargetNote: ShallowRef<PostFormProps['reply'] | null> = shallowRef(props.reply);
 const targetChannel = shallowRef(props.channel);
-const deliveryTargets = ref<DeliveryTargetEditorModelValue | null>(null);
 
 const serverDraftId = ref<string | null>(null);
 const postFormActions = getPluginHandlers('post_form_action');

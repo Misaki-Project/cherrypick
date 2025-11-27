@@ -949,9 +949,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkInput v-model="role.policies.maxFileSizeMb.value" :disabled="role.policies.maxFileSizeMb.useDefault" type="number" :readonly="readonly">
 							<template #suffix>MB</template>
 							<template #caption>
-							<div><i class="ti ti-alert-triangle" style="color: var(--MI_THEME-warn);"></i> {{ i18n.ts._role._options.maxFileSize_caption }}</div>
-						</template>
-					</MkInput>
+								<div><i class="ti ti-alert-triangle" style="color: var(--MI_THEME-warn);"></i> {{ i18n.ts._role._options.maxFileSize_caption }}</div>
+							</template>
+						</MkInput>
 					</div>
 					<MkRange v-model="role.policies.maxFileSizeMb.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
 						<template #label>{{ i18n.ts._role.priority }}</template>
@@ -1588,12 +1588,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { watch, ref, computed, useTemplateRef } from 'vue';
 import { throttle } from 'throttle-debounce';
 import { ROLE_POLICIES } from '@@/js/const.js';
-import { v4 as uuid } from 'uuid';
 import * as Misskey from 'cherrypick-js';
 import RolesEditorFormula from './RolesEditorFormula.vue';
-import type { MkSelectItem, GetMkSelectValueTypesFromDef } from '@/components/MkSelect.vue';
 import RolesEditorLevelCond from './RolesEditorLevelCond.vue';
 import RolesEditorLevel from './RolesEditorLevel.vue';
+import type { MkSelectItem, GetMkSelectValueTypesFromDef } from '@/components/MkSelect.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkColorInput from '@/components/MkColorInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
@@ -1671,10 +1670,14 @@ if (role.value.levelPolicies.experiencePolicies == null) {
 	}];
 }
 
+const random = function() {
+	return Math.random().toString(36).substring(2, 15);
+};
+
 let levelPolicies = ref({
 	baseLevel: role.value.levelPolicies.baseLevel,
 	experiencePolicies: role.value.levelPolicies.experiencePolicies.map(policy => ({
-		id: uuid(),
+		id: random(),
 		level: policy.level,
 		type: policy.type as 'const' | 'linear' | 'exponential',
 		base: policy.base,
@@ -1698,7 +1701,7 @@ let levelCondPolicies = ref(Object.fromEntries(
 				baseLevel: role.value.levelPolicies?.baseLevel,
 				CondFormula: Array.isArray((policy as { policyAsLevel?: any[] }).policyAsLevel)
 					? (policy as { policyAsLevel: any[] }).policyAsLevel.map((p: { level: number; type: string; base: number; additional?: number }) => ({
-						id: uuid(),
+						id: random(),
 						level: p.level,
 						type: p.type as 'base' | 'const' | 'multiplier',
 						base: p.base ?? instance.policies[name].value,

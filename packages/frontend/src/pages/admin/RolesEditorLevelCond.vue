@@ -80,7 +80,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { defineAsyncComponent, toRefs, useSlots } from 'vue';
-import { v4 as uuid } from 'uuid';
 import { setupVMContext } from 'happy-dom/lib/PropertySymbol.js';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
@@ -130,6 +129,10 @@ function updateModelValue(newValue: typeof modelValue.value) {
 	emit('update:modelValue', newValue);
 }
 
+function random() {
+	return Math.random().toString(36).substring(2, 15);
+}
+
 function add() {
 	const newItem: {
 		id: string;
@@ -138,7 +141,7 @@ function add() {
 		base: number | boolean;
 		additional?: number;
 	} = {
-		id: uuid(), // Always a string
+		id: random(), // Always a string
 		level: 10,
 		type: 'base',
 		base: modelValue.value.defaultValue,

@@ -37,15 +37,7 @@ const followersPaginator = markRaw(new Paginator('users/followers', {
 	computedParams: computed(() => ({
 		userId: props.user.id,
 	})),
-};
-
-const friendsFollowingPagination = {
-	endpoint: 'users/friends-following' as const,
-	limit: 20,
-	params: computed(() => ({
-		userId: props.user.id,
-	})),
-};
+}));
 
 const friendsFollowingPagination = {
 	endpoint: 'users/friends-following' as const,

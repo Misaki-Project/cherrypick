@@ -80,7 +80,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, toRefs } from 'vue';
-import { v4 as uuid } from 'uuid';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -111,6 +110,12 @@ function updateModelValue(newValue: typeof modelValue.value) {
 	emit('update:modelValue', newValue);
 }
 
+function random() {
+	return Math.random().toString(36).substring(2, 15);
+}
+
+;
+
 function add() {
 	const newItem: {
 		id: string;
@@ -120,7 +125,7 @@ function add() {
 		additional?: number;
 		exponential?: number;
 	} = {
-		id: uuid(), // Always a string
+		id: random(), // Always a string
 		level: 10,
 		type: 'const',
 		base: 100,

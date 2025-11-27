@@ -150,7 +150,7 @@ export interface Locale extends ILocale {
      */
     "youBlocked": string;
     /**
-     * {user}さんのフォローやノートの表示はできません。
+     * {user}さんのフォローやポストの表示はできません。
      */
     "youBlockedDescription": ParameterizedString<"user">;
     /**
@@ -2647,6 +2647,14 @@ export interface Locale extends ILocale {
      * クリップボードのテキストが長過ぎて貼り付けられないようです。ここはテキストファイルとして添付するのはどうでしょう？
      */
     "attachAsFileQuestion": string;
+    /**
+     * まだチャットはありません
+     */
+    "noMessagesYet": string;
+    /**
+     * 新着メッセージがあります
+     */
+    "newMessageExists": string;
     /**
      * メッセージに添付できるファイルはひとつです
      */
@@ -6578,34 +6586,6 @@ export interface Locale extends ILocale {
          */
         "newline": string;
         /**
-         * このグループをミュート
-         */
-        "muteThisRoom": string;
-        /**
-         * グループを削除
-         */
-        "deleteRoom": string;
-        /**
-         * このサーバー、またはこのアカウントでダイレクトメッセージは有効化されていません。
-         */
-        "chatNotAvailableForThisAccountOrServer": string;
-        /**
-         * このサーバー、またはこのアカウントでダイレクトメッセージは読み取り専用となっています。新たに書き込んだり、グループを作成・参加したりすることはできません。
-         */
-        "chatIsReadOnlyForThisAccountOrServer": string;
-        /**
-         * 相手のアカウントでダイレクトメッセージが使えない状態になっています。ダイレクトメッセージを送るとユーザー指定ノートで送信され、相手がユーザー指定ノートに返信すればここで見ることができます。
-         */
-        "chatNotAvailableInOtherAccount": string;
-        /**
-         * このユーザーとのダイレクトメッセージを開始できません
-         */
-        "cannotChatWithTheUser": string;
-        /**
-         * ダイレクトメッセージが使えない状態になっているか、相手がダイレクトメッセージを開放していません。
-         */
-        "cannotChatWithTheUser_description": string;
-        /**
          * あなたはこのグループの参加者ではありませんが、招待が届いています。参加するには、招待を承認してください。
          */
         "youAreNotAMemberOfThisRoomButInvited": string;
@@ -6614,31 +6594,59 @@ export interface Locale extends ILocale {
          */
         "doYouAcceptInvitation": string;
         /**
-         * ダイレクトメッセージ
+         * このルームをミュート
+         */
+        "muteThisRoom": string;
+        /**
+         * ルームを削除
+         */
+        "deleteRoom": string;
+        /**
+         * このサーバー、またはこのアカウントでチャットは有効化されていません。
+         */
+        "chatNotAvailableForThisAccountOrServer": string;
+        /**
+         * このサーバー、またはこのアカウントでチャットは読み取り専用となっています。新たに書き込んだり、チャットルームを作成・参加したりすることはできません。
+         */
+        "chatIsReadOnlyForThisAccountOrServer": string;
+        /**
+         * 相手のアカウントでチャット機能が使えない状態になっています。
+         */
+        "chatNotAvailableInOtherAccount": string;
+        /**
+         * このユーザーとのチャットを開始できません
+         */
+        "cannotChatWithTheUser": string;
+        /**
+         * チャットが使えない状態になっているか、相手がチャットを開放していません。
+         */
+        "cannotChatWithTheUser_description": string;
+        /**
+         * チャットする
          */
         "chatWithThisUser": string;
         /**
-         * このユーザーはフォロワーからのみメッセージを受け付けています。
+         * このユーザーはフォロワーからのみチャットを受け付けています。
          */
         "thisUserAllowsChatOnlyFromFollowers": string;
         /**
-         * このユーザーは、このユーザーがフォローしているユーザーからのみメッセージを受け付けています。
+         * このユーザーは、このユーザーがフォローしているユーザーからのみチャットを受け付けています。
          */
         "thisUserAllowsChatOnlyFromFollowing": string;
         /**
-         * このユーザーは相互フォローのユーザーからのみメッセージを受け付けています。
+         * このユーザーは相互フォローのユーザーからのみチャットを受け付けています。
          */
         "thisUserAllowsChatOnlyFromMutualFollowing": string;
         /**
-         * このユーザーは誰からもメッセージを受け付けていません。
+         * このユーザーは誰からもチャットを受け付けていません。
          */
         "thisUserNotAllowedChatAnyone": string;
         /**
-         * メッセージを許可する相手
+         * チャットを許可する相手
          */
         "chatAllowedUsers": string;
         /**
-         * 自分からメッセージを送った相手とはこの設定に関わらずメッセージの送受信が可能です。
+         * 自分からダイレクトメッセージを送った相手とはこの設定に関わらずチャットが可能です。
          */
         "chatAllowedUsers_note": string;
         /**
@@ -9133,6 +9141,14 @@ export interface Locale extends ILocale {
              * ノートの編集
              */
             "canEditNote": string;
+            /**
+             * 完全なアカウントの削除
+             */
+            "canPurgeAccount": string;
+            /**
+             * 予約投稿の最大数
+             */
+            "scheduleNoteMax": string;
             /**
              * ノート内の最大メンション数
              */
@@ -14944,6 +14960,100 @@ export interface Locale extends ILocale {
          * 配送先が選択されています
          */
         "hasDeliveryTargets": string;
+        /**
+         * アクティビティを送信しない
+         */
+        "noSendActivity": string;
+    };
+    /**
+     * IPアドレス
+     */
+    "ipAddress": string;
+    /**
+     * IPアドレスを検索
+     */
+    "searchIpAddress": string;
+    /**
+     * マニュアルレベル
+     */
+    "manualLevel": string;
+    /**
+     * 経験値
+     */
+    "experience": string;
+    "_experience": {
+        /**
+         * Lv.{value}
+         */
+        "levelShort": ParameterizedString<"value">;
+        /**
+         * ベースレベル
+         */
+        "baseLevel": string;
+        /**
+         * 最大レベル
+         */
+        "maxLevel": string;
+        /**
+         * 設定値
+         */
+        "settingValue": string;
+        "_rules": {
+            /**
+             * ベース
+             */
+            "base": string;
+            /**
+             * 定数
+             */
+            "const": string;
+            /**
+             * 線形
+             */
+            "linear": string;
+            /**
+             * 指数
+             */
+            "exponential": string;
+            /**
+             * 乗数
+             */
+            "multiplier": string;
+        };
+        "_values": {
+            /**
+             * ベース値
+             */
+            "base": string;
+            /**
+             * 加算値
+             */
+            "additional": string;
+            /**
+             * 指数
+             */
+            "exponential": string;
+        };
+        "_calcs": {
+            /**
+             * 加減算
+             */
+            "additional": string;
+            /**
+             * 乗算
+             */
+            "multiplier": string;
+            /**
+             * 固定値
+             */
+            "set": string;
+        };
+    };
+    "_hideReason": {
+        /**
+         * この投稿は非公開です
+         */
+        "privateNote": string;
     };
 }
 declare const locales: {

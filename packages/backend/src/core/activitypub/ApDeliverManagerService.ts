@@ -34,11 +34,6 @@ interface IDirectRecipe extends IRecipe {
 	to: MiRemoteUser;
 }
 
-interface ISelectiveFollowersRecipe extends IRecipe {
-	type: 'SelectiveFollowers';
-	deliveryTargets?: { mode: 'include' | 'exclude'; hosts: string[] } | null;
-}
-
 const isFollowers = (recipe: IRecipe): recipe is IFollowersRecipe =>
 	recipe.type === 'Followers';
 
@@ -47,9 +42,6 @@ const isSelectiveFollowers = (recipe: IRecipe): recipe is ISelectiveFollowersRec
 
 const isDirect = (recipe: IRecipe): recipe is IDirectRecipe =>
 	recipe.type === 'Direct';
-
-const isSelectiveFollowers = (recipe: IRecipe): recipe is ISelectiveFollowersRecipe =>
-	recipe.type === 'SelectiveFollowers';
 
 class DeliverManager {
 	private actor: ThinUser;
@@ -123,19 +115,6 @@ class DeliverManager {
 		};
 
 		this.addRecipe(recipe);
-	}
-
-	/**
-	 * Add recipe for selective followers deliver
-	 */
-	@bindThis
-	public addSelectiveFollowersRecipe(deliveryTargets?: { mode: 'include' | 'exclude'; hosts: string[] } | null): void {
-		const deliver: ISelectiveFollowersRecipe = {
-			type: 'SelectiveFollowers',
-			deliveryTargets,
-		};
-
-		this.addRecipe(deliver);
 	}
 
 	/**
