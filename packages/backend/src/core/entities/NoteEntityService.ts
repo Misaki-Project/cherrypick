@@ -625,8 +625,7 @@ export class NoteEntityService implements OnModuleInit {
 		];
 		const packedUsers = await this.userEntityService.packMany(users, me)
 			.then(users => new Map(users.map(u => [u.id, u])));
-
-		return await Promise.all(notes.map(n => this.pack(n, me, {
+		const packedNotes = await Promise.all(notes.map(n => this.pack(n, me, {
 			...options,
 			_hint_: {
 				bufferedReactions,
@@ -635,6 +634,8 @@ export class NoteEntityService implements OnModuleInit {
 				packedUsers,
 			},
 		})));
+
+		return packedNotes.filter(note => !note.isHidden);
 	}
 
 	@bindThis
