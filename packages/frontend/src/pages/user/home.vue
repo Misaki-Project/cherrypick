@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkAccountMoved v-if="user.movedTo" :movedTo="user.movedTo"/>
 					<MkRemoteCaution v-if="user.host != null" :href="user.url ?? user.uri!"/>
 					<MkInfo v-if="user.host == null && user.username.includes('.')">{{ i18n.ts.isSystemAccount }}</MkInfo>
-				<MkSuspendedCaution v-if="user.isSuspended" class="warn"/>
+					<MkSuspendedCaution v-if="user.isSuspended" class="warn"/>
 					<div :key="user.id" class="main _panel">
 						<div ref="bannerEl" class="banner-container">
 							<div class="banner" :style="style"></div>
@@ -63,14 +63,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</div>
 						<div v-if="user.roles.length > 0" class="roles">
 							<span
-							v-for="role in user.roles.filter(a=>!a.isHideUserProfile)" :key="role.id" ref="roleEls" class="role" :style="{ '--color': role.color ?? '' }"
-						>
+								v-for="role in user.roles.filter(a=>!a.isHideUserProfile)" :key="role.id" ref="roleEls" class="role" :style="{ '--color': role.color ?? '' }"
+							>
 								<MkA v-adaptive-bg :to="`/roles/${role.id}`" @mouseenter="showRoleTooltip($event, role)" @mouseleave="hideRoleTooltip">
 									<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%; border-radius: 0.4em;" :src="role.iconUrl"/>
 									<span>{{ role.name }}</span><span v-if="role.experience" style="font-size: 0.85em; opacity: 0.8; padding-left: 4px"><b> {{ i18n.tsx._experience.levelShort({value: role.experience.currentLevel}) }}</b></span>
 								</MkA>
 								<MkRoleDescriptionTooltip v-if="tooltipRole === role" :role="role" :showing="tooltipShowing"/>
-						</span>
+							</span>
 						</div>
 						<div v-if="iAmModerator" class="moderationNote">
 							<MkTextarea v-if="editModerationNote || (moderationNote != null && moderationNote !== '')" v-model="moderationNote" manualSave>
@@ -139,23 +139,23 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dl>
 						</div>
 						<div v-if="$i && $i.id != user.id && friendsFollow && friendsFollow.users" class="friends">
-						<MkA v-if="friendsFollow.userCount > 0" :to="userPage(user, 'followers-you-follow')" class="link">
-							<div class="friends-field">
-								<div v-for="(r, index) in friendsFollow.users.slice(0, 3)" :key="r.id" class="icons">
-									<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
+							<MkA v-if="friendsFollow.userCount > 0" :to="userPage(user, 'followers-you-follow')" class="link">
+								<div class="friends-field">
+									<div v-for="(r, index) in friendsFollow.users.slice(0, 3)" :key="r.id" class="icons">
+										<MkAvatar :link="false" style="width: 24px; height: 24px; z-index: calc(100 - index);" :user="r.follower"/>
+									</div>
+									<div class="text">
+										<span>{{ getFriendsFollowText(friendsFollow.users, friendsFollow.userCount) }}</span>
+									</div>
 								</div>
-								<div class="text">
-									<span>{{ getFriendsFollowText(friendsFollow.users, friendsFollow.userCount) }}</span>
+							</MkA>
+							<div v-if="friendsFollow.userCount === 0" class="link">
+								<div class="friends-field-noUser">
+									<span>{{ i18n.ts._profile._friendsFollows.noFollows }}</span>
 								</div>
-							</div>
-						</MkA>
-						<div v-if="friendsFollow.userCount === 0" class="link">
-							<div class="friends-field-noUser">
-								<span>{{ i18n.ts._profile._friendsFollows.noFollows }}</span>
 							</div>
 						</div>
-					</div>
-					<div class="status">
+						<div class="status">
 							<MkA :to="userPage(user)">
 								<b>{{ number(user.notesCount) }}</b>
 								<span>{{ i18n.ts.notes }}</span>
@@ -327,7 +327,7 @@ const style = computed(() => {
 });
 
 onMounted(async () => {
-	friendsFollow.value = await misskeyApi('users/friends-following', { userId: props.user.id, limit: 5 });
+	friendsFollow.value = await misskeyApi('users/friends-summary', { userId: props.user.id, limit: 5 });
 });
 
 function getFriendsFollowText(users: Array<any> | null, count: number): string {
