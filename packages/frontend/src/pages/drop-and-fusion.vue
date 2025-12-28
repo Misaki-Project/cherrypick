@@ -44,14 +44,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<b>{{ i18n.ts.ranking }}</b> ({{ gameMode.toUpperCase() }})
 								</div>
 								<div style="width: auto; margin-left: auto; text-align: right;">
-									<MkSelect v-model="rankingSince" style="margin-left: 8px;">
-										<option value="1h">{{ getHourLocalize("1h") }}</option>
-										<option value="6h">{{ getHourLocalize("6h") }}</option>
-										<option value="24h">{{ getHourLocalize("24h") }}</option>
-										<option value="7d">{{ getHourLocalize("7d") }}</option>
-										<option value="30d">{{ getHourLocalize("30d") }}</option>
-										<option value="1y">{{ getHourLocalize("1y") }}</option>
-										<!--<option value="all">{{ getHourLocalize("all") }}</option>-->
+									<MkSelect v-model="rankingSince" :items="rankingSinceDef" style="margin-left: 8px;">
 									</MkSelect>
 								</div>
 							</div>
@@ -111,8 +104,34 @@ import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/utility/misskey-api.js';
 import { prefer } from '@/preferences';
 
-const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
-const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
+const {
+	model: gameMode,
+	def: gameModeDef,
+} = useMkSelect({
+	items: [
+		{ label: 'NORMAL', value: 'normal' },
+		{ label: 'SQUARE', value: 'square' },
+		{ label: 'YEN', value: 'yen' },
+		{ label: 'SWEETS', value: 'sweets' },
+		//{ label: 'SPACE', value: 'space' },
+	],
+	initialValue: 'normal',
+});
+const {
+	model: rankingSince,
+	def: rankingSinceDef,
+} = useMkSelect({
+	items: [
+		{ label: getHourLocalize('1h'), value: '1h' },
+		{ label: getHourLocalize('6h'), value: '6h' },
+		{ label: getHourLocalize('24h'), value: '24h' },
+		{ label: getHourLocalize('7d'), value: '7d' },
+		{ label: getHourLocalize('30d'), value: '30d' },
+		{ label: getHourLocalize('1y'), value: '1y' },
+		//{ label: 'SPACE', value: 'space' },
+	],
+	initialValue: '7d',
+});
 const gameStarted = ref(false);
 const mute = ref(false);
 const ranking = ref<Misskey.entities.BubbleGameRankingResponse | null>(null);

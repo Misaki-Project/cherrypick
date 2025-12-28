@@ -35,12 +35,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #caption><div v-html="i18n.ts._role.descriptionOfPermission.replaceAll('\n', '<br>')"></div></template>
 	</MkSelect>
 
-	<MkSelect v-model="role.target" :items="[{ label: i18n.ts._role.manual, value: 'manual' }, { label: i18n.ts._role.conditional, value: 'conditional' }]" :readonly="readonly">
+	<MkSelect v-model="role.target" :items="[{ label: i18n.ts._role.manual, value: 'manual' }, { label: i18n.ts._role.conditional, value: 'conditional' }, { label: i18n.ts._role.manualLevel, value: 'manualLevel' }]" :readonly="readonly">
 		<template #label><i class="ti ti-users"></i> {{ i18n.ts._role.assignTarget }}</template>
 		<template #caption><div v-html="i18n.ts._role.descriptionOfAssignTarget.replaceAll('\n', '<br>')"></div></template>
-		<option value="manual">{{ i18n.ts._role.manual }}</option>
-		<option value="conditional">{{ i18n.ts._role.conditional }}</option>
-		<option value="manualLevel">{{ i18n.ts._role.manualLevel }}</option>
 	</MkSelect>
 
 	<MkFolder v-if="role.target === 'conditional'" defaultOpen>
