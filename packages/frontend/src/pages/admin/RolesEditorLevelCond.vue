@@ -37,10 +37,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 												<template #prefix>{{ i18n.tsx._experience.levelShort({value:getTotalLevel(modelValue.CondFormula.findIndex(el => el === element))}) }} <i class="ti ti-arrow-right"></i></template>
 												<template #suffix><i class="ti ti-arrow-right"></i>{{ i18n.ts._experience.maxLevel }}</template>
 											</MkInput>
-											<MkSelect v-model="element.type" :class="$style.itemSelect" style="width: 150px;" @update:modelValue="updateModelValue({...modelValue})">
-												<option value="base">{{ i18n.ts._experience._rules.base }}</option>
-												<option value="const">{{ i18n.ts._experience._rules.const }}</option>
-												<option v-if="modelValue.type === 'number'" value="multiplier">{{ i18n.ts._experience._rules.multiplier }}</option>
+											<MkSelect
+												v-model="element.type" :class="$style.itemSelect" :items="
+													[
+														{value:'base', label: i18n.ts._experience._rules.base},
+														{value:'const', label: i18n.ts._experience._rules.const},
+														...(modelValue.type === 'number' ? [{value:'multiplier', label: i18n.ts._experience._rules.multiplier}] : [])
+													]" style="width: 150px;" @update:modelValue="updateModelValue({...modelValue})"
+											>
 											</MkSelect>
 											<button v-if="modelValue.CondFormula.length > 1" class="_button" :class="$style.itemRemove" @click="remove(index)"><i class="ti ti-x"></i></button>
 										</div>
@@ -48,8 +52,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<div :class="$style.itemInfo">
 										<div style="display: flex; align-items: center; gap: 8px;">
 											<span v-if="element.type==='base'">{{ i18n.ts._role.useBaseValue }}</span>
-											<MkSelect v-if="optionValues.length > 0 && element.type!=='base'" v-model="element.base" :class="$style.itemConst" @update:modelValue="updateModelValue({...modelValue})">
-												<option v-for="value in optionValues" :key="value.value" :value="value.value">{{ value.label }}</option>
+											<MkSelect v-if="optionValues.length > 0 && element.type!=='base'" v-model="element.base" :items="optionValues" :class="$style.itemConst" @update:modelValue="updateModelValue({...modelValue})">
 											</MkSelect>
 											<MkInput v-else-if="modelValue.type==='number' && element.type!=='base'" v-model="element.base" type="number" :class="$style.itemConst" @input="updateModelValue({...modelValue})">
 												<template #label>{{ i18n.ts._experience._values.base }}</template>
@@ -80,7 +83,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { defineAsyncComponent, toRefs, useSlots } from 'vue';
-import { v4 as uuid } from 'uuid';
 import { setupVMContext } from 'happy-dom/lib/PropertySymbol.js';
 import MkInput from '@/components/MkInput.vue';
 import MkSelect from '@/components/MkSelect.vue';
@@ -130,6 +132,10 @@ function updateModelValue(newValue: typeof modelValue.value) {
 	emit('update:modelValue', newValue);
 }
 
+function random() {
+	return Math.random().toString(36).substring(2, 15);
+}
+
 function add() {
 	const newItem: {
 		id: string;
@@ -138,7 +144,7 @@ function add() {
 		base: number | boolean;
 		additional?: number;
 	} = {
-		id: uuid(), // Always a string
+		id: random(), // Always a string
 		level: 10,
 		type: 'base',
 		base: modelValue.value.defaultValue,

@@ -31,10 +31,6 @@ export const packedNoteSchema = {
 				format: 'date-time',
 			},
 		},
-		noteEditHistory: {
-			type: 'array',
-			optional: true, nullable: false,
-		},
 		deletedAt: {
 			type: 'string',
 			optional: true, nullable: true,
@@ -282,6 +278,11 @@ export const packedNoteSchema = {
 			type: 'number',
 			optional: true, nullable: false,
 		},
+		hasPoll: {
+			type: 'boolean',
+			optional: true, nullable: false,
+		},
+
 		myReaction: {
 			type: 'string',
 			optional: true, nullable: true,

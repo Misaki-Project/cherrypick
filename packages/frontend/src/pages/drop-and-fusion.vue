@@ -23,13 +23,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div class="_woodenFrame" style="text-align: center;">
 					<div class="_woodenFrameInner">
 						<div class="_gaps" style="padding: 16px;">
-							<MkSelect v-model="gameMode">
-								<option value="normal">NORMAL</option>
-								<option value="square">SQUARE</option>
-								<option value="yen">YEN</option>
-								<option value="sweets">SWEETS</option>
-								<!--<option value="space">SPACE</option>-->
-							</MkSelect>
+							<MkSelect v-model="gameMode" :items="gameModeDef"></MkSelect>
 							<MkButton primary gradate large rounded inline @click="start">{{ i18n.ts.start }}</MkButton>
 						</div>
 					</div>
@@ -50,21 +44,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<b>{{ i18n.ts.ranking }}</b> ({{ gameMode.toUpperCase() }})
 								</div>
 								<div style="width: auto; margin-left: auto; text-align: right;">
-									<MkSelect v-model="rankingSince" style="margin-left: 8px;">
-										<option value="1h">{{ getHourLocalize("1h") }}</option>
-										<option value="6h">{{ getHourLocalize("6h") }}</option>
-										<option value="24h">{{ getHourLocalize("24h") }}</option>
-										<option value="7d">{{ getHourLocalize("7d") }}</option>
-										<option value="30d">{{ getHourLocalize("30d") }}</option>
-										<option value="1y">{{ getHourLocalize("1y") }}</option>
-										<!--<option value="all">{{ getHourLocalize("all") }}</option>-->
+									<MkSelect v-model="rankingSince" :items="rankingSinceDef" style="margin-left: 8px;">
 									</MkSelect>
 								</div>
 							</div>
 							<div v-if="ranking" class="_gaps_s">
 								<div v-for="r in ranking" :key="r.id" :class="$style.rankingRecord">
-									<MkAvatar :link="true" style="width: 24px; height: 24px; margin-right: 4px;" :user="r.user"/>
-									<MkUserName :user="r.user" :nowrap="true"/>
+									<MkAvatar v-if="r.user" :link="true" style="width: 24px; height: 24px; margin-right: 4px;" :user="r.user"/>
+									<MkUserName v-if="r.user" :user="r.user" :nowrap="true"/>
 									<b style="margin-left: auto;">{{ r.score.toLocaleString() }} {{ getScoreUnit(gameMode) }}</b>
 									<div style="margin-left: 8px; width: 50px; font-size: 80%; text-align: right;">
 										<div><MkTime :time="r.registeredAt" :mode="prefer.s.enableAbsoluteTime ? 'absolute' : 'relative'"/></div>
@@ -105,21 +92,50 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
+import * as Misskey from 'cherrypick-js';
 import XGame from './drop-and-fusion.game.vue';
 import { store } from '@/store.js';
 import { definePage } from '@/page.js';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
+import { useMkSelect } from '@/composables/use-mkselect.js';
 import MkSelect from '@/components/MkSelect.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import { misskeyApiGet } from '@/utility/misskey-api.js';
 import { prefer } from '@/preferences';
 
-const gameMode = ref<'normal' | 'square' | 'yen' | 'sweets' | 'space'>('normal');
-const rankingSince = ref<'1h' | '6h' | '24h' | '7d' | '30d' | '1y' | 'all'>('7d');
+const {
+	model: gameMode,
+	def: gameModeDef,
+} = useMkSelect({
+	items: [
+		{ label: 'NORMAL', value: 'normal' },
+		{ label: 'SQUARE', value: 'square' },
+		{ label: 'YEN', value: 'yen' },
+		{ label: 'SWEETS', value: 'sweets' },
+		//{ label: 'SPACE', value: 'space' },
+	],
+	initialValue: 'normal',
+});
+const {
+	model: rankingSince,
+	def: rankingSinceDef,
+} = useMkSelect({
+	items: [
+		{ label: getHourLocalize('1h'), value: '1h' },
+		{ label: getHourLocalize('6h'), value: '6h' },
+		{ label: getHourLocalize('24h'), value: '24h' },
+		{ label: getHourLocalize('7d'), value: '7d' },
+		{ label: getHourLocalize('30d'), value: '30d' },
+		{ label: getHourLocalize('1y'), value: '1y' },
+		//{ label: 'SPACE', value: 'space' },
+	],
+	initialValue: '7d',
+});
 const gameStarted = ref(false);
 const mute = ref(false);
-const ranking = ref(null);
+const ranking = ref<Misskey.entities.BubbleGameRankingResponse | null>(null);
+
 watch(gameMode, async () => {
 	await updateRanking();
 }, { immediate: true });

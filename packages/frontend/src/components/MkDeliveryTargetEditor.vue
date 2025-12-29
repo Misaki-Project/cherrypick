@@ -1,11 +1,11 @@
 <!--
-SPDX-FileCopyrightText: syuilo and misskey-project
+SPDX-FileCopyrightText: noridev and cherrypick-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <div :class="$style.root">
-	<div :class="$style.label"><i class="ti ti-server-2"></i> {{ i18n.ts._deliveryTargetControl.deliveryTargetControl }}</div>
+	<div :class="$style.label"><i class="ti ti-truck-delivery"></i> {{ i18n.ts._deliveryTargetControl.deliveryTargetControl }}</div>
 
 	<div :class="$style.body">
 		<MkRadios v-model="deliveryMode" direction="vertical">
@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						:class="$style.serverItem"
 					>
 						<div :class="$style.serverInfo">
-							<div :class="$style.serverHost">{{ server.host }}</div>
+							<div :class="$style.serverHost">{{ server.name }} ({{ server.host }})</div>
 							<div :class="$style.serverCount">
 								{{ i18n.tsx._deliveryTargetControl.followersCount({ count: server.followersCount }) }}
 							</div>
@@ -72,73 +72,89 @@ import MkInput from '@/components/MkInput.vue';
 import MkCheckbox from '@/components/MkCheckbox.vue';
 import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
+
 export type DeliveryTargetEditorModelValue = {
 	mode: 'include' | 'exclude';
 	hosts: string[];
 };
+
 const props = withDefaults(defineProps<{
 	modelValue: DeliveryTargetEditorModelValue;
 }>(), {
 	modelValue: () => ({ mode: 'include', hosts: [] }),
 });
+
 const emit = defineEmits<{
 	(ev: 'update:modelValue', value: DeliveryTargetEditorModelValue): void;
 	(ev: 'destroyed'): void;
 }>();
+
 const deliveryMode = ref<'include' | 'exclude'>(props.modelValue.mode);
 const selectedHosts = ref<string[]>([...props.modelValue.hosts]);
-const servers = ref<{ host: string; followersCount: number }[]>([]);
+const servers = ref<{ host: string; name: string | null; followersCount: number }[]>([]);
 const serversLoading = ref(true);
 const loadError = ref(false);
 const searchQuery = ref('');
+
 // 内部更新中フラグ（無限ループ防止）
 const isInternalUpdate = ref(false);
+
 // Search functionality
 const filteredServers = computed(() => {
 	if (!searchQuery.value.trim()) {
 		return servers.value;
 	}
 	const query = searchQuery.value.toLowerCase().trim();
+
 	return servers.value.filter(server =>
-		server.host.toLowerCase().includes(query),
+		server.host.toLowerCase().includes(query) ||
+		(server.name && server.name.toLowerCase().includes(query)),
 	);
 });
+
 // Watch for props changes - 外部からの変更のみ反映
 watch(() => props.modelValue, (newValue) => {
 	if (isInternalUpdate.value) return; // 内部更新中は無視
 	// 値が実際に変わった場合のみ更新
+
 	if (deliveryMode.value !== newValue.mode ||
 		JSON.stringify(selectedHosts.value) !== JSON.stringify(newValue.hosts)) {
 		deliveryMode.value = newValue.mode;
 		selectedHosts.value = [...newValue.hosts];
 	}
 }, { deep: true });
+
 // Clear selected hosts when switching to 'include' mode
 watch(deliveryMode, (newMode) => {
 	if (newMode === 'include') {
 		selectedHosts.value = [];
 	}
 });
+
 // Watch for internal changes and emit - 重複防止付き
 watch([deliveryMode, selectedHosts], () => {
 	const newValue = {
 		mode: deliveryMode.value,
 		hosts: [...selectedHosts.value],
 	};
+
 	// 実際に値が変わった場合のみemit
 	if (JSON.stringify(newValue) !== JSON.stringify(props.modelValue)) {
 		isInternalUpdate.value = true;
 		emit('update:modelValue', newValue);
+
 		nextTick(() => {
 			isInternalUpdate.value = false;
 		});
 	}
 }, { deep: true });
+
 const loadServers = async () => {
 	serversLoading.value = true;
 	loadError.value = false;
+
 	try {
-		const result = await misskeyApi<{ servers: { host: string; followersCount: number }[] }>('i/followers-servers', {});
+		const result = await misskeyApi<{ servers: { host: string; name: string | null; followersCount: number }[] }>('i/followers-servers', {});
 		servers.value = result.servers;
 	} catch (err) {
 		console.error('Failed to load follower servers:', err);
@@ -147,6 +163,7 @@ const loadServers = async () => {
 		serversLoading.value = false;
 	}
 };
+
 onMounted(() => {
 	loadServers();
 });
@@ -159,6 +176,7 @@ onMounted(() => {
 	gap: 8px;
 	padding: 8px 24px;
 }
+
 .label {
 	font-size: 0.85em;
 	padding: 0 0 8px 0;
@@ -168,17 +186,21 @@ onMounted(() => {
 	align-items: center;
 	gap: 4px;
 }
+
 .body {
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
 }
+
 .serverSelection {
 	padding: 8px 0;
 }
+
 .searchInput {
 	margin-bottom: 8px;
 }
+
 .noServers {
 	text-align: center;
 	color: var(--MI_THEME-fgTransparentWeak);
@@ -189,6 +211,7 @@ onMounted(() => {
 	gap: 8px;
 	font-size: 0.9em;
 }
+
 .servers {
 	display: flex;
 	flex-direction: column;
@@ -200,25 +223,30 @@ onMounted(() => {
 	border-radius: 6px;
 	background: var(--MI_THEME-bg);
 }
+
 .serverItem {
-	width: 100%;
+	//width: 100%;
 }
+
 .serverInfo {
 	flex: 1;
 	min-width: 0;
 }
+
 .serverHost {
 	font-weight: 500;
 	color: var(--MI_THEME-fg);
 	word-break: break-all;
 	line-height: 1.3;
 }
+
 .serverCount {
 	font-size: 0.8em;
 	color: var(--MI_THEME-fgTransparentWeak);
 	margin-top: 2px;
 	line-height: 1.2;
 }
+
 .searchInfo {
 	margin-top: 8px;
 	font-size: 0.8em;
@@ -226,6 +254,7 @@ onMounted(() => {
 	text-align: center;
 	padding: 4px 8px;
 }
+
 .errorMessage {
 	display: flex;
 	flex-direction: column;
@@ -236,6 +265,7 @@ onMounted(() => {
 	font-size: 0.9em;
 	text-align: center;
 }
+
 .retryButton {
 	display: flex;
 	align-items: center;
@@ -246,6 +276,7 @@ onMounted(() => {
 	color: var(--MI_THEME-fg);
 	font-size: 0.85em;
 	transition: background-color 0.2s;
+
 	&:hover {
 		background: var(--MI_THEME-buttonHoverBg);
 	}

@@ -6,7 +6,7 @@
 import { Not, IsNull, MoreThan } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository, NotesRepository, FollowRequestsRepository, UserProfilesRepository, UsersRepository, FollowingsRepository, UserListMembershipsRepository } from '@/models/_.js';
+import type { DriveFilesRepository, NotesRepository, PagesRepository, FollowRequestsRepository, UserProfilesRepository, UsersRepository, FollowingsRepository, UserListMembershipsRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
 import { DriveService } from '@/core/DriveService.js';
 import type { MiUser } from '@/models/User.js';
@@ -18,7 +18,9 @@ import { EmailService } from '@/core/EmailService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { bindThis } from '@/decorators.js';
 import { SearchService } from '@/core/SearchService.js';
+import { PageService } from '@/core/PageService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { QueueLoggerService } from '../QueueLoggerService.js';
 import type * as Bull from 'bullmq';
 import type { DbUserDeleteJobData } from '../types.js';
@@ -49,59 +51,20 @@ export class DeleteAccountProcessorService {
 		@Inject(DI.userListMembershipsRepository)
 		private userListMembershipsRepository: UserListMembershipsRepository,
 
+		@Inject(DI.pagesRepository)
+		private pagesRepository: PagesRepository,
+
 		private userEntityService: UserEntityService,
 		private driveService: DriveService,
+		private pageService: PageService,
 		private emailService: EmailService,
 		private roleService: RoleService,
 		private queueLoggerService: QueueLoggerService,
 		private searchService: SearchService,
+		private globalEventService: GlobalEventService,
 		private queueService: QueueService,
 	) {
 		this.logger = this.queueLoggerService.logger.createSubLogger('delete-account');
-	}
-
-	private async deleteNotes(user: MiUser) {
-		while (true) {
-			const notes = await this.notesRepository.find({
-				where: {
-					userId: user.id,
-				},
-				take: 100,
-			});
-
-			if (notes.length === 0) {
-				break;
-			}
-
-			await this.notesRepository.delete(notes.map(note => note.id));
-
-			for (const note of notes) {
-				await this.searchService.unindexNote(note);
-			}
-		}
-
-		this.logger.succ('All of notes deleted');
-	}
-
-	private async deleteFiles(user: MiUser) {
-		while (true) {
-			const files = await this.driveFilesRepository.find({
-				where: {
-					userId: user.id,
-				},
-				take: 10,
-			});
-
-			if (files.length === 0) {
-				break;
-			}
-
-			for (const file of files) {
-				await this.driveService.deleteFileSync(file);
-			}
-		}
-
-		this.logger.succ('All of files deleted');
 	}
 
 	@bindThis
@@ -116,11 +79,93 @@ export class DeleteAccountProcessorService {
 			? await this.roleService.getUserPolicies(user.id)
 			: { /*canDeleteContent: true,*/ canPurgeAccount: true };
 
-		if (job.data.onlyFiles) {
-			//if (!canDeleteContent) return 'Permission denied';
+		if (job.data.onlyFiles || !(!canPurgeAccount || job.data.soft)) {
+			{ // Delete files
+				let cursor: MiDriveFile['id'] | null = null;
 
-			await this.deleteFiles(user);
-			return 'Files deleted';
+				while (true) {
+					const files = await this.driveFilesRepository.find({
+						where: {
+							userId: user.id,
+							...(cursor ? { id: MoreThan(cursor) } : {}),
+						},
+						take: 10,
+						order: {
+							id: 1,
+						},
+					}) as MiDriveFile[];
+
+					if (files.length === 0) {
+						break;
+					}
+
+					cursor = files.at(-1)?.id ?? null;
+
+					for (const file of files) {
+						await this.driveService.deleteFileSync(file, undefined, isRemote);
+					}
+				}
+
+				this.logger.succ(`All of files deleted: ${job.data.user.id}`);
+
+				if (job.data.onlyFiles) {
+					return 'File Deleted.';
+				}
+			}
+		}
+		if (!(!canPurgeAccount || job.data.soft)) {
+			{ // Delete notes
+				let cursor: MiNote['id'] | null = null;
+
+				while (true) {
+					const notes = await this.notesRepository.find({
+						where: {
+							userId: user.id,
+							...(cursor ? { id: MoreThan(cursor) } : {}),
+						},
+						take: 100,
+						order: {
+							id: 1,
+						},
+					}) as MiNote[];
+
+					if (notes.length === 0) {
+						break;
+					}
+
+					cursor = notes.at(-1)?.id ?? null;
+
+					await this.notesRepository.delete(notes.map(note => note.id));
+
+					for (const note of notes) {
+						await this.searchService.unindexNote(note);
+					}
+				}
+
+				this.logger.succ(`All of notes deleted: ${job.data.user.id}`);
+			}
+
+			{
+				// delete pages. Necessary for decrementing pageCount of notes.
+				while (true) {
+					const pages = await this.pagesRepository.find({
+						where: {
+							userId: user.id,
+						},
+						take: 100,
+						order: {
+							id: 1,
+						},
+					});
+
+					if (pages.length === 0) {
+						break;
+					}
+					for (const page of pages) {
+						await this.pageService.delete(user, page.id);
+					}
+				}
+			}
 		}
 
 		{ // Send email notification
@@ -142,10 +187,13 @@ export class DeleteAccountProcessorService {
 			//削除しない代わりにユーザーの痕跡をすべて解除する
 			(async () => {
 				//await this.unsubscribeList(user).catch(e => {});
-				await this.unFollowAll(user).catch(e => {});
+				await this.unFollowAll(user).catch(e => { });
 			})();
 		} else {
 			await this.usersRepository.delete(job.data.user.id);
+
+			// Trigger CacheService
+			this.globalEventService.publishInternalEvent('remoteUserUpdated', { id: job.data.user.id });
 		}
 
 		return `[${job.data.user.id}] Account deleted`;

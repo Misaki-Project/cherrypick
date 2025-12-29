@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: lqvp
+SPDX-FileCopyrightText: noridev and cherrypick-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -27,22 +27,27 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup generic="T extends string">
 import { computed } from 'vue';
+
 const props = defineProps<{
 	modelValue: T[];
 	value: T;
 	disabled?: boolean;
 }>();
+
 const emit = defineEmits<{
 	(ev: 'update:modelValue', value: T[]): void;
 }>();
+
 const checked = computed(() => props.modelValue.includes(props.value));
 
 function toggle(): void {
 	if (props.disabled) return;
+
 	const currentValues = [...props.modelValue];
 	if (checked.value) {
-		// Remove from array
+		// Remove from an array
 		const index = currentValues.indexOf(props.value);
+
 		if (index > -1) {
 			currentValues.splice(index, 1);
 		}
@@ -50,6 +55,7 @@ function toggle(): void {
 		// Add to array
 		currentValues.push(props.value);
 	}
+
 	emit('update:modelValue', currentValues);
 }
 </script>
@@ -70,22 +76,27 @@ function toggle(): void {
 	font-size: 90%;
 	transition: all 0.2s;
 	user-select: none;
+
 	&.disabled {
 		opacity: 0.6;
 		cursor: not-allowed !important;
 	}
+
 	&:hover {
 		border-color: var(--MI_THEME-inputBorderHover) !important;
 	}
+
 	&:focus-within {
 		outline: none;
 		box-shadow: 0 0 0 2px var(--MI_THEME-focus);
 	}
+
 	&.checked {
 		background-color: var(--MI_THEME-accentedBg) !important;
 		border-color: var(--MI_THEME-accentedBg) !important;
 		color: var(--MI_THEME-accent);
 		cursor: default !important;
+
 		> .button {
 			border-color: var(--MI_THEME-accent);
 			background-color: var(--MI_THEME-accent);
@@ -93,6 +104,7 @@ function toggle(): void {
 		}
 	}
 }
+
 .input {
 	position: absolute;
 	width: 0;
@@ -100,6 +112,7 @@ function toggle(): void {
 	opacity: 0;
 	margin: 0;
 }
+
 .button {
 	position: relative;
 	display: inline-flex;
@@ -114,6 +127,7 @@ function toggle(): void {
 	font-size: 10px;
 	line-height: 1;
 }
+
 .label {
 	margin-left: 8px;
 	display: block;
