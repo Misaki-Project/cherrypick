@@ -3997,8 +3997,6 @@ _deliveryTargetControl:
   deliveryTargetsExclude: "一部のサーバーに非公開"
   hasDeliveryTargets: "配送先が選択されています"
 
-  noSendActivity: "アクティビティを送信しない"
-
 ipAddress: "IPアドレス"
 searchIpAddress: "IPアドレスを検索"
 
@@ -4026,3 +4024,5 @@ _experience:
 
 _hideReason:
   privateNote: "この投稿は非公開です"
+
+noSendActivity: "アクティビティを送信しない"

@@ -505,11 +505,11 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 							const { canceled, result: setMode } = await os.select({
 								title: i18n.ts.experience + ': ' + r.name,
 								items: [{
-									value: 'add', text: i18n.ts._experience._calcs.additional,
+									value: 'add', label: i18n.ts._experience._calcs.additional,
 								}, {
-									value: 'multiplier', text: i18n.ts._experience._calcs.multiplier,
+									value: 'multiplier', label: i18n.ts._experience._calcs.multiplier,
 								}, {
-									value: 'set', text: i18n.ts._experience._calcs.set,
+									value: 'set', label: i18n.ts._experience._calcs.set,
 								}],
 								default: 'add',
 							});
