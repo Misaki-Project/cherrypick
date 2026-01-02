@@ -3836,8 +3836,6 @@ _deliveryTargetControl:
   deliveryTargetsExclude: "Not public to some servers"
   hasDeliveryTargets: "Delivery targets are selected"
 
-noSendActivity: "Don't send activity"
-
 ipAddress: "IP Address"
 searchIpAddress: "Search IP Address"
 
@@ -3865,3 +3863,5 @@ _experience:
 
 _hideReason:
   privateNote: "This note is private."
+
+noSendActivity: "Don't send activity"

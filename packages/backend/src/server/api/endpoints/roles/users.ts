@@ -81,7 +81,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.noSuchRole);
 			}
 
-			const query = this.queryService.makePaginationQuery(this.roleAssignmentsRepository.createQueryBuilder('assign'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
+			let query = this.queryService.makePaginationQuery(this.roleAssignmentsRepository.createQueryBuilder('assign'), ps.sinceId, ps.untilId, ps.sinceDate, ps.untilDate)
 				.andWhere('assign.roleId = :roleId', { roleId: role.id })
 				.andWhere(new Brackets(qb => {
 					qb

@@ -14960,10 +14960,6 @@ export interface Locale extends ILocale {
          * 配送先が選択されています
          */
         "hasDeliveryTargets": string;
-        /**
-         * アクティビティを送信しない
-         */
-        "noSendActivity": string;
     };
     /**
      * IPアドレス
@@ -15055,6 +15051,10 @@ export interface Locale extends ILocale {
          */
         "privateNote": string;
     };
+    /**
+     * アクティビティを送信しない
+     */
+    "noSendActivity": string;
 }
 declare const locales: {
     [lang: string]: Locale;

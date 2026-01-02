@@ -188,6 +188,20 @@ if (requestUrl.hostname === 'music.youtube.com' && requestUrl.pathname.match('^/
 	requestUrl.hostname = 'www.youtube.com';
 }
 
+if (requestUrl.hostname === 'youtu.be') {
+	const videoId = requestUrl.pathname.slice(1);
+	const params = new URLSearchParams(requestUrl.search);
+	requestUrl.hostname = 'www.youtube.com';
+	requestUrl.pathname = '/watch';
+	requestUrl.search = '';
+	requestUrl.searchParams.set('v', videoId);
+	params.forEach((value, key) => {
+		if (key !== 'v') {
+			requestUrl.searchParams.set(key, value);
+		}
+	});
+}
+
 requestUrl.hash = '';
 
 window.fetch(`/url?url=${encodeURIComponent(requestUrl.href)}&lang=${versatileLang}`)
